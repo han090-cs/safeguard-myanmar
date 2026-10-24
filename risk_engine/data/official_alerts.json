@@ -1,0 +1,5 @@
+{
+ "_comment": "Official warnings. Only entries in this file are ever returned with official_warning=true. Entries with \"source\": \"dmh\" are written by risk_engine/dmh_importer.py (DMH, moezala.gov.mm) and are replaced on every import; entries without it are manual and kept as they are. Schema: {id, issuer, type (heavy_rain|cyclone|depression|strong_wind|untimely_rain|flood|tsunami|weather_early_warning|other), regions [canonical names, or \"Myanmar\" for the whole country], valid_from, valid_to (ISO 8601 with offset), url, links {my,en}, title {my,en}, summary {my,en} (optional), retrieved_at}.",
+ "updated_at": "2026-10-24T13:40:22.989374+00:00",
+ "alerts": []
+}

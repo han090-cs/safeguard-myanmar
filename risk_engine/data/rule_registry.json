@@ -1,0 +1,587 @@
+{
+  "_comment": "Operational registry for rules R01–R13 and cards I01–I11. The scientific content (messages, evidence, sources, limitations) is read from knowledge_model.json; this file holds review status and engine wiring only. review_status must be 'approved' for a rule to run when RISK_ENGINE_MODE=production.",
+  "registry_version": "1.0",
+  "review_statuses": [
+    "provisional",
+    "approved",
+    "rejected"
+  ],
+  "myanmar_evidence_levels": {
+    "myanmar_epidemiological": {
+      "my": "မြန်မာနိုင်ငံမှာ လေ့လာထားတာတွေ ရှိတယ်",
+      "en": "Myanmar studies available"
+    },
+    "myanmar_exposure_or_burden_only": {
+      "my": "မြန်မာနိုင်ငံက ထိတွေ့မှု/ဝန်ထုပ်ဝန်ပိုး ဒေတာသာ ရှိတယ်",
+      "en": "Myanmar exposure or burden data only"
+    },
+    "myanmar_reports_only": {
+      "my": "မြန်မာနိုင်ငံက ဖြစ်ရပ်အစီရင်ခံစာတွေသာ ရှိတယ်",
+      "en": "Myanmar event reports only"
+    },
+    "none": {
+      "my": "မြန်မာနိုင်ငံအတွက် အထောက်အထား မတွေ့ပါ (ဒေသတွင်း/ကမ္ဘာ့ အထောက်အထားကိုသာ အခြေခံထားတယ်)",
+      "en": "No Myanmar evidence (regional/global evidence)"
+    }
+  },
+  "rules": {
+    "R01": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "extreme_heat",
+      "label": {
+        "my": "အပူဒဏ် အန္တရာယ်",
+        "en": "Heat stress"
+      },
+      "myanmar_evidence": "myanmar_reports_only",
+      "threshold_status": "regional_standard_not_myanmar_validated",
+      "affected_groups": [
+        "older_adults",
+        "young_children",
+        "pregnant_people",
+        "chronic_illness",
+        "outdoor_workers"
+      ],
+      "health_implications": [
+        "heat_exhaustion",
+        "heat_stroke",
+        "dehydration"
+      ],
+      "home_eligible": true
+    },
+    "R02": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "hot_night",
+      "label": {
+        "my": "ညအပူ မကျဆင်းခြင်း",
+        "en": "Hot night"
+      },
+      "myanmar_evidence": "none",
+      "threshold_status": "no_threshold",
+      "affected_groups": [
+        "older_adults",
+        "poorly_ventilated_housing"
+      ],
+      "health_implications": [
+        "heat_strain"
+      ],
+      "home_eligible": false,
+      "modifier_of": "R01"
+    },
+    "R03": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "occupational_heat",
+      "label": {
+        "my": "ပြင်ပလုပ်ငန်းခွင် အပူဒဏ်",
+        "en": "Heat at outdoor work"
+      },
+      "myanmar_evidence": "none",
+      "threshold_status": "regional_standard_not_myanmar_validated",
+      "affected_groups": [
+        "outdoor_workers"
+      ],
+      "health_implications": [
+        "heat_illness",
+        "dehydration",
+        "kidney_strain"
+      ],
+      "home_eligible": true,
+      "requires_audience": "outdoor_worker",
+      "work_hours": [
+        9,
+        17
+      ]
+    },
+    "R04": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "high_uv",
+      "label": {
+        "my": "UV ပြင်းအား",
+        "en": "UV index"
+      },
+      "myanmar_evidence": "myanmar_exposure_or_burden_only",
+      "threshold_status": "global_standard",
+      "affected_groups": [
+        "outdoor_workers",
+        "farmers",
+        "children"
+      ],
+      "health_implications": [
+        "sunburn",
+        "eye_damage"
+      ],
+      "home_eligible": true
+    },
+    "R05": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "fine_particulate_pollution",
+      "label": {
+        "my": "လေထုညစ်ညမ်းမှု (PM2.5)",
+        "en": "Air pollution (PM2.5)"
+      },
+      "myanmar_evidence": "myanmar_exposure_or_burden_only",
+      "threshold_status": "operational_standard_us_epa",
+      "affected_groups": [
+        "respiratory_or_heart_disease",
+        "children",
+        "older_adults",
+        "outdoor_workers"
+      ],
+      "health_implications": [
+        "respiratory_aggravation",
+        "cardiovascular_aggravation"
+      ],
+      "home_eligible": true
+    },
+    "R06": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "dust_pm10",
+      "label": {
+        "my": "ဖုန်မှုန့် (PM10)",
+        "en": "Dust (PM10)"
+      },
+      "myanmar_evidence": "myanmar_exposure_or_burden_only",
+      "threshold_status": "guideline_exceedance_not_health_threshold",
+      "affected_groups": [
+        "respiratory_disease"
+      ],
+      "health_implications": [
+        "respiratory_irritation"
+      ],
+      "home_eligible": true,
+      "suppressed_by": "R05"
+    },
+    "R07": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "safety",
+      "hazard": "lightning",
+      "label": {
+        "my": "မိုးကြိုးအန္တရာယ်",
+        "en": "Lightning"
+      },
+      "myanmar_evidence": "myanmar_reports_only",
+      "threshold_status": "meteorological_category",
+      "affected_groups": [
+        "farmers_in_fields",
+        "people_outdoors"
+      ],
+      "health_implications": [
+        "lightning_injury_or_death"
+      ],
+      "home_eligible": true,
+      "thunder_codes": [
+        95,
+        96,
+        99
+      ],
+      "lookahead_hours": 12
+    },
+    "R08": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "safety",
+      "hazard": "flood_water",
+      "label": {
+        "my": "ရေကြီးရေ ဘေးကင်းရေး",
+        "en": "Floodwater safety"
+      },
+      "myanmar_evidence": "myanmar_reports_only",
+      "threshold_status": "depends_on_upstream_signal",
+      "affected_groups": [
+        "children",
+        "flood_prone_residents",
+        "people_crossing_floodwater"
+      ],
+      "health_implications": [
+        "drowning",
+        "injury"
+      ],
+      "home_eligible": true,
+      "after_hours": 48
+    },
+    "R09": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "post_flood_leptospirosis_exposure",
+      "label": {
+        "my": "ရေကြီးပြီးနောက် ကြွက်ဆီးရောဂါ ထိတွေ့နိုင်ခြေ",
+        "en": "Leptospirosis exposure after floods"
+      },
+      "myanmar_evidence": "myanmar_exposure_or_burden_only",
+      "threshold_status": "depends_on_upstream_signal",
+      "affected_groups": [
+        "people_in_floodwater",
+        "farmers",
+        "livestock_keepers",
+        "people_with_wounds"
+      ],
+      "health_implications": [
+        "leptospirosis"
+      ],
+      "home_eligible": true,
+      "lookback_days": 28,
+      "biological_lag": {
+        "my": "ရေနဲ့ ထိတွေ့ပြီး ၂ ရက်ကနေ ၄ ပတ်အတွင်း",
+        "en": "2 days to 4 weeks after floodwater contact"
+      }
+    },
+    "R10": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "post_flood_water_food_safety",
+      "label": {
+        "my": "ရေကြီးပြီးနောက် ရေနဲ့ အစားအစာ ဘေးကင်းရေး",
+        "en": "Water and food safety after floods"
+      },
+      "myanmar_evidence": "myanmar_epidemiological",
+      "threshold_status": "depends_on_upstream_signal",
+      "affected_groups": [
+        "children",
+        "idp_camp_residents",
+        "coastal_delta_residents",
+        "no_safe_water"
+      ],
+      "health_implications": [
+        "acute_watery_diarrhoea",
+        "cholera",
+        "typhoid"
+      ],
+      "home_eligible": true,
+      "lookback_days": 14,
+      "biological_lag": {
+        "my": "ရက်ပိုင်းကနေ ရက်သတ္တပတ်များစွာအထိ",
+        "en": "days to weeks"
+      }
+    },
+    "R11": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "mosquito_breeding_habitat",
+      "label": {
+        "my": "ခြင်ပေါက်ဖွားရာ လျှော့ချရေး",
+        "en": "Mosquito breeding sites"
+      },
+      "myanmar_evidence": "myanmar_epidemiological",
+      "threshold_status": "no_threshold",
+      "affected_groups": [
+        "children",
+        "urban_periurban_households"
+      ],
+      "health_implications": [
+        "mosquito_borne_disease_risk"
+      ],
+      "home_eligible": true,
+      "months": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "lookback_days": 7,
+      "frequency_cap": "weekly",
+      "biological_lag": {
+        "my": "မြန်မာနိုင်ငံမှာ သွေးလွန်တုပ်ကွေး (Dengue) ကိစ္စတွေက မိုးရွာပြီးနောက် ~၁–၃ လအကြာမှာ ပေါ်လာတတ်ပါတယ်",
+        "en": "In Myanmar, dengue cases follow rainfall by ~1–3 months"
+      },
+      "alert_class_cap": "information",
+      "alert_class_cap_reason": "Trigger (≥1 wet day in 7) is a design parameter, not a validated vector or disease threshold; mosquito content stays informational until validated Myanmar evidence exists."
+    },
+    "R12": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "safety",
+      "hazard": "storm_or_cyclone",
+      "label": {
+        "my": "မုန်တိုင်း / လေပြင်း",
+        "en": "Storm / strong wind"
+      },
+      "myanmar_evidence": "myanmar_reports_only",
+      "threshold_status": "depends_on_upstream_signal",
+      "affected_groups": [
+        "coastal_delta_residents",
+        "idp_camp_residents",
+        "weak_housing"
+      ],
+      "health_implications": [
+        "drowning",
+        "injury",
+        "service_disruption"
+      ],
+      "home_eligible": true
+    },
+    "R13": {
+      "enabled": true,
+      "review_status": "provisional",
+      "category": "health",
+      "hazard": "dry_spell_water_safety",
+      "label": {
+        "my": "မိုးနည်းကာလ ရေဘေးကင်းရေး",
+        "en": "Water safety in dry spells"
+      },
+      "myanmar_evidence": "myanmar_reports_only",
+      "threshold_status": "depends_on_upstream_signal",
+      "affected_groups": [
+        "idp_camp_residents",
+        "long_water_collection_households",
+        "children_under_5"
+      ],
+      "health_implications": [
+        "diarrhoeal_disease"
+      ],
+      "home_eligible": true,
+      "months": [
+        3,
+        4,
+        5
+      ],
+      "frequency_cap": "weekly"
+    }
+  },
+  "cards": {
+    "I01": {
+      "enabled": true,
+      "attach_to": "R01",
+      "myanmar_evidence": "none",
+      "review_status": "provisional"
+    },
+    "I02": {
+      "enabled": true,
+      "months": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "myanmar_evidence": "myanmar_epidemiological",
+      "review_status": "provisional"
+    },
+    "I03": {
+      "enabled": true,
+      "months": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "region_set": "malaria_documented",
+      "myanmar_evidence": "myanmar_epidemiological",
+      "review_status": "provisional"
+    },
+    "I04": {
+      "enabled": true,
+      "months": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "region_set": "je_hotspot",
+      "myanmar_evidence": "myanmar_epidemiological",
+      "review_status": "provisional"
+    },
+    "I05": {
+      "enabled": true,
+      "months": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "myanmar_evidence": "myanmar_epidemiological",
+      "review_status": "provisional"
+    },
+    "I06": {
+      "enabled": true,
+      "region_set": "highland",
+      "requires_hazard": "cold_spell",
+      "myanmar_evidence": "none",
+      "review_status": "provisional"
+    },
+    "I07": {
+      "enabled": true,
+      "requires_hazard_lookback": [
+        "flood_potential"
+      ],
+      "lookback_days": 14,
+      "myanmar_evidence": "none",
+      "review_status": "provisional"
+    },
+    "I08": {
+      "enabled": true,
+      "requires_hazard": "low_visibility",
+      "myanmar_evidence": "none",
+      "review_status": "provisional"
+    },
+    "I09": {
+      "enabled": true,
+      "region_set": "hilly_or_mining",
+      "requires_hazard": "heavy_rain",
+      "myanmar_evidence": "myanmar_reports_only",
+      "review_status": "provisional"
+    },
+    "I10": {
+      "enabled": true,
+      "requires_hazard_lookback": [
+        "flood_potential",
+        "official_flood",
+        "official_cyclone"
+      ],
+      "lookback_days": 28,
+      "myanmar_evidence": "myanmar_reports_only",
+      "review_status": "provisional"
+    },
+    "I11": {
+      "enabled": true,
+      "attach_to": "R01",
+      "requires_context": "displacement_site",
+      "myanmar_evidence": "myanmar_reports_only",
+      "review_status": "provisional"
+    }
+  },
+  "group_labels": {
+    "older_adults": {
+      "my": "သက်ကြီးရွယ်အို",
+      "en": "Older adults"
+    },
+    "young_children": {
+      "my": "ကလေးငယ်",
+      "en": "Young children"
+    },
+    "children": {
+      "my": "ကလေး",
+      "en": "Children"
+    },
+    "children_under_5": {
+      "my": "၅ နှစ်အောက်ကလေး",
+      "en": "Children under 5"
+    },
+    "pregnant_people": {
+      "my": "ကိုယ်ဝန်ဆောင်မိခင်",
+      "en": "Pregnant people"
+    },
+    "chronic_illness": {
+      "my": "နာတာရှည်ရောဂါရှိသူ",
+      "en": "People with chronic illness"
+    },
+    "outdoor_workers": {
+      "my": "ပြင်ပလုပ်သား",
+      "en": "Outdoor workers"
+    },
+    "farmers": {
+      "my": "လယ်သမား",
+      "en": "Farmers"
+    },
+    "farmers_in_fields": {
+      "my": "လယ်ကွင်းထဲမှာ အလုပ်လုပ်သူ",
+      "en": "People working in fields"
+    },
+    "people_outdoors": {
+      "my": "အပြင်မှာ ရှိနေသူ",
+      "en": "People outdoors"
+    },
+    "poorly_ventilated_housing": {
+      "my": "လေဝင်လေထွက်မကောင်းတဲ့ အိမ်မှာ နေသူ",
+      "en": "People in poorly ventilated housing"
+    },
+    "respiratory_or_heart_disease": {
+      "my": "အသက်ရှူ/နှလုံးရောဂါရှိသူ",
+      "en": "People with lung or heart disease"
+    },
+    "respiratory_disease": {
+      "my": "အသက်ရှူရောဂါရှိသူ",
+      "en": "People with lung disease"
+    },
+    "flood_prone_residents": {
+      "my": "ရေကြီးလွယ်ဒေသ နေထိုင်သူ",
+      "en": "Residents of flood-prone areas"
+    },
+    "people_crossing_floodwater": {
+      "my": "ရေထဲဖြတ်ကူးသူ/ယာဉ်မောင်းသူ",
+      "en": "People crossing floodwater"
+    },
+    "people_in_floodwater": {
+      "my": "ရေကြီးရေထဲ လျှောက်သွားသူ/အလုပ်လုပ်သူ",
+      "en": "People wading or working in floodwater"
+    },
+    "livestock_keepers": {
+      "my": "မွေးမြူရေးသမား",
+      "en": "Livestock keepers"
+    },
+    "people_with_wounds": {
+      "my": "ဒဏ်ရာရှိသူ",
+      "en": "People with open wounds"
+    },
+    "idp_camp_residents": {
+      "my": "ရွှေ့ပြောင်းစခန်းမှာ နေသူ",
+      "en": "Displacement camp residents"
+    },
+    "coastal_delta_residents": {
+      "my": "ကမ်းရိုးတန်း/မြစ်ဝကျွန်းပေါ်ဒေသ နေထိုင်သူ",
+      "en": "Coastal and delta residents"
+    },
+    "no_safe_water": {
+      "my": "သန့်ရှင်းတဲ့ရေ မရသူ",
+      "en": "People without safe water"
+    },
+    "urban_periurban_households": {
+      "my": "မြို့ပြ/မြို့ဆင်ခြေဖုံး အိမ်ထောင်စု",
+      "en": "Urban and peri-urban households"
+    },
+    "weak_housing": {
+      "my": "အားနည်းတဲ့ အဆောက်အအုံမှာ နေသူ",
+      "en": "People in weak housing"
+    },
+    "long_water_collection_households": {
+      "my": "ရေခပ်ဖို့ ခရီးဝေးသွားရတဲ့ အိမ်ထောင်စု",
+      "en": "Households far from water"
+    }
+  },
+  "official_basis": {
+    "_comment": "Used when a rule is triggered by an official warning (e.g. a DMH flood or cyclone warning) instead of model data, so the notice does not call itself model-based. {alerts} = the official warnings' titles. Needs Burmese review like all wording.",
+    "important_note": {
+      "my": "ဒီကျန်းမာရေးအသိပေးချက်က အထက်မှာပြထားတဲ့ DMH ရဲ့ တရားဝင်သတိပေးချက်ကို အခြေခံထားတာပါ။ ဒီအသိပေးချက်ကိုယ်တိုင်က တရားဝင်သတိပေးချက် မဟုတ်ပါ။ ရွှေ့ပြောင်းဖို့နဲ့ ဒေသအလိုက် ညွှန်ကြားချက်တွေအတွက် DMH နဲ့ ဒေသအာဏာပိုင်တွေရဲ့ ညွှန်ကြားချက်ကို လိုက်နာပါ။",
+      "en": "This health notice follows the official DMH warning shown above. The notice itself is not an official warning; for evacuation and local instructions, follow DMH and local authorities."
+    },
+    "situation": {
+      "my": "ဒီဒေသအတွက် DMH က တရားဝင်သတိပေးချက် ထုတ်ပြန်ထားပါတယ် – {alerts}။",
+      "en": "An official DMH warning is in force for this area: {alerts}."
+    },
+    "situation_rules": [
+      "R08",
+      "R12"
+    ]
+  },
+  "alert_class_policy": {
+    "_comment": "Presentation policy (risk_engine/classes.py), not a scientific threshold. Classes: information < watch < advisory. official_warning is reserved for alerts issued by DMH and is never produced by a rule.",
+    "cap_by_knowledge_class": {
+      "A": "advisory",
+      "B": "watch",
+      "C": "information",
+      "D": "information"
+    },
+    "advisory_requires": "severity >= high and the signal starts within 24 hours"
+  }
+}

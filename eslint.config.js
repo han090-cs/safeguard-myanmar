@@ -1,0 +1,32 @@
+import js from "@eslint/js";
+import globals from "globals";
+
+export default [
+  js.configs.recommended,
+  { ignores: ["node_modules/**", "**/__pycache__/**"] },
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: { ...globals.browser, ...globals.serviceworker }
+    },
+    rules: {
+      "no-unreachable": "error",
+      "no-undef": "error",
+      "no-unreachable-loop": "error",
+      // swallowing storage/network errors on purpose is the app's offline-first pattern
+      "no-empty": ["error", { allowEmptyCatch: true }],
+      "no-unused-vars": ["error", { caughtErrors: "none", args: "none" }]
+    }
+  },
+  {
+    // globals that one script file shares with another through the page
+    files: ["weather_script.js", "feeds.js"],
+    languageOptions: { globals: { MWRisk: "readonly" } }
+  },
+  { files: ["sw-version.js"], rules: { "no-unused-vars": "off" } }, // global read by sw.js via importScripts
+  { files: ["sw.js"], languageOptions: { globals: { SW_VERSION: "readonly" } } },
+  { files: ["tests/**/*.mjs"], languageOptions: { sourceType: "module", globals: { ...globals.node, ...globals.browser } } },
+  { files: ["playwright*.config.js"], languageOptions: { globals: { process: "readonly" } } }
+];

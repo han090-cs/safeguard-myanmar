@@ -1,0 +1,28 @@
+{
+  "updated": "2026-10-08",
+  "next_update": "2026-11-12",
+  "source": "NOAA Climate Prediction Center, ENSO Diagnostic Discussion",
+  "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml",
+  "status": "El Niño Advisory",
+  "wmo": {
+    "date": "2026-09-03",
+    "persist_through": "2027-02",
+    "chance": "close to 100%"
+  },
+  "dmh_url": "https://www.moezala.gov.mm/",
+  "historic_chance_ond": "83%",
+  "historic_note": "Chance that Oct-Dec 2026 exceeds every El Nino since 1950 (3-month RONI of +2.5C or more); was 75% in the September statement",
+  "sascof": {
+    "session": "SASCOF-34",
+    "date": "2026-04-28",
+    "season": "2026 JJAS",
+    "expired": true,
+    "summary": "Below-normal monsoon rainfall most likely over most of South Asia; above-normal min/max temperatures; El Nino expected, positive IOD later.",
+    "source": "WMO/IMD/RIMES SASCOF-34 consensus statement, Male",
+    "note": "Seasonal forecast, not an official Myanmar (DMH) warning; the season ended 2026-09-30."
+  },
+  "strong_chance": "greater than 83%",
+  "strong_through": "2027-01/03",
+  "warning_system_name": "El Niño Warning System",
+  "warning_system_url": "https://wai-999.github.io/El-Nino-Warning-System/?release=2.0.1#/"
+}

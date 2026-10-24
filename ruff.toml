@@ -1,0 +1,11 @@
+# The code base deliberately uses compact one-line statements; only real problems (unused/undefined names, bugs) fail CI.
+target-version = "py312"
+line-length = 200
+extend-exclude = [".venv", "node_modules", "data"]
+
+[lint]
+select = ["E", "F"]
+ignore = ["E701", "E702", "E401", "E731", "E741", "E501"]
+
+[lint.per-file-ignores]
+"app/api.py" = ["E402"]

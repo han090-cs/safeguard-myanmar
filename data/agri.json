@@ -1,0 +1,624 @@
+{
+  "updated": "2026-10-03",
+  "sources": {
+    "S1": {
+      "n": "ACIAR – rice-pulse systems in Myanmar",
+      "u": "https://www.aciar.gov.au/sites/default/files/legacy/rice_pulse_final.pdf"
+    },
+    "S2": {
+      "n": "FAO GIEWS Country Brief: Myanmar (Dec 2016)",
+      "u": "https://reliefweb.int/report/myanmar/giews-country-brief-myanmar-21-december-2016"
+    },
+    "S3": {
+      "n": "USDA FAS – Burma Beans and Pulses Update 2020",
+      "u": "https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Burma+Beans+and+Pulses+Updates+2020_Rangoon_Burma+-+Union+of_06-04-2020"
+    },
+    "S4": {
+      "n": "Cropping systems of the Central Dry Zone of Myanmar (chickpea after rice, Oct–Nov)",
+      "u": "https://www.researchgate.net/publication/330801021_The_cropping_systems_of_the_Central_Dry_Zone_of_Myanmar_Productivity_constraints_and_possible_solutions"
+    },
+    "S5": {
+      "n": "Myanmar Agricultural Performance Survey, Dry Season 2025 (CGIAR/MAPSA)",
+      "u": "https://cgspace.cgiar.org/server/api/core/bitstreams/c94cb8b5-0ae2-45c0-8945-dbc226e4d2a6/content"
+    },
+    "S6": {
+      "n": "FFTC – Potato sector, Southern Shan State and Magway",
+      "u": "https://ap.fftc.org.tw/article/3327"
+    },
+    "S7": {
+      "n": "Wageningen – Report of the potato mission to Myanmar",
+      "u": "https://edepot.wur.nl/344832"
+    },
+    "S8": {
+      "n": "FFTC – Nitrogen fertilization of monsoon rice (MOALI recommendation)",
+      "u": "https://ap.fftc.org.tw/article/3100"
+    },
+    "S9": {
+      "n": "IFDC – Soil Fertility and Fertilizer Management Strategy for Myanmar (2018)",
+      "u": "https://ifdc.org/wp-content/uploads/2018/11/A-Soil-Fertility-and-Fertilizer-Management-Strategy-for-Myanmar-11-16-2018.pdf"
+    },
+    "S10": {
+      "n": "Myanmar Digital News – monsoon paddy harvest timing",
+      "u": "https://www.mdn.gov.mm/en/start-preparations-harvest-short-term-species-monsoon-paddy"
+    },
+    "S11": {
+      "n": "Rainfall opportunities and risks, Central Dry Zone (soil-water balance)",
+      "u": "https://www.researchgate.net/publication/324532952_Rainfall-related_opportunities_risks_and_constraints_to_rainfed_cropping_in_the_Central_Dry_Zone_of_Myanmar_as_defined_by_soil_water_balance_modelling"
+    },
+    "S12": {
+      "n": "CCAFS – Climate-smart crops for Myanmar's dry regions",
+      "u": "https://ccafs.cgiar.org/news/climate-smart-crops-myanmars-dry-regions"
+    },
+    "S13": {
+      "n": "P4 Project / CSA report – Magway sowing times",
+      "u": "https://nagmyanmar.org/wp-content/uploads/2020/09/CSA-report_August-2018.pdf"
+    },
+    "S14": {
+      "n": "Tandfonline – rice sowing time in central Myanmar",
+      "u": "https://www.tandfonline.com/doi/full/10.1080/1343943X.2024.2308336"
+    },
+    "U": {
+      "n": "Documents supplied by the project owner (AI-generated drafts, not verified)",
+      "u": ""
+    },
+    "R1": {
+      "n": "RIMES – Myanmar agro-ecological zone map, crop-weather calendars and agro-advisory system",
+      "u": "https://www.rimes.int/programs/provati-3/"
+    },
+    "O1": {
+      "n": "Open Development Myanmar – Agro-Ecological Regions of Myanmar (4 regions / 18 zones)",
+      "u": "https://opendevelopmentmyanmar.net/layers/agro-ecological-regions-of-myanmar/"
+    }
+  },
+  "zones": {
+    "delta": {
+      "my": "မြစ်ဝကျွန်းပေါ်",
+      "en": "Delta",
+      "states": [
+        "Ayeyarwady",
+        "Yangon",
+        "Bago"
+      ],
+      "soil_my": "နုန်းမြေ (alluvial) အများစုဖြစ်ပါတယ်။ ရေကို ထိန်းထားနိုင်ပြီး pH လည်း မျှတပါတယ်။",
+      "soil_en": "Mostly alluvial soil with good water holding and balanced pH.",
+      "beh": [
+        {
+          "my": "မိုးရေ လုံလောက်တဲ့နှစ်တွေမှာ မိုးစပါးကို ထပ်မံရေသွင်းဖို့ မလိုတတ်ပါဘူး။",
+          "en": "Monsoon rain is enough for rice; no extra irrigation needed.",
+          "s": "S1"
+        },
+        {
+          "my": "မိုးစပါးရိတ်သိမ်းပြီးတာနဲ့ ပဲမျိုးစုံကို ဆက်လက်စိုက်ပျိုးလေ့ရှိပါတယ်။",
+          "en": "Pulses are normally grown right after the main rice harvest.",
+          "s": "S3"
+        },
+        {
+          "my": "နွေစပါး (ဒုတိယသီးနှံ) က စုစုပေါင်းစပါးထွက်ရှိမှုရဲ့ ၁၅% ခန့်ရှိပါတယ်။",
+          "en": "The second (dry-season) rice crop is only about 15% of output.",
+          "s": "S2"
+        }
+      ]
+    },
+    "dry": {
+      "my": "အလယ်ပိုင်း မိုးနည်းဒေသ (Dry Zone)",
+      "en": "Central Dry Zone",
+      "states": [
+        "Mandalay",
+        "Magway",
+        "Sagaing",
+        "Nay Pyi Taw"
+      ],
+      "soil_my": "မြေနက်/မြေစေး (Vertisol)၊ မြေနီညိုနဲ့ သဲမြေတွေ့ရတတ်ပါတယ်။ အချို့နေရာတွေမှာ ရေထိန်းနိုင်စွမ်း နည်းနိုင်ပါတယ်။ (အရင်းအမြစ်စာရွက်အရ)",
+      "soil_en": "Dark clay (Vertisol), red-brown and sandy soils; often low water holding. (owner's document)",
+      "note_my": "နေပြည်တော်ရဲ့ အချို့ဒေသတွေသာ ဒီဇုန်ထဲမှာ ပါဝင်ပါတယ်။",
+      "note_en": "Only part of Nay Pyi Taw lies in this zone.",
+      "beh": [
+        {
+          "my": "မိုးရာသီမှာ မိုးရွာချိန် နှစ်ပိုင်းခွဲဖြစ်တတ်ပြီး ဇူလိုင်လအတွင်း မိုးပြတ်တဲ့ကာလ ရှိနိုင်ပါတယ်။",
+          "en": "Rainfall comes in two peaks and a dry spell is common in July.",
+          "s": "S4"
+        },
+        {
+          "my": "မိုးရာသီမှာ ကုန်းမြင့်ဘက်တွေမှာ နှမ်း၊ မြေပဲ၊ ပဲတီစိမ်းနဲ့ ပဲစင်းငုံကို စိုက်ကြပြီး နိမ့်တဲ့လယ်ကွင်းတွေမှာ စပါးစိုက်ကြပါတယ်။",
+          "en": "In the monsoon, sesame, groundnut, green gram and pigeon pea go on uplands and rice on lowlands.",
+          "s": "S4"
+        },
+        {
+          "my": "မိုးစပါးရိတ်ပြီးနောက် ကျန်ရှိတဲ့ မြေစိုထိုင်းဆကို အသုံးချပြီး ကုလားပဲစိုက်ကြပါတယ်။ ဖေဖော်ဝါရီ–မတ်လမှာ ရိတ်သိမ်းလေ့ရှိပါတယ်။",
+          "en": "Chickpea is sown on residual moisture after rice and harvested in Feb–Mar.",
+          "s": "S4"
+        },
+        {
+          "my": "မိုးလွန်ရာသီမှာ မတ်ပဲ၊ ပဲတီစိမ်းနဲ့ ကုလားပဲတို့ကို စိုက်ပျိုးလေ့ရှိပါတယ်။",
+          "en": "For the post-rainy season the lower-risk choices are black gram, green gram and chickpea.",
+          "s": "S12"
+        }
+      ]
+    },
+    "hills": {
+      "my": "တောင်ပေါ်ဒေသ",
+      "en": "Hills and mountains",
+      "states": [
+        "Shan",
+        "Kachin",
+        "Chin",
+        "Kayah"
+      ],
+      "soil_my": "တောင်ပေါ်မြေနီနဲ့ သစ်တောမြေတွေ တွေ့ရတတ်ပါတယ်။ မြေဆီလွှာ ရေတိုက်စားခံရနိုင်တာကို သတိထားပါ။ (အရင်းအမြစ်စာရွက်အရ)",
+      "soil_en": "Mountain red / forest soils; watch for erosion. (owner's document)",
+      "beh": [
+        {
+          "my": "အာလူးကို တစ်နှစ်ပတ်လုံး ရာသီလေးမျိုးခွဲပြီး စိုက်ကြပြီး မိုးနှောင်း (ဩဂုတ်–နိုဝင်ဘာ) က အဓိက ရာသီပါ။",
+          "en": "Potato is grown in four seasons; the late monsoon (Aug–Nov) is the main one.",
+          "s": "S6"
+        },
+        {
+          "my": "တောင်ကြီးဒေသမှာ အာလူးကို စပါးခင်းအပြီး ဇန်နဝါရီ–ဧပြီမှာ ရေသွင်းပြီး စိုက်ကြပါတယ်။",
+          "en": "In southern Shan an irrigated potato crop follows rice from January to April.",
+          "s": "S6"
+        }
+      ]
+    },
+    "coastal": {
+      "my": "ကမ်းရိုးတန်းဒေသ",
+      "en": "Coastal",
+      "states": [
+        "Rakhine",
+        "Tanintharyi",
+        "Mon"
+      ],
+      "soil_my": "မြေနီဝါ (laterite) မှာ အက်ဆစ်ဓာတ်များနိုင်ပြီး ကမ်းခြေအနီးမှာ ဆားငန်မြေတွေ ရှိနိုင်ပါတယ်။ (အရင်းအမြစ်စာရွက်အရ)",
+      "soil_en": "Acidic lateritic soils, saline near the coast. (owner's document)",
+      "beh": [
+        {
+          "my": "ကမ်းရိုးတန်းဒေသအချို့မှာ ရော်ဘာနဲ့ ကွမ်းသီးကို အဓိက စီးပွားဖြစ်စိုက်ပျိုးကြပါတယ်။",
+          "en": "Rubber and betel nut are key sales crops on the coast.",
+          "s": "S5"
+        },
+        {
+          "my": "ကမ်းရိုးတန်းမှာ မိုးရေ လုံလောက်တဲ့နှစ်တွေမှာ မိုးစပါးကို ထပ်မံရေသွင်းဖို့ မလိုတတ်ပါဘူး။",
+          "en": "Monsoon rain is enough for rice in coastal areas.",
+          "s": "S1"
+        }
+      ]
+    }
+  },
+  "crops": [
+    {
+      "id": "rice_m_delta",
+      "my": "မိုးစပါး",
+      "en": "Monsoon rice",
+      "zones": [
+        "delta"
+      ],
+      "plant": [
+        [
+          5,
+          6
+        ]
+      ],
+      "harvest": [
+        [
+          10,
+          11
+        ]
+      ],
+      "src": [
+        "S1"
+      ],
+      "v": "v",
+      "nm": "",
+      "ne": ""
+    },
+    {
+      "id": "rice_s_delta",
+      "my": "နွေစပါး (ရေသွင်း)",
+      "en": "Summer rice (irrigated)",
+      "zones": [
+        "delta"
+      ],
+      "plant": [
+        [
+          11,
+          2
+        ]
+      ],
+      "harvest": [
+        [
+          4,
+          5
+        ]
+      ],
+      "src": [
+        "S1",
+        "S2"
+      ],
+      "v": "v",
+      "nm": "ရေသွင်းလို့ရတဲ့ နေရာမှာပဲ စိုက်လေ့ရှိပါတယ်",
+      "ne": "Where irrigation is available"
+    },
+    {
+      "id": "pulse_delta",
+      "my": "မိုးစပါးအပြီး ပဲမျိုးစုံ",
+      "en": "Pulses after monsoon rice",
+      "zones": [
+        "delta"
+      ],
+      "plant": [
+        [
+          11,
+          12
+        ]
+      ],
+      "harvest": null,
+      "src": [
+        "S3",
+        "U"
+      ],
+      "v": "p",
+      "nm": "ပဲမျိုးစုံကို မိုးစပါး ရိတ်ပြီးတာနဲ့ ချက်ချင်း စိုက်လေ့ရှိပါတယ် (လအချိန်ကို အရင်းအမြစ်စာရွက်ကနေ ယူထားတာပါ)",
+      "ne": "Pulses are grown right after the main rice harvest (months from the owner's document)"
+    },
+    {
+      "id": "rice_m_dry",
+      "my": "မိုးစပါး (လယ်ပြင်နိမ့်)",
+      "en": "Monsoon rice (lowland)",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          6,
+          7
+        ]
+      ],
+      "harvest": [
+        [
+          10,
+          11
+        ]
+      ],
+      "src": [
+        "S14",
+        "S10"
+      ],
+      "v": "p",
+      "nm": "အလယ်ပိုင်းမှာ ဇွန်လနှောင်းပိုင်းကနေ ဇူလိုင်လလယ်အထိ စိုက်လေ့ရှိပါတယ်",
+      "ne": "Central areas usually sow late June–mid July"
+    },
+    {
+      "id": "sesame_dry",
+      "my": "နှမ်း",
+      "en": "Sesame",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          5,
+          8
+        ]
+      ],
+      "harvest": null,
+      "src": [
+        "S13",
+        "S5"
+      ],
+      "v": "p",
+      "nm": "မိုးရာမှာ ဇွန်–ဩဂုတ်ကြား စိုက်ကြပါတယ် (မကွေး)၊ မိုးကြိုမှာလည်း စိုက်ကြပါတယ်",
+      "ne": "Monsoon sowing June–Aug (Magway); also pre-monsoon"
+    },
+    {
+      "id": "groundnut_dry",
+      "my": "မြေပဲ",
+      "en": "Groundnut",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          5,
+          8
+        ]
+      ],
+      "harvest": null,
+      "src": [
+        "S13",
+        "S5"
+      ],
+      "v": "p",
+      "nm": "မိုးရာမှာ ဇွန်–ဩဂုတ်ကြား စိုက်ကြပါတယ် (မကွေး)၊ မိုးကြိုမှာလည်း စိုက်ကြပါတယ်",
+      "ne": "Monsoon sowing June–Aug (Magway); also pre-monsoon"
+    },
+    {
+      "id": "pigeon_dry",
+      "my": "ပဲစင်းငုံ",
+      "en": "Pigeon pea",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          5,
+          6
+        ]
+      ],
+      "harvest": [
+        [
+          1,
+          3
+        ]
+      ],
+      "src": [
+        "S3"
+      ],
+      "v": "v",
+      "nm": "အသီးသီးဖို့ ၆–၇ လ ကြာတဲ့ သီးနှံပါ",
+      "ne": "Takes 6–7 months"
+    },
+    {
+      "id": "chickpea_dry",
+      "my": "ကုလားပဲ",
+      "en": "Chickpea",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          10,
+          11
+        ]
+      ],
+      "harvest": [
+        [
+          2,
+          3
+        ]
+      ],
+      "src": [
+        "S4",
+        "S11"
+      ],
+      "v": "v",
+      "nm": "မိုးစပါးအပြီး မြေထဲက စိုထိုင်းဆနဲ့ စိုက်ပါတယ်",
+      "ne": "Sown on residual soil moisture after rice"
+    },
+    {
+      "id": "blackgram_dry",
+      "my": "မတ်ပဲ",
+      "en": "Black gram",
+      "zones": [
+        "dry"
+      ],
+      "plant": [
+        [
+          10,
+          12
+        ]
+      ],
+      "harvest": null,
+      "src": [
+        "S13",
+        "S12"
+      ],
+      "v": "p",
+      "nm": "မိုးလွန်ရာသီမှာ (အောက်တိုဘာ–ဒီဇင်ဘာ) စိုက်ပါတယ်",
+      "ne": "Post-monsoon season (Oct–Dec)"
+    },
+    {
+      "id": "potato_spring",
+      "my": "အာလူး (နွေ၊ ရေသွင်း)",
+      "en": "Potato (irrigated spring)",
+      "zones": [
+        "hills"
+      ],
+      "plant": [
+        [
+          1,
+          2
+        ]
+      ],
+      "harvest": [
+        [
+          4,
+          5
+        ]
+      ],
+      "src": [
+        "S6",
+        "S7"
+      ],
+      "v": "v",
+      "nm": "တောင်ကြီးဒေသမှာ စပါးခင်းအပြီး ရေသွင်းပြီး စိုက်ပါတယ်",
+      "ne": "Irrigated crop in southern Shan"
+    },
+    {
+      "id": "potato_early",
+      "my": "အာလူး (မိုးစောပိုင်း)",
+      "en": "Potato (early monsoon)",
+      "zones": [
+        "hills"
+      ],
+      "plant": [
+        [
+          4,
+          5
+        ]
+      ],
+      "harvest": [
+        [
+          8,
+          9
+        ]
+      ],
+      "src": [
+        "S6",
+        "S7"
+      ],
+      "v": "v",
+      "nm": "မြင့်တဲ့ ချိုင့်ဝှမ်းတွေမှာ၊ စိုက်သူ နည်းတဲ့ ရာသီပါ",
+      "ne": "Higher valleys, minor season"
+    },
+    {
+      "id": "potato_late",
+      "my": "အာလူး (မိုးနှောင်း၊ အဓိက)",
+      "en": "Potato (late monsoon, main)",
+      "zones": [
+        "hills"
+      ],
+      "plant": [
+        [
+          8,
+          8
+        ]
+      ],
+      "harvest": [
+        [
+          11,
+          11
+        ]
+      ],
+      "src": [
+        "S6",
+        "S7"
+      ],
+      "v": "p",
+      "nm": "အဓိက စိုက်ရာသီပါ (ဩဂုတ်–နိုဝင်ဘာ)",
+      "ne": "Main season, Aug–Nov"
+    },
+    {
+      "id": "rice_m_coast",
+      "my": "မိုးစပါး",
+      "en": "Monsoon rice",
+      "zones": [
+        "coastal"
+      ],
+      "plant": [
+        [
+          5,
+          6
+        ]
+      ],
+      "harvest": [
+        [
+          10,
+          11
+        ]
+      ],
+      "src": [
+        "S1"
+      ],
+      "v": "p",
+      "nm": "ကမ်းရိုးတန်းမှာ မိုးရေ လုံလောက်လို့ ရေသွင်းစရာ မလိုပါဘူး",
+      "ne": "Rain is enough in coastal areas"
+    },
+    {
+      "id": "rubber_betel",
+      "my": "ရော်ဘာ၊ ကွမ်းသီး",
+      "en": "Rubber, betel nut",
+      "zones": [
+        "coastal"
+      ],
+      "plant": null,
+      "harvest": null,
+      "src": [
+        "S5"
+      ],
+      "v": "v",
+      "nm": "နှစ်ရှည် သီးနှံတွေဖြစ်ပြီး ကမ်းရိုးတန်းမှာ ရောင်းရတဲ့ အဓိက သီးနှံတွေပါ",
+      "ne": "Perennial; key sales crops on the coast",
+      "perennial": true
+    }
+  ],
+  "monthly_general": {
+    "1": {
+      "prep": "နွေစပါးခင်း သန့်ရှင်းထွန်ယက်",
+      "care": "ဆောင်းပဲ (မတ်ပဲ၊ ကုလားပဲ) အသီးအနှံ ဖွဲ့ချိန် ရေသွင်း"
+    },
+    "2": {
+      "prep": "မိုးကြိုသီးနှံအတွက် မြေဆီလွှာ ပြင်ဆင်",
+      "care": "ဆောင်းသီးနှံ ရိတ်သိမ်း"
+    },
+    "3": {
+      "prep": "နွေစပါး၊ မိုးကြိုမြေပဲအတွက် ထွန်ယက်၊ သဘာဝမြေဩဇာ",
+      "care": "ဆောင်းသီးနှံ ရိတ်သိမ်း"
+    },
+    "4": {
+      "prep": "မိုးကြိုသီးနှံအတွက် ပေါင်းမြက်ရှင်း၊ မြေဩဇာအောက်ခံ",
+      "care": "နွေစပါး ရေသွင်း/ပေါင်းရှင်း"
+    },
+    "5": {
+      "prep": "မိုးစပါး ပျိုးထောင်မြေပြင်၊ ထွန်ယက်ရေသွင်း",
+      "care": "နွေစပါး၊ မိုးကြိုနှမ်း/မြေပဲ ရိတ်သိမ်း"
+    },
+    "6": {
+      "prep": "မိုးစပါးခင်း ထွန်ယက်စိုစွတ်အောင် ပြုလုပ်",
+      "care": "မိုးကြိုသီးနှံ ပေါင်းရှင်း/မြေဩဇာကျွေး"
+    },
+    "7": {
+      "prep": "မိုးစပါး နောက်ကျစိုက်ခင်း ထွန်ပြင်",
+      "care": "မိုးစပါး ပေါင်းရှင်း၊ ပေါင်းသတ်ဆေး၊ မြေဩဇာ"
+    },
+    "8": {
+      "prep": "မိုးနှောင်းသီးနှံအတွက် မြေပြင်ရန် ပြင်ဆင်",
+      "care": "မိုးစပါး ပိုးမွှားကာကွယ်၊ ရေထုတ်ရေသွင်း ထိန်းသိမ်း"
+    },
+    "9": {
+      "prep": "ဆောင်းသီးနှံ (နေကြာ၊ နှမ်း၊ ပဲမျိုးစုံ) အတွက် မြေပြင်ထွန်ယက်",
+      "care": "မိုးစပါး အောင်ရေပေး"
+    },
+    "10": {
+      "prep": "ကုလားပဲ၊ မတ်ပဲအတွက် မြေအစိုဓာတ်ထိန်းပြီး မြေပြင်",
+      "care": "မိုးစပါး စောစိုက်ခင်း စတင်ရိတ်သိမ်း"
+    },
+    "11": {
+      "prep": "ဆောင်းသီးနှံခင်း လေဝင်လေထွက်ကောင်းအောင် ဘောင်ဖော်",
+      "care": "မိုးစပါး အများစု ရိတ်သိမ်း/ခြွေလှေ့"
+    },
+    "12": {
+      "prep": "နွေစပါးအတွက် ရေသွင်းမြေပြင်၊ မြေဩဇာထည့်",
+      "care": "ဆောင်းသီးနှံ ရေသွင်း/ပေါင်းရှင်း၊ မိုးစပါး ရိတ်သိမ်းပြီးစီး"
+    }
+  },
+  "fert": {
+    "verified": [
+      {
+        "my": "MOALI အကြံပြုချက်အရ စပါးမှာ ယူရီးယားကို ၃ ကြိမ် ခွဲပြီး ကျွေးပါ (စိုက်/ကြဲပြီး ၁၀–၂၀ ရက်၊ ပင်ပွားချိန်၊ နှံစတင်ချိန်)။",
+        "en": "MOALI advice for rice: split urea into three top-dressings (10–20 days after sowing/transplanting, tillering, panicle initiation).",
+        "s": "S8"
+      },
+      {
+        "my": "MOALI အကြံပြုတဲ့ ယူရီးယား စုစုပေါင်းက တစ်ဟက်တာကို ၁၂၄–၁၈၅ ကီလိုပါ။",
+        "en": "MOALI's total urea recommendation is 124–185 kg per hectare.",
+        "s": "S8"
+      },
+      {
+        "my": "တိုင်းဒေသကြီးနဲ့ သီးနှံအလိုက် နိုင်ငံတစ်ခုလုံး သုံးမယ့် တရားဝင် မြေဩဇာဇယား မရှိသေးဘူးလို့ IFDC က ဖော်ပြထားပါတယ်။ ဒါကြောင့် မြေစစ်ပြီး ဒေသက စိုက်ပျိုးရေးဦးစီးဌာနနဲ့ တိုင်ပင်ပါ။",
+        "en": "IFDC notes there is no national fertilizer recommendation table by crop and agro-ecological zone. Use a soil test or ask the local Department of Agriculture.",
+        "s": "S9"
+      }
+    ],
+    "reference": [
+      {
+        "my": "စပါး — N:P:K ≈ 2:1:1 သို့ 3:1:1၊ ဖော့စဖရပ်ကို မြေပြင်ချိန်မှာ အကုန်ထည့်",
+        "en": "Rice — N:P:K about 2:1:1 or 3:1:1; apply all phosphorus at land preparation"
+      },
+      {
+        "my": "ပဲမျိုးစုံ — 1:2:1 သို့ 1:3:2၊ နိုက်ထရိုဂျင် အလွန်နည်းနည်းသာ",
+        "en": "Pulses — 1:2:1 or 1:3:2, very little nitrogen"
+      },
+      {
+        "my": "ဆီထွက်သီးနှံ — 2:2:1 နဲ့ ဆာလဖာ",
+        "en": "Oilseeds — 2:2:1 plus sulfur"
+      },
+      {
+        "my": "ဥစား/ဟင်းသီးဟင်းရွက် — 1:1:2 သို့ 2:1:3 (ပိုတက်ဆီယမ် အရေးကြီး)",
+        "en": "Tubers/vegetables — 1:1:2 or 2:1:3 (potassium matters)"
+      }
+    ]
+  },
+  "zone_method": {
+    "my": "ဇုန်ကို တိုင်း/ပြည်နယ်နာမည်တစ်ခုတည်းနဲ့ မသတ်မှတ်ပါ။ မြေပုံ boundary နဲ့ နေရာအလိုက် ခွဲပြီး အလယ်ပိုင်းမိုးနည်း၊ မြစ်ဝကျွန်းပေါ်၊ တောင်ပေါ်/တောင်တန်း၊ ကမ်းရိုးတန်း ဆိုတဲ့ အကျယ်ဇုန်ကို ပြပါတယ်။ Bago၊ နေပြည်တော်လို ကူးပြောင်းဒေသတွေမှာ မသေချာမှုကို သီးခြားပြထားပါတယ်။",
+    "en": "Zones are not assigned from a state/region name alone. The app uses local administrative boundaries plus broad agro-climate references and explicitly marks transition areas such as Bago and Naypyitaw."
+  }
+}

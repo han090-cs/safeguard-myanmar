@@ -1,0 +1,452 @@
+{
+  "rain": {
+    "icon": "🌧️",
+    "unit": "mm",
+    "titleMy": "မိုးရေချိန် (နောက်ဆုံး ၂၄ နာရီ စုစုပေါင်း)",
+    "titleEn": "Rainfall (last 24 h total)",
+    "noteMy": "တစ်ရက်စာ မိုးရေချိန် အဆင့်ခွဲခြားမှု လမ်းညွှန် (IMD/WMO ပုံစံ)။ တစ်နေရာနဲ့တစ်နေရာ ကွာနိုင်ပြီး DMH တရားဝင်သတိပေးချက် မဟုတ်ပါ။",
+    "noteEn": "Daily rainfall classes (IMD/WMO style). Local impact varies; this is not a DMH warning.",
+    "steps": [
+      {
+        "max": 0.1,
+        "tone": 1,
+        "my": "မိုးမရွာ",
+        "en": "None",
+        "tipMy": "လွန်ခဲ့တဲ့ ၂၄ နာရီ မိုးမရွာပါ။",
+        "tipEn": "No rain in the last 24 h."
+      },
+      {
+        "max": 2.5,
+        "tone": 1,
+        "my": "မိုးဖွဲ",
+        "en": "Drizzle",
+        "tipMy": "မိုးစက်အနည်းငယ်သာ ရှိပါတယ်၊ ထီး မလိုလောက်ပါ။",
+        "tipEn": "Barely wet; an umbrella is optional."
+      },
+      {
+        "max": 15.6,
+        "tone": 1,
+        "my": "မိုးအနည်းငယ်",
+        "en": "Light",
+        "tipMy": "လမ်းစိုနိုင်ပါတယ်၊ ထီးယူသွားပါ။",
+        "tipEn": "Roads get wet; carry an umbrella."
+      },
+      {
+        "max": 64.5,
+        "tone": 2,
+        "my": "မိုးအသင့်အတင့်",
+        "en": "Moderate",
+        "tipMy": "လမ်းမှာ ရေဝပ်နိုင်ပါတယ်၊ မောင်းရင် ဂရုစိုက်ပါ။",
+        "tipEn": "Puddles and slow traffic; drive carefully."
+      },
+      {
+        "max": 115.6,
+        "tone": 3,
+        "my": "မိုးသည်း",
+        "en": "Heavy",
+        "tipMy": "နိမ့်ရာမှာ ရေဝပ်နိုင်ပါတယ်၊ မလိုအပ်ရင် အပြင်မထွက်ပါနဲ့။",
+        "tipEn": "Low areas can flood; avoid unnecessary trips."
+      },
+      {
+        "max": 204.5,
+        "tone": 4,
+        "my": "မိုးအလွန်သည်း",
+        "en": "Very heavy",
+        "tipMy": "ရေကြီးမှု၊ မြေပြိုမှု ဖြစ်နိုင်ခြေ မြင့်ပါတယ်။ DMH သတိပေးချက်ကို စစ်ပါ။",
+        "tipEn": "Flood/landslide risk; check DMH warnings."
+      },
+      {
+        "max": null,
+        "tone": 5,
+        "my": "မိုးအလွန်ပြင်းထန်",
+        "en": "Extreme",
+        "tipMy": "အန္တရာယ်ကြီးပါတယ်၊ ဒေသအာဏာပိုင်တွေရဲ့ ညွှန်ကြားချက်အတိုင်း လုပ်ပါ။",
+        "tipEn": "Dangerous; follow local authority instructions."
+      }
+    ]
+  },
+  "rainChance": {
+    "icon": "☔",
+    "unit": "%",
+    "titleMy": "မိုးရွာနိုင်ခြေ (ယနေ့)",
+    "titleEn": "Chance of rain (today)",
+    "noteMy": "ဒါက မိုးရွာနိုင်ခြေကိုပဲ ပြတာပါ၊ ဘယ်လောက်သည်းမလဲဆိုတာ မပြပါဘူး။ သည်းမှုကို သိချင်ရင် မိုးရေချိန်ကို ကြည့်ပါ။",
+    "noteEn": "This is how likely rain is, not how hard it will fall. See rainfall for intensity.",
+    "steps": [
+      {
+        "max": 20,
+        "tone": 1,
+        "my": "နည်း",
+        "en": "Low",
+        "tipMy": "မိုးရွာဖို့ မဖြစ်နိုင်သလောက်ပါပဲ။",
+        "tipEn": "Unlikely to rain."
+      },
+      {
+        "max": 50,
+        "tone": 2,
+        "my": "အသင့်အတင့်",
+        "en": "Moderate",
+        "tipMy": "ရွာနိုင်ပါတယ်၊ ထီးအသင့် ထားပါ။",
+        "tipEn": "Could rain; keep an umbrella handy."
+      },
+      {
+        "max": 70,
+        "tone": 3,
+        "my": "များ",
+        "en": "High",
+        "tipMy": "ရွာဖို့ များပါတယ်၊ အစီအစဉ်ကို ကြိုပြင်ထားပါ။",
+        "tipEn": "Likely; plan around it."
+      },
+      {
+        "max": null,
+        "tone": 4,
+        "my": "အလွန်များ",
+        "en": "Very high",
+        "tipMy": "မိုးရွာမယ်ဆိုတာ သေချာနီးပါးပါပဲ။",
+        "tipEn": "Rain is almost certain."
+      }
+    ]
+  },
+  "aqi": {
+    "icon": "🌫️",
+    "unit": "AQI",
+    "titleMy": "လေထုအရည်အသွေး (US AQI)",
+    "titleEn": "Air quality (US AQI)",
+    "noteMy": "US EPA AQI အဆင့်များ။ ၀–၅၀ ကောင်း၊ ၃၀၀ ကျော်ရင် အန္တရာယ်ကြီး။",
+    "noteEn": "US EPA AQI categories. 0–50 good; above 300 hazardous.",
+    "steps": [
+      {
+        "max": 51,
+        "tone": 1,
+        "my": "ကောင်း",
+        "en": "Good",
+        "tipMy": "လေသန့်ပါတယ်၊ အပြင်မှာ လှုပ်ရှားလို့ ရပါတယ်။",
+        "tipEn": "Clean air; enjoy the outdoors."
+      },
+      {
+        "max": 101,
+        "tone": 2,
+        "my": "အသင့်အတင့်",
+        "en": "Moderate",
+        "tipMy": "အများစုအတွက် အဆင်ပြေပါတယ်၊ ထိခိုက်လွယ်သူတွေ သတိထားပါ။",
+        "tipEn": "Fine for most; very sensitive people take care."
+      },
+      {
+        "max": 151,
+        "tone": 3,
+        "my": "ထိခိုက်လွယ်သူများအတွက် မကောင်း",
+        "en": "Unhealthy for sensitive",
+        "tipMy": "ကလေး၊ သက်ကြီးရွယ်အို၊ အသက်ရှူလမ်းကြောင်း ပြဿနာရှိသူတွေ အပြင်မှာ ကြာကြာ မနေပါနဲ့။",
+        "tipEn": "Children, elderly, asthma: limit long outdoor time."
+      },
+      {
+        "max": 201,
+        "tone": 4,
+        "my": "မကောင်း",
+        "en": "Unhealthy",
+        "tipMy": "အပြင်မှာ လေ့ကျင့်ခန်းလုပ်တာ လျှော့ပါ၊ နှာခေါင်းစည်း တပ်ပါ။",
+        "tipEn": "Cut outdoor exercise; wear a mask."
+      },
+      {
+        "max": 301,
+        "tone": 5,
+        "my": "အလွန်မကောင်း",
+        "en": "Very unhealthy",
+        "tipMy": "အပြင်မထွက်တာ ပိုကောင်းပါတယ်၊ ထွက်ရရင် N95 နှာခေါင်းစည်း တပ်ပါ။",
+        "tipEn": "Stay in if you can; use N95 outside."
+      },
+      {
+        "max": null,
+        "tone": 5,
+        "my": "အန္တရာယ်ရှိ",
+        "en": "Hazardous",
+        "tipMy": "အိမ်ထဲမှာ နေပါ၊ ပြတင်းပေါက်တွေ ပိတ်ထားပါ။",
+        "tipEn": "Stay indoors with windows closed."
+      }
+    ]
+  },
+  "uv": {
+    "icon": "☀️",
+    "unit": "UV",
+    "titleMy": "UV ညွှန်းကိန်း (ယနေ့ အမြင့်ဆုံး)",
+    "titleEn": "UV index (today's peak)",
+    "noteMy": "WHO/WMO UV index အဆင့်များ။ နေရောင်အားအပေါ် အခြေခံပါတယ်၊ တိမ်ထူရင်လည်း ပြင်းနိုင်ပါသေးတယ်။",
+    "noteEn": "WHO/WMO UV index. Clouds don't fully block UV.",
+    "steps": [
+      {
+        "max": 3,
+        "tone": 1,
+        "my": "နိမ့်",
+        "en": "Low",
+        "tipMy": "အပြင်ထွက်လို့ ရပါတယ်။",
+        "tipEn": "Minimal protection needed."
+      },
+      {
+        "max": 6,
+        "tone": 2,
+        "my": "အသင့်အတင့်",
+        "en": "Moderate",
+        "tipMy": "အရိပ်ရှာပါ၊ ဦးထုပ်ဆောင်းပြီး နေကာခရင်မ် လိမ်းပါ။",
+        "tipEn": "Use shade / sun protection."
+      },
+      {
+        "max": 8,
+        "tone": 3,
+        "my": "မြင့်",
+        "en": "High",
+        "tipMy": "နေကာခရင်မ် (SPF ၃၀ နဲ့အထက်)၊ ဦးထုပ်နဲ့ အရိပ် လိုပါတယ်။",
+        "tipEn": "Sunscreen and shade recommended."
+      },
+      {
+        "max": 11,
+        "tone": 4,
+        "my": "အလွန်မြင့်",
+        "en": "Very high",
+        "tipMy": "နံနက် ၁၀ နာရီကနေ ညနေ ၄ နာရီအထိ နေပူကို ရှောင်ပါ။",
+        "tipEn": "Limit midday sun."
+      },
+      {
+        "max": null,
+        "tone": 5,
+        "my": "အလွန်ပြင်းထန်",
+        "en": "Extreme",
+        "tipMy": "အပြင်ထွက်တာကို ရှောင်ပါ၊ ထွက်ရရင် အကာအကွယ် အပြည့်ယူပါ။",
+        "tipEn": "Stay indoors if possible."
+      }
+    ]
+  },
+  "humidity": {
+    "icon": "💧",
+    "unit": "%",
+    "titleMy": "စိုထိုင်းဆ",
+    "titleEn": "Humidity",
+    "noteMy": "လေထဲက ရေငွေ့ပမာဏပါ။ ပူတဲ့အချိန် စိုထိုင်းရင် ပိုပူသလို ခံစားရပါတယ်။",
+    "noteEn": "Moisture in the air. Humid heat feels hotter.",
+    "steps": [
+      {
+        "max": 30,
+        "tone": 2,
+        "my": "ခြောက်သွေ့",
+        "en": "Dry",
+        "tipMy": "အသားအရေနဲ့ လည်ချောင်း ခြောက်နိုင်ပါတယ်၊ ရေများများ သောက်ပါ။",
+        "tipEn": "Skin and throat may dry out; drink water."
+      },
+      {
+        "max": 60,
+        "tone": 1,
+        "my": "သက်တောင့်သက်သာ",
+        "en": "Comfortable",
+        "tipMy": "ခံစားရတာ သက်သာပါတယ်။",
+        "tipEn": "Feels comfortable."
+      },
+      {
+        "max": 80,
+        "tone": 2,
+        "my": "စိုစွတ်",
+        "en": "Humid",
+        "tipMy": "ချွေးထွက်များပါတယ်၊ အဝတ်အစား ခြောက်ဖို့ နှေးနိုင်ပါတယ်။",
+        "tipEn": "Sticky; laundry dries slowly."
+      },
+      {
+        "max": null,
+        "tone": 3,
+        "my": "အလွန်စိုထိုင်း",
+        "en": "Very humid",
+        "tipMy": "ပိုပူသလို ခံစားရပါတယ်၊ အနားယူပြီး ရေသောက်ပါ။",
+        "tipEn": "Feels oppressive; rest and hydrate."
+      }
+    ]
+  },
+  "wind": {
+    "icon": "💨",
+    "unit": "km/h",
+    "titleMy": "လေတိုက်နှုန်း",
+    "titleEn": "Wind speed",
+    "noteMy": "Beaufort စကေးကို အခြေခံတဲ့ လမ်းညွှန်။ လေဝှေ့ (gust) ကတော့ ဒီထက် ပိုပြင်းနိုင်ပါတယ်။",
+    "noteEn": "Beaufort-based guide. Gusts can be stronger than the average.",
+    "steps": [
+      {
+        "max": 12,
+        "tone": 1,
+        "my": "လေငြိမ် / လေညင်း",
+        "en": "Calm / light",
+        "tipMy": "ထူးခြားမှု မရှိပါ။",
+        "tipEn": "Nothing to note."
+      },
+      {
+        "max": 29,
+        "tone": 1,
+        "my": "လေတိုက်",
+        "en": "Breezy",
+        "tipMy": "ပုံမှန်ပါပဲ၊ မြစ်ချောင်းပေါ်မှာ ဂရုစိုက်ပါ။",
+        "tipEn": "Normal; slight care on water."
+      },
+      {
+        "max": 50,
+        "tone": 2,
+        "my": "လေပြင်း",
+        "en": "Strong",
+        "tipMy": "ပေါ့တဲ့ပစ္စည်းတွေ လွင့်သွားနိုင်ပါတယ်၊ ကမ်းခြေနဲ့ ရေပြင်မှာ သတိထားပါ။",
+        "tipEn": "Light objects blow about; care near water."
+      },
+      {
+        "max": 62,
+        "tone": 3,
+        "my": "လေအလွန်ပြင်း",
+        "en": "Very strong",
+        "tipMy": "သစ်ကိုင်း ကျိုးနိုင်ပါတယ်၊ မလိုအပ်ရင် အပြင်မထွက်ပါနဲ့။",
+        "tipEn": "Branches may break; avoid unnecessary trips."
+      },
+      {
+        "max": 89,
+        "tone": 4,
+        "my": "မုန်တိုင်းအဆင့် လေပြင်း",
+        "en": "Gale",
+        "tipMy": "အဆောက်အအုံထဲမှာ နေပါ။",
+        "tipEn": "Stay inside a sturdy building."
+      },
+      {
+        "max": null,
+        "tone": 5,
+        "my": "အန္တရာယ်ရှိတဲ့ လေပြင်း",
+        "en": "Storm-force",
+        "tipMy": "ဒေသအာဏာပိုင်တွေရဲ့ ညွှန်ကြားချက်အတိုင်း လုပ်ပါ။",
+        "tipEn": "Follow local authority instructions."
+      }
+    ]
+  },
+  "pressure": {
+    "icon": "🧭",
+    "unit": "hPa",
+    "titleMy": "လေဖိအား (ပင်လယ်ရေမျက်နှာပြင်)",
+    "titleEn": "Air pressure (sea level)",
+    "noteMy": "လေဖိအားနိမ့်ရင် မိုးတိမ်နဲ့ မုန်တိုင်း ဖြစ်လွယ်ပါတယ်။ မိုးရာသီမှာ ၁၀၀၀–၁၀၁၀ ဝန်းကျင်က ပုံမှန်ပါ။",
+    "noteEn": "Low pressure favours cloud and storms. Around 1000–1010 is common in the monsoon.",
+    "steps": [
+      {
+        "max": 990,
+        "tone": 4,
+        "my": "အလွန်နိမ့်",
+        "en": "Very low",
+        "tipMy": "မုန်တိုင်းစနစ် နီးကပ်နေနိုင်ပါတယ်၊ DMH သတိပေးချက်ကို စစ်ပါ။",
+        "tipEn": "A storm system may be near; check DMH."
+      },
+      {
+        "max": 1000,
+        "tone": 3,
+        "my": "နိမ့်",
+        "en": "Low",
+        "tipMy": "မိုးတိမ်ထူပြီး မိုးသည်းနိုင်ပါတယ်။",
+        "tipEn": "Cloudy and wet weather likely."
+      },
+      {
+        "max": 1020,
+        "tone": 1,
+        "my": "ပုံမှန်",
+        "en": "Normal",
+        "tipMy": "ပုံမှန်အတိုင်းပါ။",
+        "tipEn": "Typical conditions."
+      },
+      {
+        "max": null,
+        "tone": 1,
+        "my": "မြင့်",
+        "en": "High",
+        "tipMy": "ရာသီဥတု ကြည်လင်လေ့ ရှိပါတယ်။",
+        "tipEn": "Usually fair weather."
+      }
+    ]
+  },
+  "visibility": {
+    "icon": "👁️",
+    "unit": "km",
+    "titleMy": "မြင်ကွင်းအကွာအဝေး",
+    "titleEn": "Visibility",
+    "noteMy": "ဝေးဝေးအထိ မြင်ရတဲ့ အကွာအဝေးပါ။ မြူ၊ မိုးသည်း၊ မီးခိုးမြူတွေကြောင့် လျော့နည်းသွားနိုင်ပါတယ်။",
+    "noteEn": "How far you can see. Fog, heavy rain and smoke reduce it.",
+    "steps": [
+      {
+        "max": 1,
+        "tone": 4,
+        "my": "အလွန်မြင်ကွင်းမကောင်း",
+        "en": "Very poor",
+        "tipMy": "မောင်းရင် အလွန်ဂရုစိုက်ပါ၊ မီးဖွင့်ပါ။",
+        "tipEn": "Drive very carefully with lights on."
+      },
+      {
+        "max": 4,
+        "tone": 3,
+        "my": "မြင်ကွင်းမကောင်း",
+        "en": "Poor",
+        "tipMy": "အမြန်နှုန်း လျှော့မောင်းပါ။",
+        "tipEn": "Slow down."
+      },
+      {
+        "max": 10,
+        "tone": 2,
+        "my": "အသင့်အတင့်",
+        "en": "Moderate",
+        "tipMy": "ပုံမှန်ထက် နည်းနည်း လျော့နည်းပါတယ်။",
+        "tipEn": "Slightly reduced."
+      },
+      {
+        "max": null,
+        "tone": 1,
+        "my": "ကောင်း",
+        "en": "Good",
+        "tipMy": "ဝေးဝေးအထိ မြင်ရပါတယ်။",
+        "tipEn": "Clear view."
+      }
+    ]
+  },
+  "heat": {
+    "icon": "🌡️",
+    "unit": "°C",
+    "titleMy": "ခံစားရတဲ့ အပူချိန်",
+    "titleEn": "Feels-like temperature",
+    "noteMy": "NOAA heat index အဆင့်များ (°C)။",
+    "noteEn": "NOAA heat-index categories (°C).",
+    "steps": [
+      {
+        "max": 27,
+        "tone": 1,
+        "my": "သက်တောင့်သက်သာ",
+        "en": "Comfortable",
+        "tipMy": "ပူပြင်းမှုအတွက် စိုးရိမ်စရာ မရှိပါ။",
+        "tipEn": "No heat stress."
+      },
+      {
+        "max": 32,
+        "tone": 2,
+        "my": "ပူလာနိုင်လို့ သတိထားပါ",
+        "en": "Caution",
+        "tipMy": "ကြာကြာ အလုပ်လုပ်ရင် မောပန်းနိုင်ပါတယ်။",
+        "tipEn": "Fatigue possible with long activity."
+      },
+      {
+        "max": 41,
+        "tone": 3,
+        "my": "အလွန်ပူ",
+        "en": "Extreme caution",
+        "tipMy": "ရေများများ သောက်ပါ၊ နေ့လယ်ပိုင်း အလုပ်ကို လျှော့ပါ။",
+        "tipEn": "Hydrate; ease off midday work."
+      },
+      {
+        "max": 54,
+        "tone": 4,
+        "my": "ကျန်းမာရေးအန္တရာယ်ရှိနိုင်အောင် ပူ",
+        "en": "Danger",
+        "tipMy": "အပူလျှပ်ခြင်း ဖြစ်နိုင်ပါတယ်၊ အရိပ်ရှိတဲ့ အေးတဲ့နေရာမှာ နေပါ။",
+        "tipEn": "Heat illness likely; stay cool."
+      },
+      {
+        "max": null,
+        "tone": 5,
+        "my": "အလွန်အန္တရာယ်ရှိတဲ့ အပူချိန်",
+        "en": "Extreme danger",
+        "tipMy": "အပြင်မထွက်ပါနဲ့။",
+        "tipEn": "Avoid being outside."
+      }
+    ]
+  }
+}

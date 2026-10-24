@@ -1,0 +1,48 @@
+{
+  "_comment": "Meteorological hazard thresholds used to create upstream hazard signals (flood potential, storm-force wind, dry spell, cold spell, low visibility). These are METEOROLOGICAL definitions, not health thresholds. Values with status 'existing_dashboard_design_unvalidated' are carried over from weather_script.js (renderRisks) so behaviour stays continuous; they are design choices, not evidence-based, and should be aligned with DMH practice. null = not configured.",
+  "heavy_rain_24h_mm": {
+    "value": 64.5,
+    "source": "India Meteorological Department rainfall intensity category 'heavy rain' (64.5–115.5 mm in 24 h)",
+    "status": "placeholder_regional_meteorological_category"
+  },
+  "very_heavy_rain_24h_mm": {
+    "value": 115.6,
+    "source": "India Meteorological Department rainfall intensity category 'very heavy rain' (115.6–204.4 mm in 24 h)",
+    "status": "placeholder_regional_meteorological_category",
+    "used_for": "flood_potential proxy (rainfall alone does not establish flooding)"
+  },
+  "flood_7day_forecast_mm": {
+    "value": 200,
+    "source": "Existing dashboard rule in weather_script.js: 7-day forecast rain >= 200 mm = 'flood risk (high)'",
+    "status": "existing_dashboard_design_unvalidated",
+    "used_for": "flood_potential proxy over the next 7 days"
+  },
+  "storm_force_wind_kmh": {
+    "value": 89,
+    "source": "Beaufort scale force 10 (storm) lower bound, 24.5 m/s ≈ 89 km/h sustained wind",
+    "status": "meteorological_standard",
+    "note": "weather_script.js labels current wind >= 60 km/h as 'storm-force'; 60 km/h is in the Beaufort 7–8 (near gale/gale) range, so the engine keeps the Beaufort 10 value for this label."
+  },
+  "dry_spell_min_consecutive_dry_days": {
+    "value": null,
+    "wet_day_mm": 1.0,
+    "source": "Wet day = daily precipitation ≥ 1 mm (ETCCDI convention). Run length for a 'dry spell' is not set.",
+    "status": "unset_requires_configuration"
+  },
+  "dry_spell_forecast": {
+    "max_7d_forecast_mm": 2,
+    "min_tmax_c": 32,
+    "source": "Existing dashboard rule in weather_script.js: 7-day forecast rain < 2 mm with temperature >= 32 °C",
+    "status": "existing_dashboard_design_unvalidated"
+  },
+  "cold_spell_tmin_c": {
+    "value": 10,
+    "source": "Existing dashboard rule in weather_script.js: temperature <= 10 °C (engine applies it to the daily minimum)",
+    "status": "existing_dashboard_design_unvalidated"
+  },
+  "low_visibility_m": {
+    "value": 1000,
+    "source": "WMO definition of fog: horizontal visibility below 1 km",
+    "status": "meteorological_standard"
+  }
+}

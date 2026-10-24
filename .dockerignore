@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.git
+.github
+.venv*
+__pycache__
+*.pyc
+tests
+*.md
+!README.md
+deploy

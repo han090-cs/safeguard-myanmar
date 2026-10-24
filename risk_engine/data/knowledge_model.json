@@ -1,0 +1,2453 @@
+{
+  "meta": {
+    "title": "Myanmar Weather → Health Warning Knowledge Model",
+    "title_my": "မြန်မာနိုင်ငံ ရာသီဥတုနှင့် ကျန်းမာရေး သတိပေးချက် အသိပညာမော်ဒယ်",
+    "version": "1.0",
+    "generated": "2026-09-24",
+    "core_principle_my": "ရာသီဥတုသည် အများအားဖြင့် အန္တရာယ်ပြောင်းလဲစေသည့်အချက် (Risk modifier) ဖြစ်သည်၊ ရောဂါရှာဖွေဖော်ထုတ်ချက် မဟုတ်ပါ။ စနစ်သည် 'ရာသီဥတု X = ရောဂါ Y' ဟု မည်သည့်အခါမျှ မဖော်ပြရ။",
+    "core_principle_en": "Weather is usually a risk modifier, not a diagnosis. The system must never state 'Weather X means Disease Y'.",
+    "eligibility_definitions": {
+      "OPERATIONAL": "Enough evidence and measurable weather inputs exist.",
+      "CONDITIONAL": "Useful only if additional variables/signals are available (e.g., flood signal, official bulletin, user profile).",
+      "INFORMATIONAL": "Education only; calendar/location/event cards, not automated risk signals.",
+      "RESEARCH ONLY": "Scientific relationship not suitable for user-facing alerts.",
+      "DO NOT USE": "Insufficient or speculative evidence."
+    },
+    "threshold_policy": "threshold = null means no evidence-based threshold exists. Values marked 'design' are engineering parameters, not scientific thresholds, and must be validated.",
+    "mandatory_disclaimer_my": "မော်ဒယ်ခန့်မှန်းချက်သာဖြစ်ပြီး တရားဝင်ဘေးအန္တရာယ်သတိပေးချက် သို့မဟုတ် ရောဂါရှာဖွေဖော်ထုတ်ချက် မဟုတ်ပါ။",
+    "source_levels": {
+      "1": "Systematic review / meta-analysis / WHO-UN / peer-reviewed / official surveillance",
+      "2": "University / institutional",
+      "3": "NGO / technical report",
+      "4": "News / general website – lead only, never the sole basis of an automated rule"
+    }
+  },
+  "knowledge_model": [
+    {
+      "id": "R01",
+      "name": "heat_index_notice",
+      "weather_condition": "Extreme heat / heat with high humidity",
+      "weather_condition_my": "ပြင်းထန်သောအပူ / အပူနှင့် စိုထိုင်းဆမြင့်မားမှု",
+      "weather_variables": [
+        "temperature_2m (hourly)",
+        "relative_humidity_2m (hourly)",
+        "derived: heat_index (NWS Rothfusz)",
+        "daily max of hourly heat_index"
+      ],
+      "threshold": {
+        "unit": "°C heat index (daily max)",
+        "tiers": [
+          {
+            "level": "extreme_caution",
+            "min": 32,
+            "max": 41,
+            "display": "hazards_tab_only"
+          },
+          {
+            "level": "danger",
+            "min": 41,
+            "max": 54,
+            "display": "notice"
+          },
+          {
+            "level": "extreme_danger",
+            "min": 54,
+            "max": null,
+            "display": "notice"
+          }
+        ],
+        "alt_tiers_bangkok": [
+          27.0,
+          33.0,
+          42.0,
+          52.0
+        ]
+      },
+      "threshold_basis": "US NWS heat-index categories (27/32/41/54 °C) – regional/global operational standard; NOT validated in Myanmar. Showing only Danger and above as a notice is a DESIGN choice to limit alert fatigue, not evidence-derived.",
+      "threshold_basis_my": "US NWS Heat Index အဆင့်များ (27/32/41/54°C) သည် ဒေသတွင်း/ကမ္ဘာ့ လုပ်ငန်းသုံးစံနှုန်းဖြစ်ပြီး မြန်မာတွင် အတည်မပြုရသေးပါ။ “အန္တရာယ်ရှိ” အဆင့်မှစ၍သာ အသိပေးချက်ပြသခြင်းမှာ alert fatigue လျှော့ချရန် ဒီဇိုင်းရွေးချယ်မှု (design) ဖြစ်ပြီး အထောက်အထားမှ ဆင်းသက်လာခြင်း မဟုတ်ပါ။",
+      "duration": "တစ်ရက်တည်း (ရက်ဆက်ဖြစ်ပါက R02 modifier နှင့် တွဲ)",
+      "environmental_effect": "လေထုနှင့် အိမ်တွင်းအပူမြင့်ခြင်း၊ စိုထိုင်းဆကြောင့် ချွေးအငွေ့ပျံ၍ အအေးခံနိုင်စွမ်းကျခြင်း",
+      "secondary_hazard": "ခန္ဓာကိုယ်အပူဖိအား (Heat stress)",
+      "health_risk": "အပူဒဏ်ကြောင့် ပင်ပန်းနွမ်းနယ်ခြင်း၊ အပူရှပ်ခြင်း၊ ရေဓာတ်ခန်းခြောက်ခြင်း၊ နာတာရှည်ရောဂါပိုဆိုးခြင်း",
+      "health_risk_en": "Heat exhaustion, heat stroke, dehydration, worsening of chronic disease",
+      "affected_population": [
+        "သက်ကြီးရွယ်အို",
+        "ကလေးငယ်/မွေးကင်းစ",
+        "ကိုယ်ဝန်ဆောင်မိခင်",
+        "ပြင်ပလုပ်သား",
+        "နာတာရှည်ရောဂါရှိသူ",
+        "မြို့ပြဆင်းရဲသား/ကျူးကျော်ရပ်ကွက်"
+      ],
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး",
+        "အလယ်ပိုင်းအပူပိုင်းခြောက်သွေ့ဒေသ (မန္တလေး၊ မကွေး၊ စစ်ကိုင်း)",
+        "မြို့ပြ (မန္တလေး၊ ရန်ကုန်)"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ (မတ်–မေ)"
+      ],
+      "time_lag": "တစ်နေ့တည်းနှင့် နောက်ရက်အနည်းငယ်",
+      "evidence_level": "High (relationship) / Moderate (threshold transferability)",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Myanmar (event counts)",
+        "Southeast Asia (Thai heat-index levels)",
+        "Global"
+      ],
+      "warning_eligibility": "OPERATIONAL",
+      "recommended_notice_type": "heat_health_notice",
+      "limitations": [
+        "မြန်မာနိုင်ငံအတွက် အပူနဲ့ ကျန်းမာရေးဆက်စပ်မှု (exposure–response) ကို အတည်ပြုထားတဲ့ သတ်မှတ်ချက် မရှိသေးပါ",
+        "Heat Index က အရိပ်ထဲအခြေအနေအတွက် တွက်ထားတာမို့ နေပူထဲမှာ ≈8°C အထိ ပိုမြင့်နိုင်ပါတယ်",
+        "Open-Meteo ရဲ့ apparent_temperature ကို Heat Index အစား မသုံးထားပါ",
+        "မော်ဒယ်ရဲ့ ကွက်ကွက်ခွဲ (grid) က မြို့ပြအပူကျွန်း (Urban heat island) ကို အပြည့်အဝ မဖော်ပြနိုင်ပါ (ခန့်မှန်းချက်)"
+      ],
+      "evidence_ids": [
+        "E01",
+        "E02",
+        "E06"
+      ],
+      "sources": [
+        {
+          "key": "WHO_HEAT",
+          "organization": "WHO",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "World Health Organization. Heat and health (fact sheet). Updated 31 July 2026.",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/climate-change-heat-and-health"
+        },
+        {
+          "key": "EBI2021",
+          "organization": "The Lancet",
+          "year": 2021,
+          "source_level": 1,
+          "citation": "Ebi KL, Capon A, Berry P, Broderick C, et al. Hot weather and heat extremes: health risks. The Lancet. 2021.",
+          "url": "https://doi.org/10.1016/S0140-6736(21)01208-3"
+        },
+        {
+          "key": "IFRC_SEAP2024",
+          "organization": "Myanmar Red Cross Society / IFRC",
+          "year": 2024,
+          "source_level": 3,
+          "citation": "IFRC / Myanmar Red Cross Society. Myanmar | Urban Heatwaves - Simplified Early Action Protocol (sEAP2024MM01; MDRMM022). 2024.",
+          "url": "https://reliefweb.int/report/myanmar/myanmar-urban-heatwaves-simplified-early-action-protocol-seap-no-seap2024mm01-operation-no-mdrmm022"
+        },
+        {
+          "key": "NWS_HI",
+          "organization": "US National Weather Service (NOAA)",
+          "year": null,
+          "source_level": 1,
+          "citation": "US National Weather Service. Heat Index chart and classification (Caution / Extreme Caution / Danger / Extreme Danger), as reproduced by Arizona Department of Health Services; NWS Heat Forecast Tools.",
+          "url": "https://www.azdhs.gov/documents/preparedness/epidemiology-disease-control/extreme-weather/heat/Heat-Index-Chart.pdf ; https://www.weather.gov/safety/heat-tools"
+        },
+        {
+          "key": "BKK_HI",
+          "organization": "Bangkok Metropolitan Administration Environment Department / Thai Meteorological Department (reported by The Nation)",
+          "year": 2026,
+          "source_level": 4,
+          "citation": "The Nation (Thailand). Bangkok heat index reaches 51.9°C, heightening heatstroke risk. 25 June 2026. (Reports the official Bangkok heat-index levels: Watch 27.0-32.9, Warning 33.0-41.9, Danger 42.0-51.9, Very Dangerous >=52 °C.)",
+          "url": "https://www.nationthailand.com/news/general/40067856"
+        },
+        {
+          "key": "AUNG2026",
+          "organization": "Environmental and Sustainability Indicators (Elsevier)",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "Aung HW, Kliengchuay W, Niampradit S, et al., Tantrakarnapa K. Heat-related health impacts in ASEAN countries: A scoping review. Environmental and Sustainability Indicators. 2026.",
+          "url": "https://doi.org/10.1016/j.indic.2026.101272"
+        }
+      ],
+      "rule": {
+        "trigger": "Daily maximum of hourly NWS heat index ≥ 41 °C (Danger) → notice; ≥ 54 °C (Extreme danger) → strong notice; 32–41 °C → hazards tab only",
+        "time_window": "Forecast day (00–23 local); re-evaluate on each refresh; notice at most once per day per location",
+        "confidence": "Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ယနေ့ အပူချိန်နဲ့ စိုထိုင်းဆကို ပေါင်းတွက်ထားတဲ့ အပူညွှန်းကိန်း (Heat Index) က {hi_max}°C အထိ ရောက်နိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ဒီလိုအခြေအနေမှာ နေပူထဲ ကြာကြာနေတာ၊ ပင်ပန်းတဲ့အလုပ် လုပ်တာတွေက အပူဒဏ်ကြောင့် ပင်ပန်းနွမ်းနယ်တာနဲ့ အပူလျှပ်ခြင်း (Heat stroke) ဖြစ်နိုင်ခြေကို မြင့်စေနိုင်ပါတယ်။ သက်ကြီးရွယ်အို၊ ကလေးငယ်၊ ကိုယ်ဝန်ဆောင်မိခင်၊ နာတာရှည်ရောဂါရှိသူနဲ့ ပြင်ပလုပ်သားတွေက ပိုထိခိုက်လွယ်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "နေပူထဲမှာ တိုက်ရိုက်နေရင် ခံစားရတဲ့ အပူက ဒီတန်ဖိုးထက် ပိုမြင့်နိုင်ပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "ရေကို မှန်မှန်သောက်ပါ။ နေ့လယ် အပူဆုံးအချိန်မှာ အပြင်အလုပ်နဲ့ ပင်ပန်းတဲ့ လှုပ်ရှားမှုကို လျှော့ပါ။ အရိပ်ရှိပြီး လေဝင်လေထွက်ကောင်းတဲ့ နေရာမှာ အနားယူပါ။ သက်ကြီးရွယ်အိုနဲ့ ကလေးငယ်တွေကို မကြာခဏ ကြည့်ပေးပါ။ စိတ်ရှုပ်ထွေးတာ၊ စကားပြောမပီတာ၊ သတိလစ်တာ ဖြစ်ရင် ချက်ချင်း ဆေးကုသမှု ရယူပါ။"
+          },
+          "en": {
+            "situation": "Today's heat index (temperature combined with humidity) may reach {hi_max}°C.",
+            "possible_risk": "Long periods in the sun or heavy work in these conditions can raise the risk of heat exhaustion and heat stroke. Older adults, young children, pregnant people, people with chronic illness and outdoor workers are more vulnerable.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis. Feels-like heat in direct sun can be higher than this value.",
+            "what_you_can_do": "Drink water regularly. Reduce outdoor work and strenuous activity during the hottest part of the day. Rest in shaded, well-ventilated places. Check often on older adults and young children. Seek emergency care immediately for confusion, slurred speech or loss of consciousness."
+          }
+        },
+        "addon_ids": [
+          "I01"
+        ],
+        "trigger_my": "နာရီအလိုက် NWS အပူညွှန်းကိန်း၏ နေ့စဉ်အမြင့်ဆုံးတန်ဖိုး ≥ 41°C (အန္တရာယ်ရှိ) → အသိပေးချက်; ≥ 54°C (အလွန်အန္တရာယ်ရှိ) → အလေးထား အသိပေးချက်; 32–41°C → အန္တရာယ် tab တွင်သာ ပြသ",
+        "time_window_my": "ခန့်မှန်းသည့်နေ့ (ဒေသစံတော်ချိန် ၀၀–၂၃ နာရီ); ဒေတာ refresh တိုင်း ပြန်တွက်; တစ်နေရာလျှင် တစ်ရက်တစ်ကြိမ်သာ အသိပေး (design)",
+        "confidence_my": "အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R02",
+      "name": "hot_night_modifier",
+      "weather_condition": "High night-time temperature during a heat event",
+      "weather_condition_my": "အပူရှိနေစဉ် ညအပူချိန် မကျဆင်းခြင်း",
+      "weather_variables": [
+        "temperature_2m_min (daily)",
+        "ERA5 daily climatology (location-specific percentile)"
+      ],
+      "threshold": null,
+      "threshold_basis": "No evidence-based threshold. A location-specific percentile of Tmin from the ERA5 record is an ENGINEERING parameter that must be validated before use (candidate method: Excess Heat Factor – research only).",
+      "threshold_basis_my": "အထောက်အထားအခြေပြု သတ်မှတ်ချက် မရှိပါ။ ERA5 မှတ်တမ်းမှ ဒေသအလိုက် Tmin percentile သည် အသုံးမပြုမီ အတည်ပြုရမည့် engineering parameter ဖြစ်သည် (ဖြစ်နိုင်သောနည်း – Excess Heat Factor၊ သုတေသနအဆင့်သာ)။",
+      "duration": "R01 active + ညအပူမကျဆင်းခြင်း",
+      "environmental_effect": "ညဘက် အိမ်တွင်းအပူမကျခြင်း",
+      "secondary_hazard": "ခန္ဓာကိုယ် ပြန်လည်အေးမြခွင့်မရခြင်း",
+      "health_risk": "အပူဒဏ်ဝေဒနာ ပိုဆိုးခြင်း",
+      "health_risk_en": "Greater heat strain (reduced night-time recovery)",
+      "affected_population": [
+        "သက်ကြီးရွယ်အို",
+        "လေဝင်လေထွက်ညံ့သော အိမ်နေထိုင်သူ",
+        "ယာယီတဲနေထိုင်သူ"
+      ],
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ"
+      ],
+      "time_lag": "တစ်နေ့တည်းမှ ရက်အနည်းငယ်",
+      "evidence_level": "Moderate",
+      "knowledge_class": "B",
+      "evidence_location": [
+        "Global (East Asia)"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "heat_health_notice_modifier",
+      "limitations": [
+        "သီးခြားသတိပေးချက်အဖြစ် မသုံးပါ – အပူဒဏ်အန္တရာယ်ကို ပိုပြင်းစေတဲ့ အချက်အဖြစ်ပဲ သုံးပါတယ်",
+        "ညအပူအတွက် အတည်ပြုထားတဲ့ သတ်မှတ်ချက် မရှိသေးပါ"
+      ],
+      "evidence_ids": [
+        "E03"
+      ],
+      "sources": [
+        {
+          "key": "HE2022",
+          "organization": "The Lancet Planetary Health",
+          "year": 2022,
+          "source_level": 1,
+          "citation": "He C, Kim H, Hashizume M, et al. The effects of night-time warming on mortality burden under future climate change scenarios: a modelling study. Lancet Planet Health. 2022.",
+          "url": "https://doi.org/10.1016/S2542-5196(22)00139-5"
+        },
+        {
+          "key": "WHO_HEAT",
+          "organization": "WHO",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "World Health Organization. Heat and health (fact sheet). Updated 31 July 2026.",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/climate-change-heat-and-health"
+        },
+        {
+          "key": "NAIRN2018",
+          "organization": "IJERPH (MDPI)",
+          "year": 2018,
+          "source_level": 1,
+          "citation": "Nairn J, et al. Performance of Excess Heat Factor Severity as a Global Heatwave Health Impact Index. Int J Environ Res Public Health. 2018. (Cited as a candidate calibration method only; not reviewed in detail.)",
+          "url": "https://doi.org/10.3390/ijerph15112494"
+        }
+      ],
+      "rule": {
+        "trigger": "R01 active AND forecast Tmin is unusually high for the location (percentile parameter to be validated)",
+        "time_window": "Night following an R01 day",
+        "confidence": "Low–Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ဒီညမှာလည်း အပူချိန် သိပ်မကျနိုင်ဘူးလို့ ခန့်မှန်းထားပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "နေ့ရော ညပါ အပူမကျရင် ခန္ဓာကိုယ် ပြန်အေးပြီး အနားယူဖို့ အခွင့်အလမ်း နည်းသွားပါတယ်၊ အပူဒဏ်လည်း စုပုံလာနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ညအပူချိန်အတွက် အတည်ပြုထားတဲ့ သတ်မှတ်ချက် မရှိသေးလို့ ခန့်မှန်းချက်သာ ဖြစ်ပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "အိပ်ခန်းကို လေဝင်လေထွက်ကောင်းအောင် ထားပါ။ အိပ်ရာမဝင်ခင် ရေသောက်ပါ။ တစ်ယောက်တည်းနေတဲ့ သက်ကြီးရွယ်အိုတွေကို ညဘက်မှာလည်း အကြည့်အရှု လုပ်ပေးပါ။"
+          },
+          "en": {
+            "situation": "Temperatures are not expected to drop much tonight.",
+            "possible_risk": "When it stays hot day and night, the body has less chance to recover and heat strain can build up.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "Keep sleeping areas ventilated, drink water before bed, and check on older adults living alone during the night."
+          }
+        },
+        "trigger_my": "R01 ဖွင့်ထားစဉ် ခန့်မှန်းထားသော ညအနိမ့်ဆုံးအပူချိန်သည် ထိုနေရာအတွက် ပုံမှန်ထက် မြင့်မားခြင်း (percentile parameter ကို အတည်ပြုရန်)",
+        "time_window_my": "R01 ဖြစ်သောနေ့၏ ညဘက်",
+        "confidence_my": "နိမ့်–အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R03",
+      "name": "outdoor_worker_heat",
+      "weather_condition": "Heat during outdoor working hours",
+      "weather_condition_my": "ပြင်ပအလုပ်ချိန်အတွင်း အပူ",
+      "weather_variables": [
+        "heat_index (hourly, 09–17 local)",
+        "shortwave_radiation",
+        "wind_speed_10m",
+        "wet_bulb_temperature_2m (research: WBGT estimate)"
+      ],
+      "threshold": null,
+      "threshold_basis": "Uses R01 tiers as proxy. WBGT would be preferable for workers but an estimate from model variables is not validated in Myanmar.",
+      "threshold_basis_my": "R01 အဆင့်များကို proxy အဖြစ် သုံးသည်။ အလုပ်သမားများအတွက် WBGT ပိုသင့်တော်သော်လည်း model ကိန်းရှင်များမှ ခန့်မှန်းတန်ဖိုးကို မြန်မာတွင် မအတည်ပြုရသေးပါ။",
+      "duration": "အလုပ်ချိန်တစ်လျှောက်",
+      "environmental_effect": "နေရောင်ခြည်တိုက်ရိုက် + ကိုယ်ခန္ဓာအပူထုတ်လုပ်မှု",
+      "secondary_hazard": "အလုပ်အကိုင်ဆိုင်ရာ အပူဖိအား",
+      "health_risk": "အပူဒဏ်ဝေဒနာ၊ ရေဓာတ်ခန်းခြောက်ခြင်း၊ ကျောက်ကပ်ဖိအား",
+      "health_risk_en": "Heat illness, dehydration, kidney strain",
+      "affected_population": [
+        "လယ်သမား",
+        "ဆောက်လုပ်ရေးလုပ်သား",
+        "လမ်းဘေးဈေးသည်",
+        "ပို့ဆောင်ရေးလုပ်သား"
+      ],
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ"
+      ],
+      "time_lag": "တစ်နေ့တည်း",
+      "evidence_level": "High (global)",
+      "knowledge_class": "B",
+      "evidence_location": [
+        "Global",
+        "Myanmar (media only)"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "occupational_heat_notice",
+      "limitations": [
+        "WBGT (အပူဖိအားညွှန်းကိန်း) ကို တိုက်ရိုက် မရနိုင်ပါ",
+        "ပြင်ပလုပ်သားအဖြစ် သုံးစွဲသူက ရွေးထားမှသာ ပြပါတယ်"
+      ],
+      "evidence_ids": [
+        "E05",
+        "E01"
+      ],
+      "sources": [
+        {
+          "key": "FLOURIS2018",
+          "organization": "The Lancet Planetary Health",
+          "year": 2018,
+          "source_level": 1,
+          "citation": "Flouris AD, Dinas PC, Ioannou LG, et al. Workers' health and productivity under occupational heat strain: a systematic review and meta-analysis. Lancet Planet Health. 2018.",
+          "url": "https://doi.org/10.1016/S2542-5196(18)30237-7"
+        },
+        {
+          "key": "WHO_HEAT",
+          "organization": "WHO",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "World Health Organization. Heat and health (fact sheet). Updated 31 July 2026.",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/climate-change-heat-and-health"
+        }
+      ],
+      "rule": {
+        "trigger": "User profile = outdoor worker (opt-in) AND heat index ≥ 32 °C during 09:00–17:00",
+        "time_window": "Working hours of forecast day",
+        "confidence": "Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ယနေ့ အလုပ်ချိန်အတွင်း အပူညွှန်းကိန်းက {hi_work}°C အထိ ရောက်နိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ပူတဲ့အခြေအနေမှာ ပင်ပန်းတဲ့အလုပ်ကို အနားမယူဘဲ ဆက်လုပ်ရင် အပူဒဏ်ကြောင့် မကျန်းမာဖြစ်တာနဲ့ ရေဓာတ်ခန်းခြောက်တာ ဖြစ်နိုင်ပါတယ်။ ပူတဲ့နေ့တွေ ထပ်ခါထပ်ခါ ဖြစ်ရင် ကျောက်ကပ်ကိုလည်း ဖိအားပေးနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "အလုပ်လုပ်တဲ့နေရာရဲ့ အပူကို တိုက်ရိုက်တိုင်းထားတာ မဟုတ်ပါ၊ နေရာအလိုက် ကွာနိုင်ပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "အလုပ်ချိန်အတွင်း အရိပ်ရတဲ့နေရာမှာ မကြာခဏ အနားယူပါ။ ရေမငတ်ခင်ကတည်းက ပုံမှန်သောက်ပါ။ ဖြစ်နိုင်ရင် လေးလံတဲ့အလုပ်တွေကို မနက်စောစော သို့မဟုတ် ညနေပိုင်းကို ရွှေ့ပါ။ အတူလုပ်သူတွေရဲ့ အခြေအနေကိုလည်း တစ်ယောက်ကိုတစ်ယောက် ကြည့်ပေးပါ။"
+          },
+          "en": {
+            "situation": "The heat index during working hours today may reach {hi_work}°C.",
+            "possible_risk": "Continuous heavy work without rest in these conditions can cause heat illness and dehydration; repeated hot workdays can also strain the kidneys.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "Take frequent rest breaks in the shade. Drink water regularly, not only when thirsty. If possible, move heavy tasks to early morning or late afternoon. Watch out for co-workers."
+          }
+        },
+        "trigger_my": "အသုံးပြုသူက ပြင်ပလုပ်သားအဖြစ် ရွေးချယ်ထား (opt-in) ပြီး ၀၉:၀၀–၁၇:၀၀ (design) အတွင်း အပူညွှန်းကိန်း ≥ 32°C",
+        "time_window_my": "ခန့်မှန်းသည့်နေ့၏ အလုပ်ချိန်",
+        "confidence_my": "အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R04",
+      "name": "uv_notice",
+      "weather_condition": "High to extreme UV",
+      "weather_condition_my": "UV ပြင်းအား မြင့်မားခြင်း",
+      "weather_variables": [
+        "uv_index_max (daily)",
+        "uv_index (hourly)"
+      ],
+      "threshold": {
+        "unit": "UV Index (WHO Global Solar UV Index)",
+        "tiers": [
+          {
+            "level": "moderate_high",
+            "min": 3,
+            "max": 8,
+            "display": "metric_card_only"
+          },
+          {
+            "level": "very_high",
+            "min": 8,
+            "max": 11,
+            "display": "notice"
+          },
+          {
+            "level": "extreme",
+            "min": 11,
+            "max": null,
+            "display": "notice"
+          }
+        ]
+      },
+      "threshold_basis": "WHO/WMO/UNEP/ICNIRP UV Index categories (global standard; UV physics applies in Myanmar). Showing notices only at ≥8 is a DESIGN choice.",
+      "threshold_basis_my": "WHO/WMO/UNEP/ICNIRP UV Index အမျိုးအစားများ (ကမ္ဘာ့စံ; UV ရူပဗေဒသည် မြန်မာတွင်လည်း အကျုံးဝင်)။ ≥8 တွင်သာ အသိပေးချက်ပြသခြင်းမှာ ဒီဇိုင်းရွေးချယ်မှု (design) ဖြစ်သည်။",
+      "duration": "နေ့လယ်ပိုင်း",
+      "environmental_effect": "—",
+      "secondary_hazard": "UV ထိတွေ့မှု",
+      "health_risk": "နေလောင်ခြင်း၊ မျက်စိထိခိုက်ခြင်း၊ ရေရှည် အသားအရေကင်ဆာ",
+      "health_risk_en": "Sunburn, eye damage, long-term skin cancer risk",
+      "affected_population": [
+        "ပြင်ပလုပ်သား",
+        "လယ်သမား",
+        "ကလေး"
+      ],
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ (နှစ်ပတ်လုံးမြင့်နိုင်)"
+      ],
+      "time_lag": "နေလောင် – နာရီပိုင်း; ရေရှည် – နှစ်",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Global",
+        "Myanmar (pterygium burden study)"
+      ],
+      "warning_eligibility": "OPERATIONAL",
+      "recommended_notice_type": "uv_notice",
+      "limitations": [
+        "တိမ်ဖုံးမှု ခန့်မှန်းချက် မှားရင် UV တန်ဖိုး ကွာနိုင်ပါတယ်",
+        "အသိပေးချက် အလွန်များမနေအောင် တစ်ရက်တစ်ကြိမ်ပဲ ပြပါတယ်"
+      ],
+      "evidence_ids": [
+        "E10"
+      ],
+      "sources": [
+        {
+          "key": "WHO_UV",
+          "organization": "WHO",
+          "year": 2002,
+          "source_level": 1,
+          "citation": "World Health Organization. Radiation: The ultraviolet (UV) index (Q&A); and WHO/WMO/UNEP/ICNIRP. Global Solar UV Index: A Practical Guide. 2002.",
+          "url": "https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-(uv)-index"
+        },
+        {
+          "key": "DURKIN2008",
+          "organization": "British Journal of Ophthalmology",
+          "year": 2008,
+          "source_level": 1,
+          "citation": "Durkin SR, Abhary S, Newland HS, Selva D, Aung T, Casson RJ. The prevalence, severity and risk factors for pterygium in central Myanmar: the Meiktila Eye Study. Br J Ophthalmol. 2008.",
+          "url": "https://doi.org/10.1136/bjo.2007.119842"
+        }
+      ],
+      "rule": {
+        "trigger": "uv_index_max ≥ 8 (very high) or ≥ 11 (extreme)",
+        "time_window": "Forecast day; highlight hours with uv_index ≥ 8",
+        "confidence": "High",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ယနေ့ ခရမ်းလွန်ရောင်ခြည် (UV) အညွှန်းက {uvi} အထိ ရောက်နိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ကာကွယ်မှု မရှိဘဲ နေပူထဲ ကြာကြာနေရင် အသားအရေ နေလောင်တာ၊ မျက်စိထိခိုက်တာ ဖြစ်နိုင်ပါတယ်။ ရေရှည်မှာ အသားအရေကင်ဆာ ဖြစ်နိုင်ခြေလည်း မြင့်လာနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "တိမ်ဖုံးမှု ခန့်မှန်းချက် မှားရင် UV တန်ဖိုး ကွာနိုင်ပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "နေ့လယ်ပိုင်းမှာ အရိပ်ခိုပါ။ ဦးထုပ်၊ လက်ရှည်အင်္ကျီ၊ နေကာမျက်မှန် သုံးပါ။ အဝတ်နဲ့ မဖုံးထားတဲ့ အသားအရေမှာ နေကာခရင်မ် (Sunscreen) လိမ်းပါ။"
+          },
+          "en": {
+            "situation": "Today's UV index may reach {uvi}.",
+            "possible_risk": "Unprotected time in the sun can cause sunburn and eye damage, and raises long-term skin cancer risk.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "Seek shade around midday. Wear a hat, long sleeves and sunglasses. Use sunscreen on exposed skin."
+          }
+        },
+        "trigger_my": "နေ့စဉ် UV အညွှန်း အမြင့်ဆုံး ≥ 8 (အလွန်မြင့်) သို့မဟုတ် ≥ 11 (အလွန်အမင်းမြင့်)",
+        "time_window_my": "ခန့်မှန်းသည့်နေ့; UVI ≥ 8 ဖြစ်သော နာရီများကို မီးမောင်းထိုးပြ",
+        "confidence_my": "မြင့်"
+      }
+    },
+    {
+      "id": "R05",
+      "name": "pm25_air_quality_notice",
+      "weather_condition": "Smoke / haze / particulate pollution",
+      "weather_condition_my": "မီးခိုးမြူနှင့် လေထုအမှုန်အမွှား ညစ်ညမ်းမှု",
+      "weather_variables": [
+        "pm2_5 (Air Quality API, 24-h rolling mean)",
+        "us_aqi / us_aqi_pm2_5"
+      ],
+      "threshold": {
+        "unit": "US AQI (from 24-h mean PM2.5)",
+        "tiers": [
+          {
+            "level": "moderate",
+            "min": 51,
+            "max": 100,
+            "display": "metric_card_only"
+          },
+          {
+            "level": "unhealthy_sensitive",
+            "min": 101,
+            "max": 150,
+            "display": "notice_sensitive_groups"
+          },
+          {
+            "level": "unhealthy",
+            "min": 151,
+            "max": 200,
+            "display": "notice"
+          },
+          {
+            "level": "very_unhealthy",
+            "min": 201,
+            "max": 300,
+            "display": "notice"
+          },
+          {
+            "level": "hazardous",
+            "min": 301,
+            "max": null,
+            "display": "notice"
+          }
+        ],
+        "reference_values_ug_m3": {
+          "WHO_AQG_2021_PM25_24h": 15,
+          "Myanmar_NEQG_2015_PM25_24h": 25
+        }
+      },
+      "threshold_basis": "US EPA AQI categories (operational standard). WHO AQG 2021 and Myanmar NEQG 2015 values shown as reference context. Implementer must confirm which EPA breakpoint table (2024 revision) Open-Meteo applies.",
+      "threshold_basis_my": "US EPA AQI အမျိုးအစားများ (လုပ်ငန်းသုံးစံ)။ WHO AQG 2021 နှင့် မြန်မာ NEQG 2015 တန်ဖိုးများကို ရည်ညွှန်းနောက်ခံအဖြစ် ပြသ။ Open-Meteo က EPA ၏ မည်သည့် breakpoint ဇယား (၂၀၂၄ ပြင်ဆင်ချက်) ကို သုံးသည်ကို implementer က အတည်ပြုရမည်။",
+      "duration": "၂၄ နာရီပျမ်းမျှ",
+      "environmental_effect": "လယ်ယာ/တောမီးရှို့မှု၊ ယာဉ်ထုတ်လွှတ်မှု၊ ဖုန်",
+      "secondary_hazard": "PM2.5 ထိတွေ့မှု",
+      "health_risk": "အသက်ရှူလမ်းကြောင်းနှင့် ဦးနှောက်/နှလုံးသွေးကြောရောဂါ လက္ခဏာပိုဆိုးခြင်း",
+      "health_risk_en": "Worsening respiratory and cardiovascular/cerebrovascular conditions",
+      "affected_population": [
+        "အသက်ရှူ/နှလုံးရောဂါရှိသူ",
+        "ကလေး",
+        "သက်ကြီးရွယ်အို",
+        "ပြင်ပလုပ်သား"
+      ],
+      "geographic_context": [
+        "မန္တလေး",
+        "ရန်ကုန်",
+        "အလယ်ပိုင်းခြောက်သွေ့ဒေသ",
+        "ထိုင်းနယ်စပ်ဒေသ (နယ်စပ်ဖြတ်မီးခိုး)"
+      ],
+      "seasonal_context": [
+        "ဆောင်း/ခြောက်သွေ့ရာသီ",
+        "နွေရာသီ (ဇန်နဝါရီ–ဧပြီ)"
+      ],
+      "time_lag": "တစ်နေ့တည်းမှ ၄ ရက်",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Myanmar (exposure)",
+        "Southeast Asia (health effects)",
+        "Global"
+      ],
+      "warning_eligibility": "OPERATIONAL",
+      "recommended_notice_type": "air_quality_notice",
+      "limitations": [
+        "CAMS ကမ္ဘာလုံးဆိုင်ရာ မော်ဒယ် (0.4°၊ ~45 km) ဖြစ်ပြီး မြေပြင်တိုင်းတာချက် မဟုတ်ပါ",
+        "ဒေသတွင်း မီးရှို့တာကို လျော့တွက်မိ/ပိုတွက်မိနိုင်ပါတယ်",
+        "မြန်မာနိုင်ငံမှာ PM နဲ့ ကျန်းမာရေးရလဒ် ဆက်စပ်မှုကို လေ့လာထားတာ မရှိသေးပါ"
+      ],
+      "evidence_ids": [
+        "E40"
+      ],
+      "sources": [
+        {
+          "key": "MUELLER2020",
+          "organization": "Environmental Health",
+          "year": 2020,
+          "source_level": 1,
+          "citation": "Mueller W, Loh M, Vardoulakis S, et al. Ambient particulate matter and biomass burning: an ecological time series study of respiratory and cardiovascular hospital visits in northern Thailand. Environ Health. 2020.",
+          "url": "https://doi.org/10.1186/s12940-020-00629-3"
+        },
+        {
+          "key": "ZHANG2022",
+          "organization": "Atmospheric Pollution Research",
+          "year": 2022,
+          "source_level": 1,
+          "citation": "Zhang N, Maung MW, Win MS, Feng J, Yao X. Carbonaceous aerosol and inorganic ions of PM2.5 in Yangon and Mandalay of Myanmar: Seasonal and spatial variations in composition and sources. Atmos Pollut Res. 2022.",
+          "url": "https://doi.org/10.1016/j.apr.2022.101444"
+        },
+        {
+          "key": "WHO_AQG2021",
+          "organization": "WHO",
+          "year": 2021,
+          "source_level": 1,
+          "citation": "World Health Organization. WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide. 2021. (PM2.5 24-h AQG 15 µg/m³; annual 5 µg/m³; PM10 24-h 45 µg/m³.)",
+          "url": "https://www.who.int/publications/i/item/9789240034228"
+        },
+        {
+          "key": "NEQG2015",
+          "organization": "Ministry of Environmental Conservation and Forestry, Myanmar",
+          "year": 2015,
+          "source_level": 1,
+          "citation": "Republic of the Union of Myanmar. National Environmental Quality (Emission) Guidelines. 29 December 2015. (Ambient PM2.5 24-h 25 µg/m³, annual 10 µg/m³; PM10 24-h 50 µg/m³, annual 20 µg/m³.)",
+          "url": "https://www.myanmar-responsiblebusiness.org/pdf/2015-12-29-National-Environmental-Quality_Emission_Guidelines_en.pdf"
+        },
+        {
+          "key": "EPA_AQI",
+          "organization": "US Environmental Protection Agency",
+          "year": 2024,
+          "source_level": 1,
+          "citation": "US EPA. AQI Breakpoints (Air Quality System code table), including the 2024 PM2.5 revision.",
+          "url": "https://aqs.epa.gov/aqsweb/documents/codetables/aqi_breakpoints.html"
+        },
+        {
+          "key": "OM_AQ",
+          "organization": "Open-Meteo",
+          "year": 2026,
+          "source_level": 2,
+          "citation": "Open-Meteo. Air Quality API documentation (CAMS global 0.4°; US AQI uses 24-h rolling mean for PM).",
+          "url": "https://open-meteo.com/en/docs/air-quality-api"
+        }
+      ],
+      "rule": {
+        "trigger": "US AQI (PM2.5, 24-h mean) ≥ 101 → notice for sensitive groups; ≥ 151 → general notice",
+        "time_window": "Current and next 24 h",
+        "confidence": "Moderate (model data)",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ယနေ့ လေထုအရည်အသွေးညွှန်းကိန်း (AQI) က {aqi} ({category}) ဖြစ်နိုင်ပြီး PM2.5 ၂၄ နာရီပျမ်းမျှ {pm25} µg/m³ ခန့် ရှိနိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "လေထုထဲက အမှုန်အမွှားငယ် (PM2.5) တွေက အဆုတ်ထဲ နက်နက်ဝင်သွားနိုင်ပြီး အသက်ရှူလမ်းကြောင်းနဲ့ နှလုံးသွေးကြောရောဂါ လက္ခဏာတွေကို ပိုဆိုးစေနိုင်ပါတယ်။ အသက်ရှူ/နှလုံးရောဂါရှိသူ၊ ကလေးနဲ့ သက်ကြီးရွယ်အိုတွေ ပိုထိခိုက်လွယ်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ဒီတန်ဖိုးက ကမ္ဘာလုံးဆိုင်ရာ လေထုမော်ဒယ် (CAMS) ရဲ့ ခန့်မှန်းချက်ဖြစ်ပြီး မြေပြင်မှာ တိုင်းထားတာ မဟုတ်ပါ။ ဒေသတွင်း မီးရှို့တာတွေကြောင့် တကယ့်တန်ဖိုး ကွာနိုင်ပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "အပြင်မှာ ပင်ပန်းတဲ့ လှုပ်ရှားမှုကို လျှော့ပါ။ အသက်ရှူရောဂါရှိသူတွေ ကိုယ့်ဆေးကို အသင့်ထားပါ။ အမှိုက်နဲ့ ကောက်ရိုး မီးရှို့တာကို ရှောင်ပါ။ အပြင်ထွက်ရရင် မှန်မှန်ကန်ကန် တပ်ထားတဲ့ N95/KN95 နှာခေါင်းစည်းက အကာအကွယ် ပေးနိုင်ပါတယ်။"
+          },
+          "en": {
+            "situation": "Today's air quality index (AQI) may be {aqi} ({category}), with 24-hour PM2.5 around {pm25} µg/m³.",
+            "possible_risk": "Fine particles (PM2.5) reach deep into the lungs and can worsen respiratory and cardiovascular symptoms. People with lung or heart disease, children and older adults are more vulnerable.",
+            "important_note": "This value comes from a global air-quality model (CAMS), not a ground monitor; local burning can make actual levels differ. This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "Reduce strenuous outdoor activity. People with lung disease should keep their medicines at hand. Avoid burning rubbish or crop residue. A well-fitted N95/KN95 mask offers protection if you must be outside."
+          }
+        },
+        "trigger_my": "US AQI (PM2.5၊ ၂၄ နာရီပျမ်းမျှ) ≥ 101 → ထိခိုက်လွယ်အုပ်စုများအတွက် အသိပေးချက်; ≥ 151 → အများပြည်သူ အသိပေးချက်",
+        "time_window_my": "လက်ရှိနှင့် လာမည့် ၂၄ နာရီ",
+        "confidence_my": "အလယ်အလတ် (model ဒေတာ)"
+      }
+    },
+    {
+      "id": "R06",
+      "name": "pm10_dust_notice",
+      "weather_condition": "Dust-producing wind / coarse particles",
+      "weather_condition_my": "ဖုန်မှုန့်ထသောလေ / PM10",
+      "weather_variables": [
+        "pm10 (24-h mean)",
+        "dust",
+        "us_aqi_pm10"
+      ],
+      "threshold": {
+        "unit": "µg/m³ PM10 (24-h mean)",
+        "reference_values": {
+          "Myanmar_NEQG_2015": 50,
+          "WHO_AQG_2021": 45
+        }
+      },
+      "threshold_basis": "National (NEQG 2015) and WHO guideline values – guideline exceedance, not a health-effect threshold.",
+      "threshold_basis_my": "အမျိုးသား (NEQG 2015) နှင့် WHO လမ်းညွှန်တန်ဖိုးများ – လမ်းညွှန်ချက်ကျော်လွန်မှုသာဖြစ်ပြီး ကျန်းမာရေးသက်ရောက်မှု သတ်မှတ်ချက် မဟုတ်ပါ။",
+      "duration": "၂၄ နာရီပျမ်းမျှ",
+      "environmental_effect": "မြေဖုန်ပျံ့လွင့်ခြင်း",
+      "secondary_hazard": "PM10 ထိတွေ့မှု",
+      "health_risk": "အသက်ရှူလမ်းကြောင်း ယားယံခြင်းနှင့် ရောဂါပိုဆိုးခြင်း",
+      "health_risk_en": "Respiratory irritation and aggravation",
+      "affected_population": [
+        "အသက်ရှူရောဂါရှိသူ"
+      ],
+      "geographic_context": [
+        "အလယ်ပိုင်းခြောက်သွေ့ဒေသ (အနုမာန)"
+      ],
+      "seasonal_context": [
+        "နွေ",
+        "ဆောင်း/ခြောက်သွေ့"
+      ],
+      "time_lag": "တစ်နေ့တည်း",
+      "evidence_level": "Moderate",
+      "knowledge_class": "B",
+      "evidence_location": [
+        "Myanmar (source apportionment)",
+        "Global"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "air_quality_notice",
+      "limitations": [
+        "CAMS ရဲ့ ဖုန်မှုန့်/PM10 တန်ဖိုးကို မြန်မာမှာ မအတည်ပြုရသေးပါ",
+        "လေထုညစ်ညမ်းမှု (PM2.5) အချက်ပြမှုနဲ့ တစ်ပြိုင်နက် ဖြစ်ရင် အဲဒီဟာကိုပဲ ပြပါတယ်"
+      ],
+      "evidence_ids": [
+        "E41"
+      ],
+      "sources": [
+        {
+          "key": "ZHANG2022",
+          "organization": "Atmospheric Pollution Research",
+          "year": 2022,
+          "source_level": 1,
+          "citation": "Zhang N, Maung MW, Win MS, Feng J, Yao X. Carbonaceous aerosol and inorganic ions of PM2.5 in Yangon and Mandalay of Myanmar: Seasonal and spatial variations in composition and sources. Atmos Pollut Res. 2022.",
+          "url": "https://doi.org/10.1016/j.apr.2022.101444"
+        },
+        {
+          "key": "WHO_AQG2021",
+          "organization": "WHO",
+          "year": 2021,
+          "source_level": 1,
+          "citation": "World Health Organization. WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide. 2021. (PM2.5 24-h AQG 15 µg/m³; annual 5 µg/m³; PM10 24-h 45 µg/m³.)",
+          "url": "https://www.who.int/publications/i/item/9789240034228"
+        },
+        {
+          "key": "NEQG2015",
+          "organization": "Ministry of Environmental Conservation and Forestry, Myanmar",
+          "year": 2015,
+          "source_level": 1,
+          "citation": "Republic of the Union of Myanmar. National Environmental Quality (Emission) Guidelines. 29 December 2015. (Ambient PM2.5 24-h 25 µg/m³, annual 10 µg/m³; PM10 24-h 50 µg/m³, annual 20 µg/m³.)",
+          "url": "https://www.myanmar-responsiblebusiness.org/pdf/2015-12-29-National-Environmental-Quality_Emission_Guidelines_en.pdf"
+        },
+        {
+          "key": "OM_AQ",
+          "organization": "Open-Meteo",
+          "year": 2026,
+          "source_level": 2,
+          "citation": "Open-Meteo. Air Quality API documentation (CAMS global 0.4°; US AQI uses 24-h rolling mean for PM).",
+          "url": "https://open-meteo.com/en/docs/air-quality-api"
+        }
+      ],
+      "rule": {
+        "trigger": "24-h mean PM10 > 50 µg/m³ (NEQG) AND R05 not active",
+        "time_window": "Current and next 24 h",
+        "confidence": "Low–Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ယနေ့ လေထုထဲမှာ ဖုန်မှုန့်နဲ့ PM10 ပမာဏ မြင့်နိုင်ပါတယ် (၂၄ နာရီပျမ်းမျှ {pm10} µg/m³ ခန့်)။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ဖုန်မှုန့်တွေက အသက်ရှူလမ်းကြောင်းကို ယားယံစေပြီး ပန်းနာရင်ကျပ်လို ရောဂါရှိသူတွေရဲ့ လက္ခဏာကို ပိုဆိုးစေနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ဖုန်မှုန့်/PM10 တန်ဖိုးကို မြန်မာမှာ မအတည်ပြုရသေးပါဘူး။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "ဖုန်ထူတဲ့အချိန်မှာ အပြင်လှုပ်ရှားမှု လျှော့ပါ။ အသက်ရှူရောဂါရှိသူတွေ ဆေးကို အသင့်ထားပါ။"
+          },
+          "en": {
+            "situation": "Dust and PM10 levels may be high today (24-hour mean around {pm10} µg/m³).",
+            "possible_risk": "Dust can irritate the airways and worsen symptoms in people with conditions such as asthma.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "Reduce outdoor activity when it is dusty. People with lung disease should keep their medicines at hand."
+          }
+        },
+        "trigger_my": "PM10 ၂၄ နာရီပျမ်းမျှ > 50 µg/m³ (NEQG) ဖြစ်ပြီး R05 မဖွင့်ထားခြင်း",
+        "time_window_my": "လက်ရှိနှင့် လာမည့် ၂၄ နာရီ",
+        "confidence_my": "နိမ့်–အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R07",
+      "name": "thunderstorm_lightning_safety",
+      "weather_condition": "Thunderstorm / lightning",
+      "weather_condition_my": "မိုးကြိုးပါ မိုးသက်မုန်တိုင်း",
+      "weather_variables": [
+        "weather_code (hourly; 95, 96, 99)",
+        "cape (auxiliary only)"
+      ],
+      "threshold": {
+        "unit": "WMO weather code",
+        "values": [
+          95,
+          96,
+          99
+        ]
+      },
+      "threshold_basis": "Meteorological category (WMO code). No health threshold is needed or claimed. No CAPE threshold is set.",
+      "threshold_basis_my": "Meteorological အမျိုးအစား (WMO code) ဖြစ်သည်။ ကျန်းမာရေးသတ်မှတ်ချက် မလိုအပ်သလို မဆိုထားပါ။ CAPE သတ်မှတ်ချက် မသတ်မှတ်ပါ။",
+      "duration": "မိုးသက်မုန်တိုင်းကာလ",
+      "environmental_effect": "လျှပ်စီးမိုးကြိုး",
+      "secondary_hazard": "မိုးကြိုးထိမှန်ခြင်း",
+      "health_risk": "သေဆုံးခြင်း၊ ဒဏ်ရာ၊ မီးလောင်",
+      "health_risk_en": "Death, injury, burns",
+      "affected_population": [
+        "လယ်ကွင်းတွင် အလုပ်လုပ်သူ",
+        "မိုးထဲ ပြင်ပရှိသူ"
+      ],
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "မေလလယ်–ဇွန်",
+        "စက်တင်ဘာ–အောက်တိုဘာလလယ်"
+      ],
+      "time_lag": "ချက်ချင်း",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Myanmar (official figures via media)",
+        "Bangladesh (peer-reviewed)"
+      ],
+      "warning_eligibility": "OPERATIONAL",
+      "recommended_notice_type": "lightning_safety_notice",
+      "limitations": [
+        "မိုးသက်မုန်တိုင်း ခန့်မှန်းချက်ရဲ့ နေရာနဲ့ အချိန်မှာ မသေချာမှု များပါတယ်",
+        "မိုးကြိုးဖြစ်နိုင်ခြေ (lightning_potential) ဒေတာကို မြန်မာအတွက် မရနိုင်ပါ"
+      ],
+      "evidence_ids": [
+        "E43"
+      ],
+      "sources": [
+        {
+          "key": "IRRAWADDY_LIGHT2020",
+          "organization": "The Irrawaddy (citing Ministry of Social Welfare, Relief and Resettlement)",
+          "year": 2020,
+          "source_level": 4,
+          "citation": "The Irrawaddy. Lightning Strikes Have Killed 62 in Myanmar This Year. 9 June 2020. (Reports MSWRR/Department of Disaster Management figures.)",
+          "url": "https://www.irrawaddy.com/news/burma/lightning-strikes-killed-62-myanmar-year.html"
+        },
+        {
+          "key": "HOLLE2019",
+          "organization": "International Journal of Disaster Risk Reduction",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "Holle RL, Dewan A, Said R, et al. Fatalities related to lightning occurrence and agriculture in Bangladesh. Int J Disaster Risk Reduct. 2019.",
+          "url": "https://doi.org/10.1016/j.ijdrr.2019.101264"
+        },
+        {
+          "key": "DEWAN2017",
+          "organization": "Weather, Climate, and Society (AMS)",
+          "year": 2017,
+          "source_level": 1,
+          "citation": "Dewan A, Hossain MF, Rahman MM, Yamane Y, et al. Recent Lightning-Related Fatalities and Injuries in Bangladesh. Weather Clim Soc. 2017.",
+          "url": "https://doi.org/10.1175/WCAS-D-16-0128.1"
+        },
+        {
+          "key": "OM_FC",
+          "organization": "Open-Meteo",
+          "year": 2026,
+          "source_level": 2,
+          "citation": "Open-Meteo. Weather Forecast API documentation (hourly/daily variables).",
+          "url": "https://open-meteo.com/en/docs"
+        }
+      ],
+      "rule": {
+        "trigger": "Any hour in the next 12 h with weather_code ∈ {95, 96, 99}",
+        "time_window": "Next 12 hours (hourly)",
+        "confidence": "Moderate (forecast uncertainty)",
+        "message": {
+          "my": {
+            "အခြေအနေ": "လာမယ့် နာရီအနည်းငယ်အတွင်း ဒီဒေသမှာ မိုးကြိုးပါ မိုးသက်မုန်တိုင်း ဖြစ်နိုင်တယ်လို့ မော်ဒယ်က ခန့်မှန်းထားပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "မိုးကြိုးက မြန်မာနိုင်ငံမှာ နှစ်စဉ် လူအများအပြား သေဆုံးစေတဲ့ သဘာဝဘေးတစ်ခုဖြစ်ပြီး လယ်ကွင်းနဲ့ ပွင့်လင်းတဲ့နေရာတွေမှာ ရှိနေသူတွေ အထူးအန္တရာယ်ရှိပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ခန့်မှန်းချက်ရဲ့ နေရာနဲ့ အချိန်မှာ မသေချာမှု ရှိပါတယ်။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "မိုးခြိမ်းသံ ကြားရင် ခိုင်ခံ့တဲ့ အဆောက်အအုံ သို့မဟုတ် အပိတ်ယာဉ်ထဲ ချက်ချင်းဝင်ပါ။ လယ်ကွင်း၊ ရေပြင်နဲ့ တစ်ပင်တည်းရှိတဲ့ သစ်ပင်အောက်မှာ မနေပါနဲ့။ မိုးကြိုးပစ်နေချိန်မှာ လျှပ်စစ်ကြိုးနဲ့ ချိတ်ထားတဲ့ ပစ္စည်းတွေ မကိုင်ပါနဲ့။"
+          },
+          "en": {
+            "situation": "The model forecasts possible thunderstorms with lightning in this area in the coming hours.",
+            "possible_risk": "Lightning kills many people in Myanmar every year; people in open fields and open spaces are at particular risk.",
+            "important_note": "Forecast timing and location are uncertain. This is a model-based risk signal, not an official warning and not a diagnosis.",
+            "what_you_can_do": "When you hear thunder, go inside a solid building or closed vehicle immediately. Do not stay in open fields, on water or under an isolated tree. Avoid touching devices connected to mains power during lightning."
+          }
+        },
+        "trigger_my": "လာမည့် ၁၂ နာရီအတွင်း မည်သည့်နာရီတွင်မဆို weather_code ∈ {95, 96, 99}",
+        "time_window_my": "လာမည့် ၁၂ နာရီ (နာရီအလိုက်)",
+        "confidence_my": "အလယ်အလတ် (ခန့်မှန်းချက် မသေချာမှု)"
+      }
+    },
+    {
+      "id": "R08",
+      "name": "floodwater_safety",
+      "weather_condition": "Flood / flash flood",
+      "weather_condition_my": "ရေကြီးရေလျှံ / ရုတ်တရက်ရေကြီးခြင်း",
+      "weather_variables": [
+        "dashboard flood / flash-flood signal (upstream meteorological rule)",
+        "precipitation (hourly/daily)",
+        "optional: river_discharge (Open-Meteo Flood API, GloFAS)"
+      ],
+      "threshold": null,
+      "threshold_basis": "No health threshold. Depends on the dashboard's existing meteorological flood signal or an official flood notice. GloFAS return-period thresholds could be added but need validation for Myanmar rivers.",
+      "threshold_basis_my": "ကျန်းမာရေးသတ်မှတ်ချက် မရှိပါ။ Dashboard ၏ လက်ရှိ meteorological ရေကြီးအချက်ပြ သို့မဟုတ် တရားဝင်ရေကြီးသတိပေးချက်အပေါ် မူတည်သည်။ GloFAS return-period သတ်မှတ်ချက်များကို ထပ်ထည့်နိုင်သော်လည်း မြန်မာမြစ်များအတွက် အတည်ပြုရန် လိုသည်။",
+      "duration": "ရေကြီးကာလ",
+      "environmental_effect": "ရေလွှမ်းမိုး၊ ရေစီးသန်",
+      "secondary_hazard": "ရေနစ်၊ ရေအောက်အရာဝတ္ထု၊ လျှပ်စစ်ယိုစိမ့်",
+      "health_risk": "ရေနစ်သေဆုံးခြင်း၊ ဒဏ်ရာ",
+      "health_risk_en": "Drowning, injury",
+      "affected_population": [
+        "ကလေး",
+        "ရေကြီးလွယ်ဒေသနေထိုင်သူ",
+        "ရေထဲဖြတ်ကူး/ယာဉ်မောင်းသူ"
+      ],
+      "geographic_context": [
+        "ရေကြီးလွယ်သော မြစ်ဝှမ်း (ပဲခူး၊ ဧရာဝတီ)",
+        "၂၀၂၄ ယာဂီထိခိုက်ဒေသများ"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ"
+      ],
+      "time_lag": "ချက်ချင်း",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Global",
+        "Myanmar (disaster reports)"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "floodwater_safety_notice",
+      "limitations": [
+        "ရာသီဥတု API က ရေကြီးမှုရဲ့ အကျယ်အဝန်းကို မသိပါ",
+        "တရားဝင်ရေကြီးသတိပေးချက်ကို ဦးစားပေးပါ"
+      ],
+      "evidence_ids": [
+        "E32"
+      ],
+      "sources": [
+        {
+          "key": "WHO_DROWN",
+          "organization": "WHO",
+          "year": null,
+          "source_level": 1,
+          "citation": "World Health Organization. Floods - Drowning: key facts (drowning accounts for 75% of deaths in flood disasters).",
+          "url": "https://www.who.int/health-topics/floods/drowning---key-facts"
+        },
+        {
+          "key": "WHO_SEAR_DROWN2025",
+          "organization": "WHO South-East Asia Regional Office",
+          "year": 2025,
+          "source_level": 1,
+          "citation": "WHO. South-East Asia regional status report on drowning 2025.",
+          "url": "https://www.who.int/publications/i/item/9789290221098"
+        },
+        {
+          "key": "ACAPS2024",
+          "organization": "ACAPS",
+          "year": 2024,
+          "source_level": 3,
+          "citation": "ACAPS. Briefing Note - Myanmar: Impact of Typhoon Yagi (24 September 2024).",
+          "url": "https://reliefweb.int/report/myanmar/acaps-briefing-note-myanmar-impact-typhoon-yagi-24-september-2024"
+        },
+        {
+          "key": "OM_FLOOD",
+          "organization": "Open-Meteo / Copernicus GloFAS",
+          "year": 2026,
+          "source_level": 2,
+          "citation": "Open-Meteo. Flood API documentation (river discharge from GloFAS).",
+          "url": "https://open-meteo.com/en/docs/flood-api"
+        }
+      ],
+      "rule": {
+        "trigger": "Dashboard flood or flash-flood signal active, OR official flood notice ingested",
+        "time_window": "While signal active + 48 h after (design parameter)",
+        "confidence": "Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ဒီဒေသမှာ ရေကြီးရေလျှံနိုင်ခြေကို အချက်ပြထားပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ရေကြီးဘေးကြောင့် သေဆုံးတာ အများစုက ရေနစ်လို့ ဖြစ်ပါတယ်။ ရေစီးသန်တဲ့နေရာမှာ လမ်းလျှောက်တာ၊ ယာဉ်မောင်းတာက အထူးအန္တရာယ်ရှိပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ဒီအချက်ပြမှုက မော်ဒယ်ကို အခြေခံထားတာဖြစ်ပြီး တရားဝင်ရေကြီးသတိပေးချက် မဟုတ်ပါ။ သက်ဆိုင်ရာဌာနရဲ့ တရားဝင်ထုတ်ပြန်ချက်တွေကို စစ်ပါ။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "ရေကြီးနေတဲ့နေရာမှာ လမ်းမလျှောက်ပါနဲ့၊ ယာဉ်မမောင်းပါနဲ့၊ ရေမကူးပါနဲ့။ ကလေးတွေကို ရေအနီးမှာ အမြဲကြည့်ထားပါ။ ရေဝင်နေတဲ့အိမ်မှာ လျှပ်စစ်ကို ဘေးကင်းအောင် ပိတ်ပါ။"
+          },
+          "en": {
+            "situation": "There is a flood-risk signal for this area.",
+            "possible_risk": "Most deaths in floods are from drowning. Walking or driving through fast-moving water is especially dangerous.",
+            "important_note": "This signal is based on a weather model and is not an official flood warning. Check official announcements from the relevant authorities.",
+            "what_you_can_do": "Do not walk, drive or swim in floodwater. Always watch children near water. Switch off electricity safely if water enters your home."
+          }
+        },
+        "trigger_my": "Dashboard ၏ ရေကြီး သို့မဟုတ် ရုတ်တရက်ရေကြီး အချက်ပြ ဖွင့်ထားခြင်း၊ သို့မဟုတ် တရားဝင်ရေကြီးသတိပေးချက် ရရှိခြင်း",
+        "time_window_my": "အချက်ပြဖွင့်ထားစဉ် + နောက် ၄၈ နာရီ (design parameter)",
+        "confidence_my": "အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R09",
+      "name": "post_flood_leptospirosis_exposure",
+      "weather_condition": "Flooding / standing floodwater",
+      "weather_condition_my": "ရေကြီးပြီးနောက် ရေဝပ်/ရွှံ့",
+      "weather_variables": [
+        "dashboard flood signal history (last 28 days)",
+        "official flood notice"
+      ],
+      "threshold": null,
+      "threshold_basis": "No weather threshold. Time window based on CDC incubation (2 days–4 weeks) and Thai modelling lag (~1 month).",
+      "threshold_basis_my": "ရာသီဥတုသတ်မှတ်ချက် မရှိပါ။ အချိန်ဘောင်ကို CDC ၏ ပိုးဝင်ပြီး လက္ခဏာပေါ်ချိန် (၂ ရက်–၄ ပတ်) နှင့် ထိုင်း modelling ၏ နှောင့်နှေးမှု (~၁ လ) ကို အခြေခံသည်။",
+      "duration": "ရေကြီးစဉ်နှင့် နောက် ၄ ပတ်",
+      "environmental_effect": "ကြွက်/တိရစ္ဆာန်ဆီး ရောနှောနိုင်သော ရေနှင့် ရွှံ့",
+      "secondary_hazard": "Leptospira ပါဝင်နိုင်သော ရေနှင့် ထိတွေ့မှု",
+      "health_risk": "ကြွက်ဆီးရောဂါ (Leptospirosis)",
+      "health_risk_en": "Leptospirosis",
+      "affected_population": [
+        "ရေကြီးရေထဲ လျှောက်/အလုပ်လုပ်သူ",
+        "လယ်သမား",
+        "မွေးမြူရေးသမား",
+        "ဒဏ်ရာရှိသူ"
+      ],
+      "geographic_context": [
+        "ရေကြီးလွယ်သော မြေနိမ့်ပိုင်းနှင့် လယ်ယာဒေသ"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ",
+        "မိုးနှောင်း"
+      ],
+      "time_lag": "ရေထိတွေ့ပြီး ၂ ရက်မှ ၄ ပတ်",
+      "evidence_level": "High (global) / Limited (Myanmar)",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Global",
+        "Southeast Asia (Thailand, Laos)",
+        "Myanmar (occupational seroprevalence only)"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "post_flood_infection_prevention_notice",
+      "limitations": [
+        "မြန်မာနိုင်ငံမှာ ရေကြီးမှုနဲ့ ကြွက်ဆီးရောဂါ ဆက်စပ်မှု လေ့လာချက် မတွေ့ရသေးပါ",
+        "ရောဂါဖြစ်ပွားနေတယ်လို့ ဆိုလိုတာ မဟုတ်ပါ"
+      ],
+      "evidence_ids": [
+        "E26"
+      ],
+      "sources": [
+        {
+          "key": "NAING2019",
+          "organization": "PLOS ONE",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "Naing C, Reid SA, Aye SN, Htet NH, Ambu S. Risk factors for human leptospirosis following flooding: A meta-analysis of observational studies. PLoS One. 2019.",
+          "url": "https://doi.org/10.1371/journal.pone.0217643"
+        },
+        {
+          "key": "CHADSUTHI2021",
+          "organization": "Scientific Reports",
+          "year": 2021,
+          "source_level": 1,
+          "citation": "Chadsuthi S, Chalvet-Monfray K, Wiratsudakul A, Modchang C. The effects of flooding and weather conditions on leptospirosis transmission in Thailand. Sci Rep. 2021.",
+          "url": "https://doi.org/10.1038/s41598-020-79546-x"
+        },
+        {
+          "key": "CDC_LEPTO",
+          "organization": "US CDC",
+          "year": null,
+          "source_level": 1,
+          "citation": "US Centers for Disease Control and Prevention. Clinical Overview of Leptospirosis (incubation 2 days to 4 weeks).",
+          "url": "https://www.cdc.gov/leptospirosis/hcp/clinical-overview/index.html"
+        },
+        {
+          "key": "WHO_PHSA2023",
+          "organization": "WHO",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "WHO. Public health situation analysis: Myanmar. Last update August 2023.",
+          "url": "https://cdn.who.int/media/docs/default-source/searo/myanmar/documents/public-health-situation-analysis-phsa_myanmar_august-2023.pdf"
+        }
+      ],
+      "rule": {
+        "trigger": "Flood signal active now or within the past 28 days for this location",
+        "time_window": "Flood period + 28 days",
+        "confidence": "Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ရေကြီးပြီးနောက် ဒီဒေသမှာ ရေဝပ်နေတဲ့နေရာနဲ့ ရွှံ့တွေ ကျန်နေနိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ကြွက်၊ တိရစ္ဆာန်ဆီးတွေ ရောနေနိုင်တဲ့ ရေကြီးရေနဲ့ ထိတွေ့ရင်၊ အထူးသဖြင့် ခြေလက်မှာ ဒဏ်ရာရှိနေရင် ကြွက်ဆီးရောဂါ (Leptospirosis) ကူးစက်နိုင်ခြေ မြင့်တတ်တယ်လို့ လေ့လာမှုတွေက ပြထားပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ကြွက်ဆီးရောဂါ ဖြစ်နေတယ်လို့ အတည်ပြုတာ မဟုတ်ပါ၊ ရေကြီးပြီးနောက် ဖြစ်နိုင်ခြေကို သတိပေးတာပါ။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "ရေကြီးရေထဲ ဝင်ရရင် ရာဘာဘွတ်ဖိနပ်ရှည် စီးပါ။ ဒဏ်ရာတွေကို ရေမဝင်အောင် အုပ်ထားပါ။ ရေကြီးရေနဲ့ ထိတွေ့ပြီး ၄ ပတ်အတွင်း ဖျားတာ၊ ကြွက်သားကိုက်တာ ဖြစ်ရင် ကျန်းမာရေးဝန်ထမ်းဆီ သွားပြပြီး ရေကြီးရေနဲ့ ထိတွေ့ခဲ့တယ်ဆိုတာ ပြောပြပါ။"
+          },
+          "en": {
+            "situation": "Standing water and mud may remain in this area after flooding.",
+            "possible_risk": "Studies show that contact with floodwater that may contain rat or animal urine — especially with cuts on the skin — increases the risk of leptospirosis.",
+            "important_note": "This is not confirmation of a disease outbreak; it is a risk signal based on weather and environmental conditions.",
+            "what_you_can_do": "Wear rubber boots if you must enter floodwater. Keep wounds covered with waterproof dressings. If you develop fever or muscle pain within 4 weeks of floodwater contact, see a health worker and mention the exposure."
+          }
+        },
+        "trigger_my": "ဤနေရာအတွက် ရေကြီးအချက်ပြသည် ယခု ဖွင့်ထားခြင်း သို့မဟုတ် လွန်ခဲ့သော ၂၈ ရက်အတွင်း ဖွင့်ခဲ့ခြင်း",
+        "time_window_my": "ရေကြီးကာလ + ၂၈ ရက်",
+        "confidence_my": "အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R10",
+      "name": "post_flood_water_food_safety",
+      "weather_condition": "Flood / cyclone / heavy rain affecting water and sanitation",
+      "weather_condition_my": "ရေကြီး/ဆိုင်ကလုန်းကြောင့် ရေနှင့် မိလ္လာစနစ် ထိခိုက်ခြင်း",
+      "weather_variables": [
+        "dashboard flood or storm signal",
+        "official flood/cyclone notice"
+      ],
+      "threshold": null,
+      "threshold_basis": "No weather threshold. Rainfall alone is a weak predictor of cholera in Myanmar (Khant 2026); trigger on flood/storm signals.",
+      "threshold_basis_my": "ရာသီဥတုသတ်မှတ်ချက် မရှိပါ။ မြန်မာတွင် မိုးရေတစ်ခုတည်းသည် ကာလဝမ်း၏ ညံ့ဖျင်းသော ခန့်မှန်းကိန်းရှင်ဖြစ်သဖြင့် (Khant 2026) ရေကြီး/မုန်တိုင်းအချက်ပြဖြင့် ဖွင့်ရန်။",
+      "duration": "ရေကြီးကာလနှင့် နောက်ပိုင်း",
+      "environmental_effect": "ရေအရင်းအမြစ်ညစ်ညမ်း၊ မိလ္လာလျှံ၊ ရေနုတ်မြောင်းပိတ်",
+      "secondary_hazard": "ညစ်ညမ်းသော သောက်ရေနှင့် အစားအစာ",
+      "health_risk": "ဝမ်းပျက်ဝမ်းလျှော (AWD)၊ ကာလဝမ်း၊ အူရောင်ငန်းဖျား",
+      "health_risk_en": "Acute watery diarrhoea, cholera, typhoid",
+      "affected_population": [
+        "ကလေး",
+        "IDP စခန်းနေထိုင်သူ",
+        "ကမ်းရိုးတန်း/မြစ်ဝကျွန်းပေါ်နေထိုင်သူ",
+        "သန့်ရှင်းသောရေ မရရှိသူ"
+      ],
+      "geographic_context": [
+        "ရခိုင်",
+        "ဧရာဝတီ",
+        "ပဲခူး",
+        "ရန်ကုန်",
+        "မြို့ပြ ရေနုတ်မြောင်းညံ့ဒေသ"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ",
+        "မိုးနှောင်း"
+      ],
+      "time_lag": "ရက်မှ ရက်သတ္တပတ်",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Myanmar",
+        "Southeast Asia",
+        "Global"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "water_food_safety_notice",
+      "limitations": [
+        "ရောဂါဖြစ်ပွားမှုကို ကျန်းမာရေးဌာနရဲ့ တရားဝင်ထုတ်ပြန်ချက်ကနေပဲ သိနိုင်ပါတယ်",
+        "ရေနုတ်မြောင်းနဲ့ ရေ၊ သန့်ရှင်းမှု (WASH) အခြေအနေကို API နဲ့ မတိုင်းနိုင်ပါ"
+      ],
+      "evidence_ids": [
+        "E27",
+        "E31"
+      ],
+      "sources": [
+        {
+          "key": "LEVY2016",
+          "organization": "Environmental Science & Technology",
+          "year": 2016,
+          "source_level": 1,
+          "citation": "Levy K, Woster AP, Goldstein RS, Carlton EJ. Untangling the Impacts of Climate Change on Waterborne Diseases: a Systematic Review of Relationships between Diarrheal Diseases and Temperature, Rainfall, Flooding, and Drought. Environ Sci Technol. 2016.",
+          "url": "https://doi.org/10.1021/acs.est.5b06186"
+        },
+        {
+          "key": "TAN2025",
+          "organization": "Frontiers in Microbiology",
+          "year": 2025,
+          "source_level": 1,
+          "citation": "Tan B, De Vera P, Abrazaldo J, Ng C. Flood-associated disease outbreaks and transmission in Southeast Asia. Front Microbiol. 2025.",
+          "url": "https://doi.org/10.3389/fmicb.2025.1694246"
+        },
+        {
+          "key": "MYINT2011",
+          "organization": "Conflict and Health",
+          "year": 2011,
+          "source_level": 1,
+          "citation": "Myint et al. Are there any changes in burden and management of communicable diseases in areas affected by Cyclone Nargis? Confl Health. 2011.",
+          "url": "https://doi.org/10.1186/1752-1505-5-9"
+        },
+        {
+          "key": "KHANT2026",
+          "organization": "Water Research X",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "Khant NA, San A, Moon J, Kim H. Climate-driven patterns of waterborne diseases in Myanmar: implications for sustainable development goal-aligned water and health governance. Water Research X. 2026.",
+          "url": "https://doi.org/10.1016/j.wroa.2026.100558"
+        },
+        {
+          "key": "WHO_AWD2024",
+          "organization": "WHO South-East Asia Regional Office",
+          "year": 2024,
+          "source_level": 1,
+          "citation": "WHO. Myanmar Acute Watery Diarrhea / Cholera Outbreak - External Situation Report, 6th edition (published 6 November 2024).",
+          "url": "https://reliefweb.int/report/myanmar/myanmar-acute-watery-diarrhea-cholera-outbreak-external-situation-report-6th-edition-2024-published-6-november-2024"
+        }
+      ],
+      "rule": {
+        "trigger": "Flood or storm signal active now or within the past 14 days (window is a design parameter to validate)",
+        "time_window": "Flood/storm period + 14 days (design)",
+        "confidence": "Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ရေကြီးရေလျှံမှုကြောင့် ရေတွင်း၊ ရေကန်နဲ့ မိလ္လာစနစ်တွေ ညစ်ညမ်းနိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ညစ်ညမ်းတဲ့ ရေနဲ့ အစားအစာကနေ ဝမ်းပျက်ဝမ်းလျှောရောဂါ၊ ကာလဝမ်း၊ အူရောင်ငန်းဖျားလို ရောဂါတွေ ကူးစက်နိုင်ခြေ မြင့်လာနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ဒါက ကာလဝမ်း သို့မဟုတ် တခြားရောဂါ ဖြစ်နေတယ်လို့ အတည်ပြုတာ မဟုတ်ပါ။ ရောဂါဖြစ်ပွားမှုသတင်းကို ကျန်းမာရေးဌာနရဲ့ တရားဝင်ထုတ်ပြန်ချက်ကနေပဲ ယူပါ။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "သောက်ရေကို ကျိုချက်ပါ သို့မဟုတ် သန့်စင်ပါ။ ရေကြီးရေနဲ့ ထိတွေ့ခဲ့တဲ့ အစားအစာကို စွန့်ပစ်ပါ။ စားမယ့်အချိန်မတိုင်ခင်နဲ့ အိမ်သာသုံးပြီးတိုင်း ဆပ်ပြာနဲ့ လက်ဆေးပါ။ ဝမ်းလျှောရင် ဓာတ်ဆားရည် (ORS) တိုက်ပါ၊ ရေဓာတ်ခန်းခြောက်လက္ခဏာတွေ တွေ့ရင် ချက်ချင်း ဆေးကုသမှု ရယူပါ။"
+          },
+          "en": {
+            "situation": "Flooding can contaminate wells, ponds and sanitation systems.",
+            "possible_risk": "Contaminated water and food can increase the risk of diarrhoeal diseases, including cholera and typhoid.",
+            "important_note": "This is not confirmation of cholera or any other outbreak. Get outbreak information only from official health-authority announcements.",
+            "what_you_can_do": "Boil or treat drinking water. Throw away food that touched floodwater. Wash hands with soap before eating and after using the toilet. Give oral rehydration solution (ORS) for diarrhoea and seek care immediately for signs of dehydration."
+          }
+        },
+        "trigger_my": "ရေကြီး သို့မဟုတ် မုန်တိုင်းအချက်ပြသည် ယခု ဖွင့်ထားခြင်း သို့မဟုတ် လွန်ခဲ့သော ၁၄ ရက်အတွင်း ဖွင့်ခဲ့ခြင်း (အချိန်ဘောင်မှာ အတည်ပြုရမည့် design parameter)",
+        "time_window_my": "ရေကြီး/မုန်တိုင်းကာလ + ၁၄ ရက် (design)",
+        "confidence_my": "အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "R11",
+      "name": "mosquito_breeding_habitat",
+      "weather_condition": "Rainy-season rainfall creating standing water",
+      "weather_condition_my": "မိုးရာသီ မိုးရွာပြီးနောက် ရေဝပ်နေရာ တိုးပွားခြင်း",
+      "weather_variables": [
+        "precipitation_sum (daily, past 7 days)",
+        "calendar month (monsoon / post-monsoon)"
+      ],
+      "threshold": null,
+      "threshold_basis": "No evidence-based rainfall threshold for a user-facing notice. Zaw 2023 statistical optima (e.g., ~300 mm/month at 2-month lag) are NOT operational thresholds. Frequency cap (e.g., once per week) is a design parameter.",
+      "threshold_basis_my": "အသုံးပြုသူထံ ပြသမည့် အသိပေးချက်အတွက် အထောက်အထားအခြေပြု မိုးရေသတ်မှတ်ချက် မရှိပါ။ Zaw 2023 ၏ statistical optimum များ (ဥပမာ – လစဉ် ~300 mm၊ ၂ လ နောက်ကျ) သည် လုပ်ငန်းသုံးသတ်မှတ်ချက် မဟုတ်ပါ။ ပြသမှုအကြိမ်ရေ ကန့်သတ်ချက်မှာ design parameter ဖြစ်သည်။",
+      "duration": "မိုးရာသီတစ်လျှောက်",
+      "environmental_effect": "ရေဝပ်နေရာနှင့် ဖုံးမထားသော ရေသိုလှောင်ကန် တိုးပွားခြင်း",
+      "secondary_hazard": "Aedes ခြင် ပေါက်ဖွားရာ တိုးပွားခြင်း",
+      "health_risk": "ခြင်မှတစ်ဆင့်ကူးစက်ရောဂါ (Dengue ကဲ့သို့) အန္တရာယ်",
+      "health_risk_en": "Risk of mosquito-borne disease such as dengue",
+      "affected_population": [
+        "ကလေး (Dengue ဆေးရုံတက်သူအများစု)",
+        "မြို့ပြ/မြို့ဆင်ခြေဖုံး အိမ်ထောင်စု"
+      ],
+      "geographic_context": [
+        "မွန်",
+        "ရန်ကုန်",
+        "ဧရာဝတီ",
+        "မန္တလေး",
+        "စစ်ကိုင်း",
+        "မြစ်ဝကျွန်းပေါ်/မြေနိမ့်ပိုင်း"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ (ဇွန်–စက်တင်ဘာ)",
+        "မိုးနှောင်း"
+      ],
+      "time_lag": "Dengue ကိစ္စများသည် မိုးရေနောက် ~၁–၃ လ (Myanmar)",
+      "evidence_level": "Moderate",
+      "knowledge_class": "B",
+      "evidence_location": [
+        "Myanmar",
+        "Southeast Asia",
+        "Global"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "mosquito_breeding_prevention_notice",
+      "limitations": [
+        "သွေးလွန်တုပ်ကွေး (Dengue) ဖြစ်ပွားမှု သို့မဟုတ် အန္တရာယ်အဆင့်ကို ရာသီဥတုတစ်ခုတည်းနဲ့ ဆုံးဖြတ်လို့ မရပါ",
+        "ဒေသအလိုက် ဆက်စပ်မှု ကွာပါတယ် (တနင်္သာရီမှာ မတွေ့ရပါ)",
+        "ဒါက ကာကွယ်ဖို့ သတိပေးတာသာ ဖြစ်ပြီး အန္တရာယ်အမှတ် (risk score) မဟုတ်ပါ"
+      ],
+      "evidence_ids": [
+        "E16",
+        "E18",
+        "E31"
+      ],
+      "sources": [
+        {
+          "key": "ZAW2023",
+          "organization": "PLOS Neglected Tropical Diseases",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "Zaw W, Lin Z, Ko Ko J, Rotejanaprasert C, Pantanilla N, Ebener S, Maude RJ. Dengue in Myanmar: Spatiotemporal epidemiology, association with climate and short-term prediction. PLoS Negl Trop Dis. 2023.",
+          "url": "https://doi.org/10.1371/journal.pntd.0011331"
+        },
+        {
+          "key": "OO2017",
+          "organization": "Tropical Medicine and Health",
+          "year": 2017,
+          "source_level": 1,
+          "citation": "Oo PM, Wai KT, Harries AD, Shewade HD, Oo T, Thi A, Lin Z. The burden of dengue, source reduction measures, and serotype patterns in Myanmar, 2011 to 2015-R2. Trop Med Health. 2017.",
+          "url": "https://doi.org/10.1186/s41182-017-0074-5"
+        },
+        {
+          "key": "AUNGSH2023",
+          "organization": "Heliyon",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "Aung SH, Kyaw AMM, Jittamala P, Lawpoolsri S, Soonthornworasiri N, Sriwichai P, Phuanukoonnon S. Efficacy of household Aedes larval control practices in a peri-urban township, Yangon, Myanmar: Implication for entomological surveillance. Heliyon. 2023.",
+          "url": "https://doi.org/10.1016/j.heliyon.2023.e18083"
+        }
+      ],
+      "rule": {
+        "trigger": "Month in monsoon/post-monsoon AND ≥1 rain day in past 7 days; show at most once per week per location (design)",
+        "time_window": "Weekly during May–November",
+        "confidence": "Moderate (for habitat); not applicable for disease level",
+        "message": {
+          "my": {
+            "အခြေအနေ": "မိုးရာသီမှာ မိုးရွာပြီးနောက် အိမ်ပတ်ဝန်းကျင်မှာ ရေဝပ်နေတဲ့နေရာတွေ တိုးလာနိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "အဲဒီလို ရေဝပ်နေရာတွေနဲ့ အဖုံးမဖုံးထားတဲ့ ရေသိုလှောင်ကန်တွေက ခြင်ပေါက်ဖွားရာ ဖြစ်လာနိုင်ပြီး ခြင်ကနေ ကူးစက်တတ်တဲ့ ရောဂါတွေ (ဥပမာ - သွေးလွန်တုပ်ကွေး) ဖြစ်နိုင်ခြေကို မြင့်စေနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ရာသီဥတုကိုပဲ အခြေခံတာမို့ သွေးလွန်တုပ်ကွေး ဖြစ်ပွားနေတယ်လို့ မဆိုလိုပါဘူး။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "ရေဝပ်နေရာတွေကို အပတ်စဉ် ဖယ်ရှားပါ။ ဘိလပ်မြေကန်၊ စည်ပိုင်းနဲ့ ရေအိုးတွေကို အဖုံးဖုံးပြီး ပုံမှန်ဆေးကြောပါ။ ခြင်ထောင်နဲ့ ခြင်ဆေး သုံးပါ။ ဖျားနာရင် ကျန်းမာရေးဝန်ထမ်းဆီ စောစောသွားပြပါ။"
+          },
+          "en": {
+            "situation": "After rain in the rainy season, standing water can increase around homes.",
+            "possible_risk": "Standing water and uncovered water containers can become mosquito breeding sites and may increase the risk of mosquito-borne diseases such as dengue.",
+            "important_note": "This is not confirmation of a disease outbreak; it is a risk signal based on weather and environmental conditions.",
+            "what_you_can_do": "Remove standing water every week. Cover and regularly clean cement tanks, barrels and water jars. Use bed nets and repellent. See a health worker early if you have a fever."
+          }
+        },
+        "trigger_my": "လက်ရှိလသည် မိုးရာသီ/မိုးနှောင်းကာလဖြစ်ပြီး လွန်ခဲ့သော ၇ ရက်အတွင်း မိုးရွာရက် အနည်းဆုံး ၁ ရက်ရှိခြင်း; တစ်နေရာလျှင် တစ်ပတ်တစ်ကြိမ်သာ ပြသ (design)",
+        "time_window_my": "မေ–နိုဝင်ဘာအတွင်း အပတ်စဉ်",
+        "confidence_my": "အလယ်အလတ် (ပေါက်ဖွားရာအတွက်); ရောဂါအဆင့်အတွက် မသက်ဆိုင်"
+      }
+    },
+    {
+      "id": "R12",
+      "name": "storm_official_warning_referral",
+      "weather_condition": "Tropical cyclone / storm-force wind",
+      "weather_condition_my": "ဆိုင်ကလုန်း / ပြင်းထန်သော လေမုန်တိုင်း",
+      "weather_variables": [
+        "wind_gusts_10m",
+        "dashboard storm-force wind signal",
+        "official DMH cyclone bulletin (preferred)"
+      ],
+      "threshold": null,
+      "threshold_basis": "No health threshold. The dashboard must never issue its own cyclone or storm-surge warning; it refers users to DMH.",
+      "threshold_basis_my": "ကျန်းမာရေးသတ်မှတ်ချက် မရှိပါ။ Dashboard သည် ဆိုင်ကလုန်း သို့မဟုတ် ဒီလှိုင်းသတိပေးချက်ကို ကိုယ်တိုင် ဘယ်တော့မှ မထုတ်ပြန်ရ – DMH သို့ ညွှန်းဆိုရသည်။",
+      "duration": "နာရီမှ ရက်",
+      "environmental_effect": "လေပြင်း၊ ဒီလှိုင်း၊ ရေကြီး၊ အဆောက်အအုံပျက်စီး",
+      "secondary_hazard": "ရေနစ်၊ အပျက်အစီးထိမှန်၊ ဝန်ဆောင်မှုပြတ်တောက်",
+      "health_risk": "သေဆုံး၊ ဒဏ်ရာ၊ နောက်ဆက်တွဲ ရေမှကူးစက်ရောဂါ အန္တရာယ်",
+      "health_risk_en": "Death, injury, later waterborne disease risk",
+      "affected_population": [
+        "ကမ်းရိုးတန်းနှင့် မြစ်ဝကျွန်းပေါ်နေထိုင်သူ",
+        "IDP စခန်းနေထိုင်သူ",
+        "အားနည်းသော အဆောက်အအုံနေထိုင်သူ"
+      ],
+      "geographic_context": [
+        "ရခိုင်",
+        "ဧရာဝတီ",
+        "ရန်ကုန်",
+        "တနင်္သာရီ"
+      ],
+      "seasonal_context": [
+        "မေလ",
+        "အောက်တိုဘာ–နိုဝင်ဘာ"
+      ],
+      "time_lag": "ချက်ချင်း + ရက်သတ္တပတ်",
+      "evidence_level": "High",
+      "knowledge_class": "A",
+      "evidence_location": [
+        "Myanmar"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "official_warning_referral",
+      "limitations": [
+        "Open-Meteo မှာ ဒီလှိုင်း (tide) မော်ဒယ် မပါပါ",
+        "ဆိုင်ကလုန်းလမ်းကြောင်း ခန့်မှန်းချက်ကို DMH ဆီကနေပဲ ယူပါ"
+      ],
+      "evidence_ids": [
+        "E33",
+        "E44"
+      ],
+      "sources": [
+        {
+          "key": "PONJA2008",
+          "organization": "Tripartite Core Group (Government of Myanmar, ASEAN, United Nations) / GFDRR",
+          "year": 2008,
+          "source_level": 1,
+          "citation": "Tripartite Core Group. Post-Nargis Joint Assessment. July 2008.",
+          "url": "https://www.gfdrr.org/sites/default/files/GFDRR_Myanmar_Post-Nargis_Joint_Assessment_2008_EN.pdf"
+        },
+        {
+          "key": "WHO_PHSA2023",
+          "organization": "WHO",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "WHO. Public health situation analysis: Myanmar. Last update August 2023.",
+          "url": "https://cdn.who.int/media/docs/default-source/searo/myanmar/documents/public-health-situation-analysis-phsa_myanmar_august-2023.pdf"
+        },
+        {
+          "key": "WIKI_TC",
+          "organization": "Wikipedia",
+          "year": 2026,
+          "source_level": 4,
+          "citation": "Wikipedia. Tropical cyclones in Myanmar (lead only; figures should be verified against DMH/PONJA/OCHA).",
+          "url": "https://en.wikipedia.org/wiki/Tropical_cyclones_in_Myanmar"
+        }
+      ],
+      "rule": {
+        "trigger": "Dashboard storm-force wind signal active OR official DMH cyclone bulletin for the state/region",
+        "time_window": "While signal/bulletin active",
+        "confidence": "High (hazard) / depends on official source",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ဒီဒေသမှာ လေပြင်း သို့မဟုတ် မုန်တိုင်းဖြစ်နိုင်တယ်လို့ အချက်ပြထားပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ဆိုင်ကလုန်းနဲ့ ပြင်းထန်တဲ့ မုန်တိုင်းတွေက ရေနစ်တာ၊ အဆောက်အအုံပြိုလဲပြီး ဒဏ်ရာရတာ၊ ကျန်းမာရေးဝန်ဆောင်မှု ပြတ်တောက်တာတွေ ဖြစ်စေနိုင်ပါတယ်။ ကမ်းရိုးတန်းနဲ့ မြစ်ဝကျွန်းပေါ်ဒေသမှာ ဒီလှိုင်းမြင့်တက်မှု အန္တရာယ်လည်း ရှိပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "ဒီအက်ပ်က ဆိုင်ကလုန်းသတိပေးချက်ကို ကိုယ်တိုင် မထုတ်ပြန်ပါဘူး။ မိုးလေဝသနှင့် ဇလဗေဒညွှန်ကြားမှုဦးစီးဌာန (DMH) ရဲ့ တရားဝင်သတိပေးချက်ကို အမြဲစစ်ပြီး လိုက်နာပါ။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "တရားဝင်ညွှန်ကြားချက်အတိုင်း ဘေးလွတ်ရာကို ရွှေ့နိုင်ဖို့ အသင့်ပြင်ထားပါ။ သောက်ရေ၊ ဆေးဝါးနဲ့ အရေးပေါ်ပစ္စည်းတွေကို ကြိုပြင်ထားပါ။ လေပြင်းတိုက်နေချိန်မှာ အပြင်မှာ မနေပါနဲ့။"
+          },
+          "en": {
+            "situation": "There is a signal for strong winds or storm conditions in this area.",
+            "possible_risk": "Cyclones and severe storms can cause drowning, injuries from collapse and debris, and disruption of health services. Coastal and delta areas also face storm-surge risk.",
+            "important_note": "This is a model-based risk signal, not an official warning and not a diagnosis. This dashboard does not issue cyclone warnings. Always check and follow official warnings from the Department of Meteorology and Hydrology (DMH).",
+            "what_you_can_do": "Be ready to move to safety as officials instruct. Prepare drinking water, medicines and emergency supplies. Stay indoors during strong winds."
+          }
+        },
+        "trigger_my": "Dashboard ၏ storm-force wind အချက်ပြ ဖွင့်ထားခြင်း သို့မဟုတ် ပြည်နယ်/တိုင်းအတွက် DMH ဆိုင်ကလုန်းသတင်းထုတ်ပြန်ချက် ရှိခြင်း",
+        "time_window_my": "အချက်ပြ/သတင်းထုတ်ပြန်ချက် အကျုံးဝင်စဉ်",
+        "confidence_my": "မြင့် (ဘေးအန္တရာယ်); တရားဝင်အရင်းအမြစ်အပေါ် မူတည်"
+      }
+    },
+    {
+      "id": "R13",
+      "name": "dry_spell_water_safety",
+      "weather_condition": "Dry spell / drought with heat",
+      "weather_condition_my": "မိုးနည်းကာလ / မိုးခေါင်ခြင်း",
+      "weather_variables": [
+        "dashboard dry-spell / drought signal",
+        "precipitation_sum (rolling)",
+        "et0_fao_evapotranspiration",
+        "ERA5 rainfall climatology (anomaly)"
+      ],
+      "threshold": null,
+      "threshold_basis": "No health threshold. Uses the dashboard's meteorological dry-spell signal.",
+      "threshold_basis_my": "ကျန်းမာရေးသတ်မှတ်ချက် မရှိပါ။ Dashboard ၏ meteorological မိုးနည်းအချက်ပြကို အသုံးပြုသည်။",
+      "duration": "ရက်သတ္တပတ်မှ လ",
+      "environmental_effect": "ကန်ခမ်းခြောက်၊ ရေအရည်အသွေးကျ၊ ရေသိုလှောင်မှုတိုး",
+      "secondary_hazard": "မသန့်ရှင်းသော ရေသုံးစွဲရခြင်း; ဖုံးမထားသော ရေကန်တွင် ခြင်ပေါက်ဖွား",
+      "health_risk": "ဝမ်းပျက်ဝမ်းလျှော (အထူးသဖြင့် ၅ နှစ်အောက်)",
+      "health_risk_en": "Diarrhoeal disease (especially under-5s)",
+      "affected_population": [
+        "IDP စခန်းနေထိုင်သူ",
+        "ရေခပ်ရန် ခရီးဝေးသော အိမ်ထောင်စု",
+        "၅ နှစ်အောက်ကလေး"
+      ],
+      "geographic_context": [
+        "အလယ်ပိုင်းခြောက်သွေ့ဒေသ (စစ်ကိုင်း၊ မန္တလေး၊ မကွေး)",
+        "ရခိုင် IDP စခန်းများ"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ (ဧပြီ–မေ အရေးကြီးဆုံး)"
+      ],
+      "time_lag": "ရက်သတ္တပတ်မှ လ",
+      "evidence_level": "Moderate",
+      "knowledge_class": "B",
+      "evidence_location": [
+        "Global/LMIC incl. SE Asia",
+        "Myanmar (media)"
+      ],
+      "warning_eligibility": "CONDITIONAL",
+      "recommended_notice_type": "water_safety_notice",
+      "limitations": [
+        "မြန်မာနိုင်ငံမှာ မိုးခေါင်ခြင်းနဲ့ ဝမ်းလျှောရောဂါ ဆက်စပ်မှုကို ရောဂါဗေဒအရ လေ့လာထားတာ မရှိသေးပါ"
+      ],
+      "evidence_ids": [
+        "E07",
+        "E18"
+      ],
+      "sources": [
+        {
+          "key": "WANG2022",
+          "organization": "Nature Communications",
+          "year": 2022,
+          "source_level": 1,
+          "citation": "Wang P, Asare E, Pitzer VE, Dubrow R, Chen K. Associations between long-term drought and diarrhea among children under five in low- and middle-income countries. Nat Commun. 2022.",
+          "url": "https://doi.org/10.1038/s41467-022-31291-7"
+        },
+        {
+          "key": "RFA2024WATER",
+          "organization": "Radio Free Asia",
+          "year": 2024,
+          "source_level": 4,
+          "citation": "Radio Free Asia. Widespread Myanmar water shortage kills scores of people. 14 May 2024.",
+          "url": "https://www.rfa.org/english/news/myanmar/rakhine-water-shortage-05142024055629.html"
+        },
+        {
+          "key": "UNWDPC2014",
+          "organization": "UN-Water Decade Programme on Capacity Development (UNW-DPC) / Government of Myanmar",
+          "year": 2014,
+          "source_level": 2,
+          "citation": "Drought Conditions and Management Strategies in Myanmar. National Drought Management Policy country report, 2014.",
+          "url": "https://www.droughtmanagement.info/literature/UNW-DPC_NDMP_Country_Report_Myanmar_2014.pdf"
+        },
+        {
+          "key": "AUNGSH2023",
+          "organization": "Heliyon",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "Aung SH, Kyaw AMM, Jittamala P, Lawpoolsri S, Soonthornworasiri N, Sriwichai P, Phuanukoonnon S. Efficacy of household Aedes larval control practices in a peri-urban township, Yangon, Myanmar: Implication for entomological surveillance. Heliyon. 2023.",
+          "url": "https://doi.org/10.1016/j.heliyon.2023.e18083"
+        }
+      ],
+      "rule": {
+        "trigger": "Dashboard dry-spell/drought signal active during hot season",
+        "time_window": "While signal active (max once per week, design)",
+        "confidence": "Low–Moderate",
+        "message": {
+          "my": {
+            "အခြေအနေ": "ဒီဒေသမှာ မိုးနည်းတဲ့ကာလ ဆက်ဖြစ်နေပြီး ရေရှားပါးနိုင်ပါတယ်။",
+            "ဖြစ်နိုင်သောအန္တရာယ်": "ရေရှားတဲ့အချိန်မှာ မသန့်တဲ့ ရေအရင်းအမြစ်တွေ သုံးရတာနဲ့ လက်ဆေးဖို့ ရေမလောက်တာတွေကြောင့် ဝမ်းပျက်ဝမ်းလျှောရောဂါ အန္တရာယ် မြင့်လာနိုင်ပါတယ်။ ရေသိုလှောင်ကန်တွေကို အဖုံးမဖုံးထားရင် ခြင်ပေါက်ဖွားရာလည်း ဖြစ်လာနိုင်ပါတယ်။",
+            "အရေးကြီးသော သတိပြုရန်": "မိုးခေါင်ခြင်းနဲ့ ဝမ်းလျှောရောဂါ ဆက်စပ်မှုကို မြန်မာမှာ ရောဂါဗေဒအရ လေ့လာထားတာ မရှိသေးပါဘူး။",
+            "လုပ်ဆောင်နိုင်သော အချက်": "သိုလှောင်ထားတဲ့ ရေကို အဖုံးဖုံးထားပါ။ သောက်ရေကို ကျိုချက်ပါ သို့မဟုတ် သန့်စင်ပါ။ ရေနည်းနေရင်တောင် စားမယ့်အချိန်မတိုင်ခင်နဲ့ အိမ်သာသုံးပြီးတိုင်း လက်ဆေးဖို့ ရေကို ဦးစားပေး ချန်ထားပါ။"
+          },
+          "en": {
+            "situation": "A dry spell is continuing in this area and water may become scarce.",
+            "possible_risk": "When water is scarce, people may use unsafe sources and have too little water for handwashing, which can raise the risk of diarrhoeal disease. Uncovered water containers can also become mosquito breeding sites.",
+            "important_note": "This is not confirmation of a disease outbreak; it is a risk signal based on weather and environmental conditions.",
+            "what_you_can_do": "Keep stored water covered. Boil or treat drinking water. Even when water is short, keep some aside for handwashing before eating and after using the toilet."
+          }
+        },
+        "trigger_my": "နွေရာသီအတွင်း Dashboard ၏ မိုးနည်း/မိုးခေါင် အချက်ပြ ဖွင့်ထားခြင်း",
+        "time_window_my": "အချက်ပြဖွင့်ထားစဉ် (တစ်ပတ်တစ်ကြိမ်သာ၊ design)",
+        "confidence_my": "နိမ့်–အလယ်အလတ်"
+      }
+    },
+    {
+      "id": "I01",
+      "name": "food_safety_in_heat",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": "R01",
+      "trigger": "Attached to R01 when active",
+      "trigger_my": "R01 ဖွင့်ထားသည့်အခါ တွဲဖက်ပြသ",
+      "threshold": null,
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ",
+        "မိုးရာသီ"
+      ],
+      "evidence_ids": [
+        "E06"
+      ],
+      "evidence_level": "Moderate",
+      "sources": [
+        {
+          "key": "CARLTON2016",
+          "organization": "International Journal of Epidemiology",
+          "year": 2016,
+          "source_level": 1,
+          "citation": "Carlton EJ, Woster AP, DeWitt P, Goldstein RS, Levy K. A systematic review and meta-analysis of ambient temperature and diarrhoeal diseases. Int J Epidemiol. 2016.",
+          "url": "https://doi.org/10.1093/ije/dyv296"
+        },
+        {
+          "key": "DAMTEW2024",
+          "organization": "eBioMedicine (The Lancet)",
+          "year": 2024,
+          "source_level": 1,
+          "citation": "Damtew et al. The impact of temperature on non-typhoidal Salmonella and Campylobacter infections: an updated systematic review and meta-analysis of epidemiological evidence. eBioMedicine. 2024.",
+          "url": "https://doi.org/10.1016/j.ebiom.2024.105393"
+        }
+      ],
+      "text": {
+        "my": "ပူတဲ့ရာသီမှာ ချက်ပြီးသား အစားအစာက ပိုမြန်မြန် ပုပ်သိုးနိုင်ပါတယ်။ ချက်ပြီးရင် ကြာကြာမထားဘဲ စားပါ။ ရေခဲသေတ္တာ မရှိရင် လိုသလောက်ပဲ ချက်ပါ။",
+        "en": "In hot weather, cooked food spoils faster. Eat cooked food soon after preparing it, and cook only what you need if you have no refrigeration."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I02",
+      "name": "seasonal_snakebite_awareness",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Calendar: June–September (monsoon farming) for rural locations; not triggered by rainfall or flood",
+      "trigger_my": "ပြက္ခဒိန် – ဇွန်–စက်တင်ဘာ (မိုးရာသီ လယ်ယာကာလ)၊ ကျေးလက်တည်နေရာများ; မိုးရေ သို့မဟုတ် ရေကြီးအချက်ပြဖြင့် မဖွင့်ရ",
+      "threshold": null,
+      "geographic_context": [
+        "ကျေးလက်လယ်ယာဒေသ",
+        "မန္တလေး",
+        "အလယ်ပိုင်းမြန်မာ"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ (ဩဂုတ်တွင် သေဆုံးမှုအများဆုံး)"
+      ],
+      "evidence_ids": [
+        "E37",
+        "E38"
+      ],
+      "evidence_level": "Low / Moderate",
+      "sources": [
+        {
+          "key": "MAHMOOD2018",
+          "organization": "PLOS Neglected Tropical Diseases",
+          "year": 2018,
+          "source_level": 1,
+          "citation": "Mahmood MA, Halliday D, Cumming R, et al. Snakebite incidence in two townships in Mandalay Division, Myanmar. PLoS Negl Trop Dis. 2018.",
+          "url": "https://doi.org/10.1371/journal.pntd.0006643"
+        },
+        {
+          "key": "WHITE2019",
+          "organization": "Toxicon: X",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "White J, et al. Twelve month prospective study of snakebite in a major teaching hospital in Mandalay, Myanmar; Myanmar Snakebite Project (MSP). Toxicon X. 2019.",
+          "url": "https://doi.org/10.1016/j.toxcx.2018.100002"
+        },
+        {
+          "key": "THEIN2019",
+          "organization": "Journal of Forensic and Legal Medicine",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "Thein CM, Byard RW. Characteristics and relative numbers of lethal snake bite cases in medicolegal practice in central Myanmar - A five year study. J Forensic Leg Med. 2019.",
+          "url": "https://doi.org/10.1016/j.jflm.2019.03.005"
+        },
+        {
+          "key": "BALCHAN2026",
+          "organization": "PLOS Neglected Tropical Diseases",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "Balchan NR, Oo WP, Wogan GOU, Keyler DE, Wüster W. The cobras (genus Naja) of Myanmar. PLoS Negl Trop Dis. 2026.",
+          "url": "https://doi.org/10.1371/journal.pntd.0014445"
+        },
+        {
+          "key": "MM_SNAKE_FIRSTAID",
+          "organization": "PLOS Neglected Tropical Diseases",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "Inadequate knowledge about snakebite envenoming symptoms and application of harmful first aid methods in the community in high snakebite incidence areas of Myanmar. PLoS Negl Trop Dis. 2019. (Title-level evidence; not reviewed in detail.)",
+          "url": "https://doi.org/10.1371/journal.pntd.0007171"
+        }
+      ],
+      "text": {
+        "my": "မိုးရာသီနဲ့ လယ်ယာလုပ်ငန်းကာလမှာ လယ်ကွင်းတွေထဲ မြွေကိုက်ခံရတာ (အထူးသဖြင့် မြွေပွေး) များတတ်ပါတယ်။ လယ်ထဲဝင်ရင် ဘွတ်ဖိနပ်ရှည်စီးပြီး ညဘက်သွားရင် ဓာတ်မီးသုံးပါ။ မြွေကိုက်ခံရရင် လှုပ်ရှားမှုကို အနည်းဆုံးထားပြီး မြွေဆေး (Antivenom) ရနိုင်တဲ့ ဆေးရုံကို ချက်ချင်းသွားပါ။ ဒဏ်ရာကို မခွဲပါနဲ့၊ ကြိုးနဲ့ တင်းတင်း မချည်ပါနဲ့။",
+        "en": "During the rainy farming season, snakebites (especially Russell's viper) are common in rice fields. Wear boots in the fields and carry a torch at night. If bitten, keep still and go immediately to a hospital that has antivenom. Do not cut the wound or apply a tight tourniquet."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I03",
+      "name": "malaria_season_area",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Location in documented malaria-burden areas (e.g., Chin, Kachin, Sagaing, southern Shan, Kayin, Rakhine) during May–November; calendar-based",
+      "trigger_my": "ငှက်ဖျား မှတ်တမ်းရှိသော ဒေသများ (ချင်း၊ ကချင်၊ စစ်ကိုင်း၊ ရှမ်းတောင်ပိုင်း၊ ကရင်၊ ရခိုင်) တွင် မေ–နိုဝင်ဘာ; ပြက္ခဒိန်အခြေပြု",
+      "threshold": null,
+      "geographic_context": [
+        "ချင်း",
+        "ကချင်",
+        "စစ်ကိုင်း",
+        "ရှမ်းတောင်ပိုင်း",
+        "ကရင်",
+        "ရခိုင်"
+      ],
+      "seasonal_context": [
+        "မေ–နိုဝင်ဘာ (ဇွန်အထွတ်)"
+      ],
+      "evidence_ids": [
+        "E20",
+        "E22"
+      ],
+      "evidence_level": "Moderate",
+      "sources": [
+        {
+          "key": "ZHAO2023",
+          "organization": "Infectious Diseases of Poverty",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "Zhao et al. Spatio-temporal trends of malaria incidence from 2011 to 2017 and environmental predictors of malaria transmission in Myanmar. Infect Dis Poverty. 2023.",
+          "url": "https://doi.org/10.1186/s40249-023-01055-6"
+        },
+        {
+          "key": "LEGENDRE2023",
+          "organization": "Parasites & Vectors",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "Legendre E, et al. 'Forest malaria' in Myanmar? Tracking transmission landscapes in a diversity of environments. Parasit Vectors. 2023.",
+          "url": "https://doi.org/10.1186/s13071-023-05915-w"
+        },
+        {
+          "key": "PATEEKHUM2026",
+          "organization": "Malaria Journal",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "Pateekhum C, et al., Nosten FH. Re-emergence of malaria in Karen State, Myanmar: has the battle of Burma been lost? Malar J. 2026.",
+          "url": "https://doi.org/10.1186/s12936-026-05808-0"
+        },
+        {
+          "key": "WHO_PHSA2026",
+          "organization": "WHO",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "WHO. Public Health Situation Analysis: Myanmar - Conflict and humanitarian crisis. March 2026.",
+          "url": "https://cdn.who.int/media/docs/default-source/searo/whe/saa/2026-03-phsa-mmr.pdf"
+        }
+      ],
+      "text": {
+        "my": "ဒီဒေသမှာ ငှက်ဖျားကူးစက်မှု မှတ်တမ်းရှိပြီး မိုးရာသီမှာ ပိုများလေ့ရှိပါတယ်။ သစ်တောထဲ ဝင်အိပ်ရင် ဆေးစိမ်ခြင်ထောင် သုံးပါ။ ဖျားနာရင် ငှက်ဖျားသွေးစစ်ဆေးမှုကို စောစောခံယူပါ။",
+        "en": "Malaria transmission has been documented in this area and is usually higher in the rainy season. Use an insecticide-treated net if you sleep in or near forest. If you have a fever, get a malaria blood test early."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I04",
+      "name": "japanese_encephalitis_season",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Calendar: May–September; delta/lowland rice-growing locations",
+      "trigger_my": "ပြက္ခဒိန် – မေ–စက်တင်ဘာ; မြစ်ဝကျွန်းပေါ်/မြေနိမ့် စပါးစိုက်ဒေသ",
+      "threshold": null,
+      "geographic_context": [
+        "ရန်ကုန်",
+        "ဧရာဝတီ",
+        "ပဲခူး",
+        "ရခိုင်",
+        "ရှမ်း",
+        "မြစ်ဝကျွန်းပေါ်/မြေနိမ့်ပိုင်း"
+      ],
+      "seasonal_context": [
+        "မေ–စက်တင်ဘာ"
+      ],
+      "evidence_ids": [
+        "E23"
+      ],
+      "evidence_level": "Moderate",
+      "sources": [
+        {
+          "key": "WIN2020JE",
+          "organization": "Tropical Medicine and Health",
+          "year": 2020,
+          "source_level": 1,
+          "citation": "Win et al. (with Wai KT, Harries AD) The burden of Japanese encephalitis, the catch-up vaccination campaign, and health service providers' perceptions in Myanmar: 2012-2017. Trop Med Health. 2020.",
+          "url": "https://doi.org/10.1186/s41182-020-00200-3"
+        },
+        {
+          "key": "WHO_PHSA2023",
+          "organization": "WHO",
+          "year": 2023,
+          "source_level": 1,
+          "citation": "WHO. Public health situation analysis: Myanmar. Last update August 2023.",
+          "url": "https://cdn.who.int/media/docs/default-source/searo/myanmar/documents/public-health-situation-analysis-phsa_myanmar_august-2023.pdf"
+        }
+      ],
+      "text": {
+        "my": "မိုးရာသီမှာ စပါးခင်းနဲ့ ရေကြီးလွယ်တဲ့ မြေနိမ့်ဒေသတွေမှာ ဂျပန်ဦးနှောက်ရောင်ရောဂါ ကူးစက်မှု များလေ့ရှိပြီး ကလေးတွေ အဓိက ထိခိုက်ပါတယ်။ ကလေးရဲ့ ကာကွယ်ဆေးမှတ်တမ်းကို ကျန်းမာရေးဝန်ထမ်းနဲ့ တိုင်ပင်စစ်ဆေးပါ။ ခြင်ကိုက်ခံရတာကို လျှော့ပါ။",
+        "en": "In the rainy season, Japanese encephalitis is more common in rice-growing and flood-prone lowlands, and mainly affects children. Check your child's vaccination record with a health worker and reduce mosquito bites."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I05",
+      "name": "rainy_season_influenza",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Calendar: May–September",
+      "trigger_my": "ပြက္ခဒိန် – မေ–စက်တင်ဘာ",
+      "threshold": null,
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "မေ–စက်တင်ဘာ (ဇူလိုင်/ဩဂုတ် အထွတ်)"
+      ],
+      "evidence_ids": [
+        "E13"
+      ],
+      "evidence_level": "Moderate",
+      "sources": [
+        {
+          "key": "HTWE2019",
+          "organization": "PLOS ONE",
+          "year": 2019,
+          "source_level": 1,
+          "citation": "Htwe KTZ, et al., Saito R. Phylogeographic analysis of human influenza A and B viruses in Myanmar, 2010-2015. PLoS One. 2019.",
+          "url": "https://doi.org/10.1371/journal.pone.0210550"
+        }
+      ],
+      "text": {
+        "my": "မြန်မာနိုင်ငံမှာ တုပ်ကွေးက မိုးရာသီ (မေ–စက်တင်ဘာ) မှာ အများဆုံး ဖြစ်လေ့ရှိပါတယ်။ ချောင်းဆိုးတာ၊ နှာချေတာ လုပ်ရင် ပါးစပ်နဲ့ နှာခေါင်းကို ဖုံးပါ။ လက်ကို မကြာခဏ ဆေးပါ။ ဖျားနာရင် အိမ်မှာ အနားယူပါ။",
+        "en": "In Myanmar, influenza is most common in the rainy season (May–September). Cover coughs and sneezes, wash hands often, and rest at home if you are unwell."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I06",
+      "name": "highland_cold_spell",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Dashboard cold-spell signal (highland areas)",
+      "trigger_my": "Dashboard ၏ အအေးလှိုင်းအချက်ပြ (တောင်ပေါ်ဒေသ)",
+      "threshold": null,
+      "geographic_context": [
+        "ချင်း",
+        "ရှမ်း",
+        "ကချင် တောင်ပေါ်ဒေသ"
+      ],
+      "seasonal_context": [
+        "ဒီဇင်ဘာ–ဖေဖော်ဝါရီ"
+      ],
+      "evidence_ids": [
+        "E11"
+      ],
+      "evidence_level": "Low",
+      "sources": [
+        {
+          "key": "GASP2015",
+          "organization": "The Lancet",
+          "year": 2015,
+          "source_level": 1,
+          "citation": "Gasparrini A, Guo Y, Hashizume M, et al. Mortality risk attributable to high and low ambient temperature: a multicountry observational study. The Lancet. 2015.",
+          "url": "https://doi.org/10.1016/S0140-6736(14)62114-0"
+        }
+      ],
+      "text": {
+        "my": "ဒီဒေသမှာ ညအပူချိန် သိသိသာသာ ကျနိုင်ပါတယ်။ သက်ကြီးရွယ်အိုနဲ့ ကလေးငယ်တွေကို နွေးထွေးအောင် ဝတ်ပေးပါ။ အအေးဒဏ်ရဲ့ ကျန်းမာရေးသက်ရောက်မှုက ရက်အနည်းငယ် ကြာမှ ပေါ်လာတတ်ပါတယ်။",
+        "en": "Night temperatures may drop sharply here. Keep older adults and young children warmly dressed. Health effects of cold can appear several days later."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I07",
+      "name": "dampness_mould",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Post-flood or prolonged wet period (event/calendar)",
+      "trigger_my": "ရေကြီးပြီးနောက် သို့မဟုတ် ရှည်ကြာသော စိုစွတ်ကာလ (ဖြစ်ရပ်/ပြက္ခဒိန်အခြေပြု)",
+      "threshold": null,
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ",
+        "မိုးနှောင်း"
+      ],
+      "evidence_ids": [
+        "E14"
+      ],
+      "evidence_level": "High",
+      "sources": [
+        {
+          "key": "WHO_DAMP2009",
+          "organization": "WHO Regional Office for Europe",
+          "year": 2009,
+          "source_level": 1,
+          "citation": "World Health Organization. WHO guidelines for indoor air quality: dampness and mould. 2009.",
+          "url": "https://www.who.int/publications/i/item/9789289041683"
+        }
+      ],
+      "text": {
+        "my": "မိုးရာသီနဲ့ ရေကြီးပြီးနောက် အိမ်ထဲမှာ စိုစွတ်ပြီး မှိုပေါက်တာက အသက်ရှူလမ်းကြောင်းလက္ခဏာနဲ့ ပန်းနာရင်ကျပ်ကို ပိုဆိုးစေနိုင်ပါတယ်။ စိုနေတဲ့ပစ္စည်းတွေကို အမြန်အခြောက်ခံပြီး လေဝင်လေထွက်ကောင်းအောင် ထားပါ။",
+        "en": "Dampness and mould at home after the rainy season or floods can worsen respiratory symptoms and asthma. Dry wet items quickly and keep rooms ventilated."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I08",
+      "name": "poor_visibility_travel",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Dashboard low-visibility condition (meteorological)",
+      "trigger_my": "Dashboard ၏ မြင်ကွင်းနည်းအခြေအနေ (meteorological)",
+      "threshold": null,
+      "geographic_context": [
+        "တစ်နိုင်ငံလုံး"
+      ],
+      "seasonal_context": [
+        "ဆောင်း/ခြောက်သွေ့ရာသီ"
+      ],
+      "evidence_ids": [
+        "E45"
+      ],
+      "evidence_level": "Low",
+      "sources": [
+        {
+          "key": "ABDELATY2011",
+          "organization": "Accident Analysis & Prevention",
+          "year": 2011,
+          "source_level": 1,
+          "citation": "Abdel-Aty M, Ekram AA, Huang H, Choi K. A study on crashes related to visibility obstruction due to fog and smoke. Accid Anal Prev. 2011.",
+          "url": "https://doi.org/10.1016/j.aap.2011.04.003"
+        }
+      ],
+      "text": {
+        "my": "မြင်ကွင်း မကောင်းနိုင်လို့ ယာဉ်မောင်းသူတွေ အရှိန်လျှော့ပြီး မီးဖွင့်မောင်းပါ။",
+        "en": "Visibility may be poor. Drivers should slow down and use headlights."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I09",
+      "name": "landslide_awareness",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "Heavy-rain/flood signal in hilly or mining locations (no numeric rainfall threshold)",
+      "trigger_my": "တောင်ကုန်း/သတ္တုတွင်းဒေသများတွင် မိုးသည်း/ရေကြီးအချက်ပြ (ကိန်းဂဏန်းမိုးရေသတ်မှတ်ချက် မသုံး)",
+      "threshold": null,
+      "geographic_context": [
+        "ကချင် (ဖားကန့်)",
+        "ချင်း",
+        "ရှမ်း"
+      ],
+      "seasonal_context": [
+        "မိုးရာသီ"
+      ],
+      "evidence_ids": [
+        "E34"
+      ],
+      "evidence_level": "Low",
+      "sources": [
+        {
+          "key": "LIN2021",
+          "organization": "ISPRS Journal of Photogrammetry and Remote Sensing",
+          "year": 2021,
+          "source_level": 1,
+          "citation": "Lin YN, Park E, Wang Y, et al. The 2020 Hpakant Jade Mine Disaster, Myanmar: A multi-sensor investigation for slope failure. ISPRS J Photogramm Remote Sens. 2021.",
+          "url": "https://doi.org/10.1016/j.isprsjprs.2021.05.015"
+        },
+        {
+          "key": "ACAPS2024",
+          "organization": "ACAPS",
+          "year": 2024,
+          "source_level": 3,
+          "citation": "ACAPS. Briefing Note - Myanmar: Impact of Typhoon Yagi (24 September 2024).",
+          "url": "https://reliefweb.int/report/myanmar/acaps-briefing-note-myanmar-impact-typhoon-yagi-24-september-2024"
+        }
+      ],
+      "text": {
+        "my": "တောင်ကုန်းဒေသနဲ့ သတ္တုတွင်းအနီးမှာ မိုးသည်းသည်းထန်ထန် ဆက်တိုက်ရွာရင် မြေပြိုနိုင်ပါတယ်။ မတ်စောက်တဲ့ တောင်စောင်းအောက်နဲ့ တူးဖော်ထားတဲ့ မြေစာပုံအနီးမှာ မလိုအပ်ဘဲ မနေပါနဲ့။ ဒေသအာဏာပိုင်တွေရဲ့ ညွှန်ကြားချက်ကို လိုက်နာပါ။",
+        "en": "In hilly and mining areas, prolonged heavy rain can trigger landslides. Avoid staying below steep slopes or spoil heaps unnecessarily, and follow local authorities' instructions."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I10",
+      "name": "post_disaster_mental_health",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": null,
+      "trigger": "After a flood/cyclone event affecting the location (event-based)",
+      "trigger_my": "ထိုဒေသကို ထိခိုက်သော ရေကြီး/ဆိုင်ကလုန်း ဖြစ်ရပ်ပြီးနောက် (ဖြစ်ရပ်အခြေပြု)",
+      "threshold": null,
+      "geographic_context": [
+        "ဘေးအန္တရာယ်ကျရောက်ခဲ့သော ဒေသ"
+      ],
+      "seasonal_context": [
+        "ဘေးဖြစ်ပြီးနောက်"
+      ],
+      "evidence_ids": [
+        "E35"
+      ],
+      "evidence_level": "Moderate",
+      "sources": [
+        {
+          "key": "GOLITALEB2022",
+          "organization": "Frontiers in Psychiatry",
+          "year": 2022,
+          "source_level": 1,
+          "citation": "Golitaleb M, Mazaheri E, Bonyadi M, Sahebi A. Prevalence of Post-traumatic Stress Disorder After Flood: A Systematic Review and Meta-Analysis. Front Psychiatry. 2022.",
+          "url": "https://doi.org/10.3389/fpsyt.2022.890671"
+        },
+        {
+          "key": "FERNANDEZ2015",
+          "organization": "PLOS ONE",
+          "year": 2015,
+          "source_level": 1,
+          "citation": "Fernandez A, Black J, Jones M, et al. Flooding and Mental Health: A Systematic Mapping Review. PLoS One. 2015.",
+          "url": "https://doi.org/10.1371/journal.pone.0119929"
+        }
+      ],
+      "text": {
+        "my": "ဘေးအန္တရာယ် ကြုံပြီးနောက် စိတ်ဖိစီးတာ၊ အိပ်မပျော်တာ၊ စိုးရိမ်ပူပန်တာတွေ ဖြစ်တတ်ပါတယ်။ ယုံကြည်ရတဲ့သူတွေနဲ့ စကားပြောပါ။ လက္ခဏာတွေ ရက်သတ္တပတ်များစွာ ဆက်ရှိနေရင် ကျန်းမာရေးဝန်ထမ်းဆီက အကူအညီတောင်းပါ။",
+        "en": "Stress, sleep problems and worry are common after a disaster. Talk with people you trust, and seek help from a health worker if symptoms last for several weeks."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    },
+    {
+      "id": "I11",
+      "name": "heat_in_shelters_and_poor_housing",
+      "warning_eligibility": "INFORMATIONAL",
+      "recommended_notice_type": "informational_card",
+      "attach_to": "R01",
+      "trigger": "Attached to R01 for locations flagged as having displacement sites (requires external data)",
+      "trigger_my": "ရွှေ့ပြောင်းစခန်းရှိကြောင်း မှတ်သားထားသော တည်နေရာများတွင် R01 နှင့် တွဲဖက် (ပြင်ပဒေတာ လိုအပ်)",
+      "threshold": null,
+      "geographic_context": [
+        "မန္တလေး",
+        "စစ်ကိုင်း",
+        "ရခိုင်",
+        "IDP စခန်းရှိဒေသ"
+      ],
+      "seasonal_context": [
+        "နွေရာသီ"
+      ],
+      "evidence_ids": [
+        "E08",
+        "E46",
+        "E48"
+      ],
+      "evidence_level": "Low / Moderate",
+      "sources": [
+        {
+          "key": "IFRC_SEAP2024",
+          "organization": "Myanmar Red Cross Society / IFRC",
+          "year": 2024,
+          "source_level": 3,
+          "citation": "IFRC / Myanmar Red Cross Society. Myanmar | Urban Heatwaves - Simplified Early Action Protocol (sEAP2024MM01; MDRMM022). 2024.",
+          "url": "https://reliefweb.int/report/myanmar/myanmar-urban-heatwaves-simplified-early-action-protocol-seap-no-seap2024mm01-operation-no-mdrmm022"
+        },
+        {
+          "key": "WHO_PHSA2026",
+          "organization": "WHO",
+          "year": 2026,
+          "source_level": 1,
+          "citation": "WHO. Public Health Situation Analysis: Myanmar - Conflict and humanitarian crisis. March 2026.",
+          "url": "https://cdn.who.int/media/docs/default-source/searo/whe/saa/2026-03-phsa-mmr.pdf"
+        },
+        {
+          "key": "IRRAWADDY_EQ2025",
+          "organization": "The Irrawaddy",
+          "year": 2025,
+          "source_level": 4,
+          "citation": "The Irrawaddy. Homeless Mandalay Quake Victims Struggle with Extreme Heat. 2 May 2025.",
+          "url": "https://www.irrawaddy.com/news/burma/homeless-mandalay-quake-victims-struggle-with-extreme-heat.html"
+        }
+      ],
+      "text": {
+        "my": "ယာယီတဲနဲ့ အမိုးပါးတဲ့နေရာတွေမှာ နေ့ရော ညပါ အပူစုပုံနိုင်ပါတယ်။ ဖြစ်နိုင်ရင် အမိုးကို အရိပ်ရအောင် ဖုံးပြီး လေဝင်လေထွက်ရှိအောင် ထားပါ။ ကလေးနဲ့ သက်ကြီးရွယ်အိုတွေကို အရိပ်ရတဲ့နေရာမှာ ထားပါ။",
+        "en": "Heat can build up day and night in tents and thin-roofed shelters. If possible, shade the roof and keep air moving. Keep children and older adults in shaded places."
+      },
+      "limitations": [
+        "ပညာပေးကတ်သာဖြစ်ပါတယ် – အန္တရာယ်အချက်ပြမှုလည်း မဟုတ်ပါ၊ သတိပေးချက်လည်း မဟုတ်ပါ"
+      ]
+    }
+  ],
+  "do_not_automate": [
+    {
+      "id": "D01",
+      "relationship_my": "ရာသီဥတုအပေါ်အခြေခံ၍ 'သွေးလွန်တုပ်ကွေးဖြစ်ပွားမှု' သို့မဟုတ် Dengue အန္တရာယ်အဆင့် (နိမ့်/မြင့်) ဖော်ပြခြင်း",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)",
+        "ခြင်/ရောဂါပိုးသယ်ဆောင်သူ စောင့်ကြည့်ဒေတာ လိုအပ် (Requires vector surveillance)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E16",
+        "E17",
+        "E19"
+      ],
+      "note_my": "မြန်မာတွင် ရာသီဥတုကိန်းရှင်က ခန့်မှန်းမှုကို အနည်းငယ်သာ တိုးတက်စေပြီး ဒေသအလိုက် ကွဲပြားသည်; ကိစ္စဒေတာနှင့် ခြင်လောက်လန်းညွှန်းကိန်း လိုအပ်သည်။ ခွင့်ပြုထားသည်မှာ R11 (ပေါက်ဖွားရာလျှော့ချရေး) သာ။"
+    },
+    {
+      "id": "D02",
+      "relationship_my": "ရာသီဥတုအပေါ်အခြေခံ၍ ငှက်ဖျားအန္တရာယ်အဆင့် သို့မဟုတ် ဖြစ်ပွားမှု ဖော်ပြခြင်း",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E20",
+        "E21"
+      ],
+      "note_my": "ငှက်ဖျားပြန်လည်မြင့်တက်မှုကို ပဋိပက္ခ၊ နေရပ်စွန့်ခွာမှုနှင့် ကျန်းမာရေးစနစ်ပြိုကွဲမှုက မောင်းနှင်သည်။"
+    },
+    {
+      "id": "D03",
+      "relationship_my": "ဂျပန်ဦးနှောက်ရောင်ရောဂါ ဖြစ်ပွားမှုသတိပေးချက်",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E23"
+      ],
+      "note_my": "ကာကွယ်ဆေးထိုးနှုန်းက ဖြစ်ပွားမှုကို အဓိကပြောင်းလဲစေသည်။"
+    },
+    {
+      "id": "D04",
+      "relationship_my": "Chikungunya/Zika အန္တရာယ်အဆင့်",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)",
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E25"
+      ],
+      "note_my": "မြန်မာတွင် ရာသီဥတုဆက်စပ်မှု လေ့လာချက် မရှိ။"
+    },
+    {
+      "id": "D05",
+      "relationship_my": "ကာလဝမ်း/AWD ဖြစ်ပွားမှု ကြေညာခြင်း",
+      "reasons": [
+        "ဓာတ်ခွဲခန်းအတည်ပြုချက် လိုအပ် (Requires laboratory confirmation)",
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)"
+      ],
+      "evidence_ids": [
+        "E27"
+      ],
+      "note_my": "ကာလဝမ်းဖြစ်ပွားကြောင်း ကျန်းမာရေးဌာနသာ ကြေညာနိုင်သည်; မိုးရေနှင့် ဆက်စပ်မှု အားနည်း။ ခွင့်ပြုထားသည်မှာ R10 (ရေ/အစားအစာဘေးကင်းရေး) သာ။"
+    },
+    {
+      "id": "D06",
+      "relationship_my": "ကြွက်ဆီးရောဂါ ဖြစ်ပွားနေကြောင်း ဖော်ပြခြင်း",
+      "reasons": [
+        "ဓာတ်ခွဲခန်းအတည်ပြုချက် လိုအပ် (Requires laboratory confirmation)",
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)"
+      ],
+      "evidence_ids": [
+        "E26"
+      ],
+      "note_my": "ခွင့်ပြုထားသည်မှာ R09 (ထိတွေ့မှုလျှော့ချရေး) သာ။"
+    },
+    {
+      "id": "D07",
+      "relationship_my": "Melioidosis အန္တရာယ်သတိပေးချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "ဓာတ်ခွဲခန်းအတည်ပြုချက် လိုအပ် (Requires laboratory confirmation)"
+      ],
+      "evidence_ids": [
+        "E29"
+      ],
+      "note_my": "မြန်မာတွင် ရောဂါရှာဖွေဖော်ထုတ်မှု နည်းပြီး ရာသီဥတုဆက်စပ်မှု မတွက်ရသေး။"
+    },
+    {
+      "id": "D08",
+      "relationship_my": "Hepatitis E အန္တရာယ်သတိပေးချက်",
+      "reasons": [
+        "ဓာတ်ခွဲခန်းအတည်ပြုချက် လိုအပ် (Requires laboratory confirmation)",
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)"
+      ],
+      "evidence_ids": [
+        "E30"
+      ],
+      "note_my": "ကိုယ်ဝန်ဆောင်မိခင်များအတွက် ကြောက်ရွံ့မှုဖြစ်စေနိုင်; တရားဝင်စောင့်ကြည့်မှု လိုအပ်။"
+    },
+    {
+      "id": "D09",
+      "relationship_my": "'ရေကြီးသဖြင့် မြွေကိုက်အန္တရာယ်တိုး' ဟု အလိုအလျောက်ဖော်ပြခြင်း",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E36"
+      ],
+      "note_my": "မြန်မာအထောက်အထား မရှိ၊ ဒေသတွင်းအထောက်အထားမှာ သတင်းအဆင့်သာ၊ systematic review တွင် မိုးရေဆက်စပ်မှု ရောထွေး။"
+    },
+    {
+      "id": "D10",
+      "relationship_my": "ကိန်းဂဏန်းမိုးရေသတ်မှတ်ချက်ဖြင့် မြေပြိုသတိပေးချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E34"
+      ],
+      "note_my": "မြန်မာအတွက် မိုးရေ–မြေပြို သတ်မှတ်ချက် မရှိ; ဖားကန့် ၂၀၂၀ မြေပြိုသည် မိုးရေကြောင့် မဟုတ်ခဲ့; မြေဆီလွှာ/ချိုင့်ဝှမ်းဒေတာ လိုအပ်။"
+    },
+    {
+      "id": "D11",
+      "relationship_my": "Dashboard ကိုယ်ပိုင် ဆိုင်ကလုန်း/ဒီလှိုင်း သတိပေးချက်",
+      "reasons": [
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)"
+      ],
+      "evidence_ids": [
+        "E33"
+      ],
+      "note_my": "DMH တရားဝင်သတိပေးချက်သာ; Open-Meteo တွင် ဒီလှိုင်း model မရှိ။"
+    },
+    {
+      "id": "D12",
+      "relationship_my": "လမ်း/ရပ်ကွက်အဆင့် ရေလွှမ်းမိုးမှု ခန့်မှန်းချက်",
+      "reasons": [
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E32",
+        "E31"
+      ],
+      "note_my": "ဇလဗေဒ model နှင့် ရေနုတ်မြောင်းဒေတာ လိုအပ်။"
+    },
+    {
+      "id": "D13",
+      "relationship_my": "အပူကြောင့် သေဆုံးမှုခန့်မှန်းတန်ဖိုး",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)",
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E04"
+      ],
+      "note_my": "မြန်မာ exposure–response မရှိ။"
+    },
+    {
+      "id": "D14",
+      "relationship_my": "Wet-bulb 'အသက်ရှင်နိုင်စွမ်း' သတိပေးချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E09"
+      ],
+      "note_my": "ကြောက်ရွံ့မှုဖြစ်စေနိုင်ပြီး လူတစ်ဦးချင်း ကွဲပြားသည်။"
+    },
+    {
+      "id": "D15",
+      "relationship_my": "အပူ × လေထုညစ်ညမ်းမှု အန္တရာယ်မြှောက်ကိန်း",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E42"
+      ],
+      "note_my": "ASEAN တွင် ရလဒ် မညီညွတ်။"
+    },
+    {
+      "id": "D16",
+      "relationship_my": "မိုးခေါင်ပြီး ၃–၅ လ Dengue နှောင့်နှေးအန္တရာယ်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)"
+      ],
+      "evidence_ids": [
+        "E19"
+      ],
+      "note_my": "ဘရာဇီးအထောက်အထားသာ; မြန်မာတွင် မစမ်းသပ်ရသေး။"
+    },
+    {
+      "id": "D17",
+      "relationship_my": "စိုထိုင်းဆနိမ့်ခြင်းဆိုင်ရာ ကျန်းမာရေးသတိပေးချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E15"
+      ],
+      "note_my": "အပူပိုင်းဒေသအတွက် အထောက်အထား မရှိ။"
+    },
+    {
+      "id": "D18",
+      "relationship_my": "နေ့–ည အပူချိန်ကွာခြားမှု သတိပေးချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)"
+      ],
+      "evidence_ids": [
+        "E12"
+      ],
+      "note_my": "လေ့လာမှု အလွန်နည်း။"
+    },
+    {
+      "id": "D19",
+      "relationship_my": "လျှပ်စစ်ပြတ်တောက်မှုကြောင့် အပူအန္တရာယ်မြှင့်တင်ခြင်း",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)"
+      ],
+      "evidence_ids": [
+        "E47"
+      ],
+      "note_my": "အထောက်အထားကွာဟချက်နှင့် ဒေတာ မရှိ။"
+    },
+    {
+      "id": "D20",
+      "relationship_my": "စိတ်ကျန်းမာရေးအန္တရာယ် ခန့်မှန်းချက်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "ရာသီဥတုတစ်ခုတည်းဖြင့် ဘေးကင်းစွာ မကောက်ချက်ချနိုင် (Cannot be safely inferred from weather alone)"
+      ],
+      "evidence_ids": [
+        "E35"
+      ],
+      "note_my": "ဘေးဖြစ်ပြီးနောက် ထောက်ပံ့မှုအချက်အလက် (I10) သာ ခွင့်ပြု။"
+    },
+    {
+      "id": "D21",
+      "relationship_my": "ရာသီဥတုဖြင့် တုပ်ကွေးဖြစ်ပွားမှုအဆင့်",
+      "reasons": [
+        "ရောဂါဗေဒစောင့်ကြည့်ဒေတာ လိုအပ် (Requires epidemiological data)"
+      ],
+      "evidence_ids": [
+        "E13"
+      ],
+      "note_my": "ရာသီပြက္ခဒိန် ပညာပေးကတ် (I05) သာ ခွင့်ပြု။"
+    },
+    {
+      "id": "D22",
+      "relationship_my": "မိုးရေအပေါ်အခြေခံ Culex/ဆင်ခြေထောက်ရောဂါ အန္တရာယ်",
+      "reasons": [
+        "အထောက်အထား မလုံလောက် (Insufficient evidence)",
+        "ခြင်/ရောဂါပိုးသယ်ဆောင်သူ စောင့်ကြည့်ဒေတာ လိုအပ် (Requires vector surveillance)"
+      ],
+      "evidence_ids": [
+        "E24"
+      ],
+      "note_my": "မိုးသည်းထန်မှုက Culex ပေါက်ဖွားရာကို လျော့စေနိုင်သည် (flushing)။"
+    },
+    {
+      "id": "D23",
+      "relationship_my": "ရောဂါရှာဖွေဖော်ထုတ်ချက်ဟု ထင်ရသော မက်ဆေ့ချ် ('သင့်တွင် … ရှိသည်') သို့မဟုတ် တရားဝင်အရေးပေါ်သတိပေးချက်ပုံစံ",
+      "reasons": [
+        "တရားဝင်အစိုးရ/အာဏာပိုင် သတင်းအချက်အလက် လိုအပ် (Requires official information)"
+      ],
+      "evidence_ids": [],
+      "note_my": "ဘေးကင်းရေးမူ – မက်ဆေ့ချ်အားလုံးတွင် 'မော်ဒယ်အချက်ပြမှုသာ' ဟု ဖော်ပြရမည်။"
+    }
+  ],
+  "api_variable_map": [
+    {
+      "variable": "temperature_2m (hourly)",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R01, R02, R03",
+      "measurable": "Yes",
+      "notes": "Heat Index တွက်ရန်; model grid သည် မြို့ပြအပူကျွန်းကို အပြည့်မဖော်ပြနိုင် (အနုမာန)"
+    },
+    {
+      "variable": "relative_humidity_2m (hourly)",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R01, R03",
+      "measurable": "Yes",
+      "notes": "Heat Index တွက်ရန်"
+    },
+    {
+      "variable": "temperature_2m_min (daily)",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R02, I06",
+      "measurable": "Yes",
+      "notes": "ညအပူ/အအေး"
+    },
+    {
+      "variable": "apparent_temperature",
+      "api": "Open-Meteo Forecast",
+      "used_by": "— (ပြသရန်သာ)",
+      "measurable": "Yes",
+      "notes": "Heat Index နှင့် ညီမျှခြင်းမတူ – NWS/Thai tiers နှင့် မနှိုင်းယှဉ်ရ"
+    },
+    {
+      "variable": "wet_bulb_temperature_2m",
+      "api": "Open-Meteo Forecast",
+      "used_by": "E09 (research)",
+      "measurable": "Yes",
+      "notes": "သုတေသနအတွက်သာ"
+    },
+    {
+      "variable": "shortwave_radiation, wind_speed_10m",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R03 (WBGT ခန့်မှန်း – research)",
+      "measurable": "Yes",
+      "notes": "WBGT ခန့်မှန်းနည်းကို မြန်မာတွင် အတည်ပြုရန်"
+    },
+    {
+      "variable": "uv_index_max / uv_index",
+      "api": "Open-Meteo Forecast / Air Quality",
+      "used_by": "R04",
+      "measurable": "Yes",
+      "notes": "WHO UVI categories"
+    },
+    {
+      "variable": "pm2_5, us_aqi, us_aqi_pm2_5",
+      "api": "Open-Meteo Air Quality (CAMS 0.4°)",
+      "used_by": "R05",
+      "measurable": "Yes (model)",
+      "notes": "US AQI သည် PM အတွက် ၂၄ နာရီ rolling mean; breakpoint version ကို စစ်ရန်"
+    },
+    {
+      "variable": "pm10, dust",
+      "api": "Open-Meteo Air Quality (CAMS)",
+      "used_by": "R06",
+      "measurable": "Yes (model)",
+      "notes": "မြန်မာတွင် မအတည်ပြုရသေး"
+    },
+    {
+      "variable": "weather_code (95/96/99)",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R07",
+      "measurable": "Yes",
+      "notes": "lightning_potential မြန်မာတွင် မရ (ICON-D2 သာ)"
+    },
+    {
+      "variable": "cape",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R07 (auxiliary)",
+      "measurable": "Yes",
+      "notes": "သတ်မှတ်ချက် မသတ်မှတ်ရ"
+    },
+    {
+      "variable": "precipitation, precipitation_sum, precipitation_hours",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R11, upstream flood signal",
+      "measurable": "Yes",
+      "notes": "ကျန်းမာရေးသတ်မှတ်ချက် မရှိ"
+    },
+    {
+      "variable": "river_discharge",
+      "api": "Open-Meteo Flood API (GloFAS)",
+      "used_by": "R08–R10 (optional)",
+      "measurable": "Yes (model)",
+      "notes": "မြန်မာမြစ်များအတွက် အတည်ပြုရန်"
+    },
+    {
+      "variable": "et0_fao_evapotranspiration",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R13 upstream",
+      "measurable": "Yes",
+      "notes": "မိုးခေါင်အချက်ပြ၏ အကူ"
+    },
+    {
+      "variable": "wind_gusts_10m",
+      "api": "Open-Meteo Forecast",
+      "used_by": "R12 upstream",
+      "measurable": "Yes",
+      "notes": "ဆိုင်ကလုန်းသတိပေးချက်ကို DMH မှသာ"
+    },
+    {
+      "variable": "visibility",
+      "api": "Open-Meteo Forecast",
+      "used_by": "I08",
+      "measurable": "Yes (low accuracy)",
+      "notes": "Model visibility တိကျမှု အကန့်အသတ်"
+    },
+    {
+      "variable": "ERA5 daily climatology (T2M, T2M_MIN, precipitation)",
+      "api": "ERA5 via Open-Meteo",
+      "used_by": "R02, R13 (anomaly baseline)",
+      "measurable": "Yes",
+      "notes": "ဒေသအလိုက် percentile/anomaly baseline – engineering parameter"
+    },
+    {
+      "variable": "ရေလွှမ်းမိုးမှု အကျယ်အဝန်း၊ ရေဝပ်နေရာ",
+      "api": "—",
+      "used_by": "R08–R10",
+      "measurable": "No",
+      "notes": "တရားဝင်/ဂြိုဟ်တုရေကြီးမြေပုံ လိုအပ်"
+    },
+    {
+      "variable": "ရောဂါကိစ္စအရေအတွက်၊ ဓာတ်ခွဲအတည်ပြုချက်",
+      "api": "—",
+      "used_by": "D01–D08",
+      "measurable": "No",
+      "notes": "ကျန်းမာရေးဌာန စောင့်ကြည့်ဒေတာ လိုအပ်"
+    },
+    {
+      "variable": "ခြင်/လောက်လန်းညွှန်းကိန်း",
+      "api": "—",
+      "used_by": "D01, D02, D22",
+      "measurable": "No",
+      "notes": "Entomological surveillance လိုအပ်"
+    },
+    {
+      "variable": "ဒီလှိုင်း (Storm surge)",
+      "api": "—",
+      "used_by": "D11",
+      "measurable": "No",
+      "notes": "DMH တရားဝင်"
+    },
+    {
+      "variable": "မြေပြိုနိုင်ခြေမြေပုံ",
+      "api": "—",
+      "used_by": "D10",
+      "measurable": "No",
+      "notes": "ဘူမိဗေဒ/ချိုင့်ဝှမ်းဒေတာ လိုအပ်"
+    },
+    {
+      "variable": "WASH အခြေအနေ၊ နေရပ်စွန့်ခွာစခန်း တည်နေရာ",
+      "api": "—",
+      "used_by": "R10, R13, I11",
+      "measurable": "No",
+      "notes": "UN/လူသားချင်းစာနာမှု ဒေတာ (ပြင်ပ)"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+try{var s=localStorage.getItem("mw_dark_mode");if(s==="1"||(s===null&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("sg-dark")}catch(e){}

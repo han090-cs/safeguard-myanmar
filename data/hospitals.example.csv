@@ -1,0 +1,2 @@
+id,name_my,name_en,level_my,level_en,beds,region_pcode,region_my,region_en,district,township_pcode,township_my,township_en,lat,lon,confidence
+hsp_example,ဥပမာဆေးရုံ,Example Hospital,မြို့နယ်,General,100,MMR000,ရန်ကုန်တိုင်းဒေသကြီး,Yangon,Example,MMR000000,ရန်ကုန်,Example,16.8000,96.1500,source-verified

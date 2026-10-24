@@ -1,0 +1,783 @@
+/* UX layer (v6.14): readability, touch targets, focus, calmer empty states. Loaded after styles.css. */
+:focus-visible{outline:3px solid var(--accent,#38bdf8);outline-offset:2px;border-radius:6px}
+body{line-height:1.65;font-variant-numeric:tabular-nums}
+.card h3{line-height:1.35}.card h4{margin:16px 0 6px}
+section.card:empty,section.card:has(> div:only-child:empty){display:none}
+details{border-radius:10px}
+details>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;padding:6px 4px;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸";display:inline-block;transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+.help-card details{border-bottom:1px solid var(--line,rgba(128,128,128,.25))}
+.help-card details p,.rain-why li{line-height:1.75}
+.help-card{opacity:.96}
+.ghost-btn{padding:8px 14px;border-radius:12px}
+.tabbar{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbar .tab{flex:1 0 auto;white-space:nowrap;scroll-snap-align:center}
+@media(max-width:650px){.tabbar .tab{min-width:72px;padding-inline:8px}.card{padding:15px}.section-heading{gap:8px}}
+.tab-panel:not([hidden]),.farm-panel:not([hidden]){animation:mwFade .2s ease-out}
+@keyframes mwFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.muted{opacity:.92}
+svg text{font-family:inherit}
+@media(prefers-reduced-motion:reduce){.tab-panel,.farm-panel{animation:none!important}details>summary::before{transition:none}}
+
+/* About dialog */
+.about-link{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;min-height:44px;padding:0 6px}
+.about-dialog{padding:0;border:0;border-radius:18px;width:min(720px,96vw);max-height:92vh;background:#fffdf8;color:#10303a;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.about-dialog::backdrop{background:rgba(3,15,28,.62)}
+.about-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#fffdf8;border-bottom:1px solid rgba(16,48,58,.15);z-index:1}
+.about-head .top-btn{background:#eef4f3;color:#10303a;border:1px solid rgba(16,48,58,.2)}
+.about-body{padding:6px 18px 24px;overflow:auto;max-height:calc(92vh - 62px);line-height:1.8}
+.about-body h3{margin:22px 0 6px;color:#0f6b78}.about-body h4{margin:14px 0 4px}
+.about-body a{color:#0f6b78;text-decoration:underline}.about-body ul{padding-left:20px}.about-body li{margin:4px 0}
+@media(max-width:650px){.about-dialog{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0}.about-body{max-height:calc(100dvh - 62px)}}
+
+/* ---- utility classes replacing inline style attributes (strict CSP: style-src 'self') ---- */
+.o75{opacity:.75}
+.fs85{font-size:.85em}
+.row-sb{display:flex;justify-content:space-between}
+.brief-row{display:flex;gap:10px;margin:8px 0;padding:8px 10px;border-left:4px solid currentColor;border-radius:4px}
+.brief-ico{font-size:1.4em}
+.cmp-blk{margin:14px 0}
+.cmp-note{font-size:.85em;margin:0}
+.cmp-bar{margin:5px 0}
+.cmp-fill{height:9px;border-radius:4px}
+.help-d{margin:6px 0}
+.help-p{margin:6px 0 0}
+.hist-bars{display:flex;align-items:flex-end;gap:2px;height:100px}
+.hist-col{flex:1;text-align:center;font-size:9px}
+.hist-bar{background:currentColor;border-radius:2px}
+.hist-row{margin:6px 0}
+.hist-fill{height:8px;border-radius:4px;background:currentColor;opacity:.55}
+.rl-ask{margin:10px 0}
+.rl-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.rl-row{margin:8px 0}
+.rl-fill{height:8px;border-radius:4px;background:var(--accent,#0f766e)}
+.forecast-row.far-day{opacity:.72}
+.wbar{display:block;height:6px;border-radius:3px;background:rgba(128,128,128,.25);overflow:hidden;margin-top:4px}
+.wbar>i{display:block;height:100%;background:var(--accent,#0f766e);border-radius:3px}
+
+/* ---- Compare tab: readable, desktop-sized charts ---- */
+.cmp-how{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:12px 14px;margin:0 0 14px;border:1px solid var(--line);border-radius:14px;background:var(--tint2);font-size:14px}
+.cmp-how>p{flex-basis:100%;margin:2px 0 0;font-size:13px;line-height:1.7}
+.cmp-lg{display:inline-flex;align-items:center;gap:6px}
+.cmp-lg i{display:inline-block;flex:none}
+.lg-band{width:22px;height:11px;border-radius:3px;background:#16a34a;opacity:.35}
+.lg-dot{width:12px;height:12px;border-radius:50%;background:var(--accent,#0b6e66)}
+.lg-mid{width:3px;height:16px;background:currentColor}
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:14px}
+#compareCharts .cmp-blk{margin:0;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface,#fff);display:flex;flex-direction:column;gap:4px}
+#compareCharts .cmp-blk svg{width:100%;max-width:400px;height:auto;margin:0 auto;display:block}
+.cmp-state{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.cmp-below .cmp-state,.cmp-above .cmp-state{color:var(--warn,#8a5a04)}
+.cmp-in .cmp-state{color:var(--good,#17803d)}
+.cmp-head{margin:2px 0 0;font-size:15px;line-height:1.7}
+.cmp-note{line-height:1.6}
+/* history tables / charts: no stretching on wide screens */
+#wxEnsoCard .hist-bars{max-width:760px}
+.hist-bars{height:110px}
+
+/* ---- Compare tab: summary, meters, facts, table, method ---- */
+.cmp-sum{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px;font-size:15px}
+.cmp-chip{display:inline-flex;gap:5px;align-items:baseline;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--tint2);font-size:14px}
+.cmp-chip.up{border-color:#e0b24f;background:#fff7e0}.cmp-chip.down{border-color:#9fb8d6;background:#eef4fb}.cmp-chip.in{border-color:#9ad1ae;background:#eef9f1}
+.cmp-stat{margin:4px 0 0;font-size:14px}
+.cmp-meter{margin:8px 0 2px;max-width:340px}
+.cmp-meter-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.cmp-seg{height:10px;border-radius:5px;background:rgba(128,128,128,.22)}
+.cmp-seg.is-mid{background:rgba(22,163,74,.30)}
+.cmp-seg.is-on{background:var(--accent,#0b6e66);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent,#0b6e66)}
+.cmp-meter-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.cmp-facts{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin:6px 0 0;font-size:13px}
+.cmp-facts dt{color:var(--muted)}.cmp-facts dd{margin:0;font-weight:700;text-align:right}
+.cmp-details{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:4px 14px;background:var(--surface,#fff)}
+.cmp-details>summary{cursor:pointer;font-weight:700;padding:10px 0;min-height:44px;display:flex;align-items:center}
+.cmp-scroll{overflow-x:auto;padding-bottom:10px}
+.cmp-table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+.cmp-table th,.cmp-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.cmp-table thead th{background:var(--tint2);font-size:12.5px;color:var(--muted)}
+.cmp-table th:first-child,.cmp-table td:first-child{text-align:left;white-space:normal;min-width:150px}
+.cmp-method{margin:4px 0 10px;padding-left:20px;font-size:13.5px;line-height:1.8}
+
+/* ---- History cards: keep charts a readable size on wide screens ---- */
+#historyBody svg,#agriHistory svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto}
+#historyBody svg polyline,#agriHistory svg polyline{stroke-width:1.8px;vector-effect:non-scaling-stroke}
+#historyBody .hist-bars,#agriHistory .hist-bars,#historyBody .hist-row{max-width:640px;margin-left:auto;margin-right:auto}
+
+/* El Niño card: external warning-system link sits under the source line */
+.enso-link{margin:12px 0 0}
+
+/* Farming tab: region picker (no town search), evidence badges, key-value rows */
+body[data-mode="farm"] .search-hero{display:none!important}
+.farm-panel .card:empty{display:none}
+.region-pick{display:block;min-width:min(100%,260px)}
+.region-pick select{width:100%;min-height:46px;border-radius:14px;padding:0 12px;font:inherit}
+.region-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.region-btn{display:grid;gap:3px;width:100%;text-align:left;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--card,#fff);color:var(--text);font:inherit;cursor:pointer;min-height:48px}
+.region-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.kvl{margin:8px 0 0;display:grid;gap:8px}.kvl dt{font-weight:700;color:var(--deep);font-size:14px}.kvl dd{margin:0 0 4px;line-height:1.7}
+.kv{margin:6px 0 0;line-height:1.7;font-size:14px}.kv.unk{color:var(--muted);font-size:13px}
+.evb{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.evb-official{background:#e3f4ea;color:#12502d}.evb-general{background:#f3efe0;color:#5e4200}
+.evb-modelled{background:#e4eefa;color:#173f73}.evb-inventory{background:#eee9f6;color:#43296b}.evb-insufficient{background:#f8e6e5;color:#7a2220}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* === SAFEGUARD MYANMAR THEME START === */
+:root {
+  --sg-green-deep: #0b5328;
+  --sg-green-main: #137a36;
+  --sg-green-soft: #e6f4ea;
+  --sg-gold: #d4900b;
+  --sg-gold-bright: #e8a317;
+  --sg-bg: #f3f7f4;
+  --sg-surface: #ffffff;
+  --sg-border: #d4e3d9;
+}
+
+html, body {
+  background-color: var(--sg-bg) !important;
+  color: #0f291b !important;
+}
+
+html[lang="my"] body {
+  line-height: 1.85;
+}
+html[lang="my"] h1, html[lang="my"] h2, html[lang="my"] h3, html[lang="my"] .tab, html[lang="my"] .ftab {
+  line-height: 1.5;
+}
+
+/* ၁။ Topbar Brand Logo & Two-Tone Typography */
+.topbar {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-bottom: 1px solid var(--sg-border) !important;
+  box-shadow: 0 4px 18px rgba(11, 83, 40, 0.05) !important;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.brand-logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 2px;
+  border: 1.5px solid rgba(212, 144, 11, 0.40);
+  box-shadow: 0 3px 10px rgba(11, 83, 40, 0.10);
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+.brand-title-my {
+  font-size: 20px !important;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.my-green, .en-green { color: var(--sg-green-main) !important; }
+.my-gold, .en-gold   { color: var(--sg-gold) !important; }
+.brand-title-en {
+  display: block !important;
+  font-size: 11.5px !important;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* ၂။ Search Hero & Current Weather Card (Clean, High-Contrast Gradient) */
+.search-hero,
+.current-card,
+.current-card.card,
+.current-card.glass {
+  background: linear-gradient(135deg, #093d1e 0%, #136a32 60%, #1f8745 100%) !important;
+  border: 1px solid rgba(232, 163, 23, 0.30) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 14px 34px rgba(11, 83, 40, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #e8a317, #c98206) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 8px 20px rgba(212, 144, 11, 0.28) !important;
+}
+
+.mode-btn[aria-selected="true"],
+.tab.active,
+.ftab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--sg-green-deep), var(--sg-green-main)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(11, 83, 40, 0.20) !important;
+}
+
+/* ၃။ Smart Widgets (Hydration & 24h Spray/Dry Window) */
+.smart-widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.smart-widget {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f6fbf8;
+  border: 1px solid var(--sg-border);
+}
+.smart-widget > span {
+  font-size: 26px;
+  line-height: 1;
+}
+.smart-widget small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.smart-widget strong {
+  display: block;
+  font-size: 15.5px;
+  color: var(--sg-green-deep);
+  margin: 2px 0;
+}
+
+/* ၄။ Farming Top Sub-Navigation & Region Bento Grid */
+#farmTabbar.farm-tabbar-top {
+  position: sticky !important;
+  top: 68px !important;
+  z-index: 35 !important;
+  margin: 0 0 14px 0 !important;
+  padding: 6px !important;
+  background: var(--sg-surface) !important;
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 6px 20px rgba(11, 83, 40, 0.07) !important;
+}
+.farm-head {
+  border-left: 5px solid var(--sg-gold) !important;
+}
+.region-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 12px !important;
+}
+.region-btn {
+  border: 1px solid var(--sg-border) !important;
+  border-left: 4px solid var(--sg-green-main) !important;
+  background: #ffffff !important;
+  padding: 14px 16px !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.region-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(11, 83, 40, 0.10);
+  border-left-color: var(--sg-gold) !important;
+}
+
+/* ၅။ Preparedness Checklist */
+.prep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.prep-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--sg-border);
+  background: #f9fcfa;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.prep-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--sg-green-main);
+  flex-shrink: 0;
+}
+.prep-item.checked {
+  background: var(--sg-green-soft);
+  border-color: var(--sg-green-main);
+  font-weight: 700;
+}
+.brief-actions {
+  margin-top: 12px;
+}
+
+/* ၆။ Footer Brand Card */
+.sg-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  max-width: 100% !important;
+  margin-top: 32px !important;
+  padding: 18px 20px !important;
+  background: var(--sg-surface);
+  border: 1px solid var(--sg-border) !important;
+  border-radius: 20px;
+  text-align: left !important;
+}
+.sg-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footer-logo, .about-logo {
+  border-radius: 10px;
+  object-fit: contain;
+}
+.about-brand-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ၇။ DESKTOP BENTO GRID & SIDEBAR (≥ 1024px) */
+@media (min-width: 1024px) {
+  .app-shell {
+    width: min(1380px, calc(100% - 48px)) !important;
+  }
+
+  #dashboard:not([hidden]) {
+    display: grid !important;
+    grid-template-columns: 235px 1fr;
+    grid-template-areas:
+      "nav loc"
+      "nav current"
+      "nav decision"
+      "nav metrics"
+      "nav more"
+      "nav scale"
+      "nav panel";
+    gap: 16px 22px;
+    align-items: start;
+  }
+
+  #dashboard > .location-row  { grid-area: loc; padding-top: 6px; }
+  #dashboard > .current-card  { grid-area: current; }
+  #dashboard > .decision-grid { grid-area: decision; }
+  #dashboard > .metric-grid   { grid-area: metrics; grid-template-columns: repeat(5, 1fr) !important; }
+  #dashboard > .metrics-more  { grid-area: more; }
+  #dashboard > .scale-panel   { grid-area: scale; }
+  #dashboard > .tab-panel     { grid-area: panel; margin-top: 0; }
+
+  #dashboard > nav.tabbar {
+    grid-area: nav;
+    position: sticky !important;
+    top: 78px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 12px !important;
+    background: var(--sg-surface) !important;
+    border: 1px solid var(--sg-border) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 6px 20px rgba(11, 83, 40, 0.06) !important;
+  }
+
+  #dashboard > nav.tabbar .tab {
+    width: 100%;
+    justify-content: flex-start !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    text-align: left !important;
+  }
+
+  .tab-panel[data-panel="today"]:not([hidden]) {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .tab-panel[data-panel="today"] > .hourly-card {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ၈။ TABLET VIEW (651px – 1023px) */
+@media (min-width: 651px) and (max-width: 1023px) {
+  .tabbar {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* ၉။ MOBILE FIRST UI/UX (≤ 650px) */
+@media (max-width: 650px) {
+  body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+  .app-shell {
+    width: calc(100% - 18px) !important;
+  }
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+  }
+  .brand-title-my {
+    font-size: 17px !important;
+  }
+  .brand-title-en {
+    font-size: 10.5px !important;
+  }
+  .font-controls .font-size-label {
+    display: none;
+  }
+  .current-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 18px !important;
+    border-radius: 20px !important;
+  }
+  .current-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding-top: 10px;
+    margin-top: 8px;
+    text-align: left !important;
+    margin-left: 0 !important;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .tabbar, #farmTabbar.farm-tabbar-top {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    padding: 5px !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--sg-border) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 10px 30px rgba(11, 83, 40, 0.24) !important;
+  }
+  #farmTabbar.farm-tabbar-top {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  .tab, .ftab {
+    min-width: 0 !important;
+    min-height: 50px !important;
+    padding: 4px 1px !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+    border-radius: 13px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+
+/* OLED Battery-Saver Dark Mode (body.sg-dark) */
+.brief-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+html.sg-dark, body.sg-dark, html:has(body.sg-dark) {
+  color-scheme: dark;
+  /* full palette: every var(--x) the light theme uses is redefined, so no card stays light */
+  --bg: #07170e; --bg2: #07170e;
+  --surface: #0e2418; --surface2: #112b1d; --surface-solid: #0e2418;
+  --line: #1e422e; --chip: rgba(230,244,234,.10);
+  --accent: #4ade80; --accent2: #2fa866; --accent-strong: #86efac; --accent-soft: rgba(74,222,128,.14);
+  --good: #4ade80; --warn: #f0b429; --danger: #ff8a80;
+  --focus: #8fe3d9; --shadow: none; --shadow-soft: none;
+  --sg-bg: #07170e;
+  --sg-surface: #0e2418;
+  --sg-border: #1e422e;
+  --text: #e6f4ea;
+  --muted: #9ab8a5;
+  --tint: #133322;
+  --tint2: #112b1d;
+  background-color: #07170e !important;
+  color: #e6f4ea !important;
+}
+html.sg-dark, html.sg-dark body { background-color: #07170e !important; color: #e6f4ea !important; }
+body.sg-dark .topbar,
+body.sg-dark .card,
+body.sg-dark .glass,
+body.sg-dark .metric,
+body.sg-dark .mode-switch,
+body.sg-dark .tabbar,
+body.sg-dark #farmTabbar.farm-tabbar-top,
+body.sg-dark .sg-footer,
+body.sg-dark .smart-widget,
+body.sg-dark .prep-item,
+body.sg-dark .region-btn,
+body.sg-dark .hour {
+  background: #0e2418 !important;
+  border-color: #1e422e !important;
+  color: #e6f4ea !important;
+}
+body.sg-dark .top-btn,
+body.sg-dark .ghost-btn,
+body.sg-dark .update-pill {
+  background: #133020 !important;
+  border-color: #244f37 !important;
+  color: #e6f4ea !important;
+}
+body.sg-dark .my-green, body.sg-dark .en-green, body.sg-dark .smart-widget strong {
+  color: #4ade80 !important;
+}
+body.sg-dark .tab, body.sg-dark .ftab, body.sg-dark .mode-btn {
+  color: #a7c4b2 !important;
+}
+
+/* ===== v7.3 launch polish: one clean responsive layer (phones, tablets, desktops) ===== */
+.app-shell{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+.search-box input{min-height:48px;font-size:16px} /* 16px stops iOS from zooming the page on focus */
+.search-box input::placeholder{text-overflow:ellipsis}
+button,select,summary,[role="tab"]{touch-action:manipulation;-webkit-tap-highlight-color:rgba(19,122,54,.18)}
+:focus-visible{outline:3px solid #e8a317;outline-offset:2px}
+.top-btn[aria-pressed="true"]{border-color:var(--sg-green-main,#137a36)}
+
+@media (max-width:650px){
+  /* header: scrolls away with the page (saves ~110px) and always fits on ONE row of equal buttons, even at 320px */
+  .topbar{position:static !important;margin:0 0 8px !important;padding:6px 4px !important;border-bottom:0 !important;box-shadow:none !important;background:transparent !important;backdrop-filter:none !important}
+  .topbar .top-actions{flex:1 1 100% !important;display:flex !important;flex-wrap:nowrap !important;gap:4px !important;justify-content:stretch !important;max-width:none !important}
+  .topbar .font-controls{display:contents !important}
+  .topbar .top-btn,.topbar .font-btn{flex:1 1 0 !important;min-width:0 !important;min-height:44px !important;padding:0 2px !important;font-size:14px !important}
+  .app-shell{width:calc(100% - 16px) !important}
+
+  /* bottom navigation: bigger labels, two-line wrap, never cut off */
+  .tab,.ftab{font-size:11px !important;line-height:1.3 !important;white-space:normal !important;overflow:visible !important;text-overflow:clip !important;word-break:keep-all;min-height:54px !important;padding:4px 2px !important}
+  .tabbar,#farmTabbar.farm-tabbar-top{gap:2px !important;padding:4px !important}
+  body{padding-bottom:calc(96px + env(safe-area-inset-bottom)) !important}
+
+  /* hero: compact so the search box is visible without scrolling */
+  .search-hero{padding:18px 16px !important}
+  .search-hero h1{font-size:clamp(21px,6.2vw,26px) !important;line-height:1.5 !important;margin:0 0 6px !important}
+  .search-hero p{font-size:14px !important;line-height:1.7 !important}
+  .search-form{margin-top:14px !important;gap:8px !important}
+  .search-btn{min-height:48px !important}
+  .quick-actions{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .quick-actions::-webkit-scrollbar{display:none}
+  .quick-actions>*{flex:0 0 auto}
+}
+@media (max-width:360px){
+  .tab,.ftab{font-size:10.5px !important}
+  .brand-title-my{font-size:16px !important}
+}
+/* landscape phones: nav bar must not cover half the screen */
+@media (max-width:950px) and (orientation:landscape) and (max-height:480px){
+  .tabbar,#farmTabbar.farm-tabbar-top{position:static !important;margin:8px 0 !important;box-shadow:none !important}
+  body{padding-bottom:16px !important}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important}}
+@media (min-width:651px) and (max-width:1023px){.location-row{flex-wrap:wrap}.location-row>div:first-child{flex:1 1 60%;min-width:0}.location-row h2{overflow-wrap:anywhere}}
+
+/* Interaction-only behavior: retain the existing layout and visual system. */
+.ux-weather-view { display: contents; }
+body[data-mode="farm"] #weatherView { display: none; }
+[role="tabpanel"], #scalePanel, #searchForm { scroll-margin-top: 110px; }
+#searchResults { flex-wrap: wrap; margin-top: 10px; }
+#searchResults[hidden] { display: none; }
+#searchResults button { text-align: start; }
+#agriLocal, #agriWater, #agriHistory { /* retained for explicitly scoped local data */ }
+
+/* Temperature trend: readable values, a measured scale, and localized dates. */
+.temperature-chart-legend{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted);margin:0 0 6px}
+.temperature-chart-legend>span:first-child{display:inline-flex;align-items:center;gap:8px}
+.temperature-chart-legend i{width:20px;height:3px;border-radius:2px;background:var(--accent);display:inline-block;flex:none}
+.temperature-chart-unit{font-weight:700;color:var(--text)}
+#tempChart .temperature-chart{width:100%;height:auto;display:block;overflow:visible}
+.temperature-grid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.temperature-axis,.temperature-weekday,.temperature-date,.temperature-missing{fill:var(--muted);font-size:14px}
+.temperature-weekday{font-size:13px}
+.temperature-line{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.temperature-line-high{stroke:#d97706}.temperature-line-low{stroke:#16a34a}
+.temperature-point.temperature-high{fill:#d97706}.temperature-point.temperature-low{fill:#16a34a}
+.temperature-value.temperature-low{fill:var(--muted);font-size:14px;font-weight:600}
+.tl-high i{background:#d97706 !important}.tl-low{display:inline-flex;align-items:center;gap:8px}.tl-low i{width:20px;height:3px;border-radius:2px;background:#16a34a;display:inline-block;flex:none}
+.temperature-point{fill:currentColor;stroke:var(--surface);stroke-width:2}
+.temperature-value{fill:var(--text);font-size:16px;font-weight:700;paint-order:stroke;stroke:var(--surface);stroke-width:4;stroke-linejoin:round}
+.temperature-chart-note{margin:0;color:var(--muted);font-size:11px;text-align:right}
+
+/* WCAG AA contrast (4.5:1) for secondary text and the gold brand word */
+.muted,.tiny.muted,.fs85.muted,.smart-widget .muted,.hospital-body small,.scale-range,.lvl-tip,.forecast-temp span,.rain-cell span,.safety-label,#floodStatusText{color:#48605f !important;opacity:1 !important}
+.my-gold,.en-gold{color:#8a5a00 !important}
+body.sg-dark .muted,body.sg-dark .tiny.muted,body.sg-dark .fs85.muted,body.sg-dark #floodStatusText{color:#b7c9c6 !important}
+body.sg-dark .my-gold,body.sg-dark .en-gold{color:#f0b429 !important}
+
+/* Compare tab: region picker and chart legends */
+.hist-pick{margin:10px 0 14px}.hist-pick label{display:block;margin-bottom:6px}
+.hist-select{width:100%;min-height:48px;padding:0 12px;border:1px solid var(--line,#cfe0d8);border-radius:12px;background:#fff;color:inherit;font:inherit;font-size:16px}
+.hist-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 4px;font-size:13px}
+.hist-legend span{display:inline-flex;align-items:center;gap:6px}
+.hist-legend i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.lg-el{background:#c2410c}.lg-la{background:#1d4ed8}.lg-ne{background:#6b7280}.lg-warm{background:#c2410c;border-radius:50%!important}.lg-cool{background:#1d4ed8;border-radius:50%!important}.lg-rain{background:#0f766e}
+.lg-trend{height:4px!important;background:#c2410c}
+body.sg-dark .hist-select{background:#0f1f1d;border-color:#2c4a45}
+#historyBody svg{max-width:640px;margin:0 auto;display:block}
+
+.lg-avg{height:0!important;width:16px!important;border-top:2px dashed currentColor;border-radius:0!important}.hist-last{margin:4px 0 8px}
+
+/* v7.4: moon card, emergency quick guide, drinking water, crop-disease watch */
+.moon-row{display:flex;align-items:center;gap:14px;margin:6px 0 10px}.moon-icon{font-size:44px;line-height:1}
+.kv-list{list-style:none;margin:8px 0;padding:0}.kv-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line,#dbe7e1)}
+.guide-list{margin:8px 0 8px 0;padding-left:22px}.guide-list li{margin:8px 0;line-height:1.75}
+.hyd-box{margin-top:12px;padding-top:6px;border-top:1px dashed var(--line,#cfe0d8)}.hyd-box h4{margin:8px 0 2px}
+.sos-item{border:1px solid var(--line,#cfe0d8);border-radius:12px;margin:8px 0;padding:0 12px;background:rgba(255,255,255,.6)}
+.sos-item summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:700;font-size:16px;list-style-position:inside}
+.sos-item[open]{padding-bottom:6px}
+body.sg-dark .sos-item{background:rgba(255,255,255,.05);border-color:#2c4a45}
+#sosBody .em-list{margin-top:10px}
+
+/* Dark mode: official-warning boxes had light backgrounds with light text (unreadable), plus badges and selects */
+body.sg-dark .pulse-alert,body.sg-dark .dmh-alert{background:#2a2a1c !important;color:#e6f4ea !important}
+body.sg-dark .pulse-alert.urgent,body.sg-dark .dmh-alert.urgent{background:#38201e !important}
+body.sg-dark .pulse-clear{background:#14301f !important;color:#e6f4ea !important}
+body.sg-dark .auto-badge,body.sg-dark .source-tag,body.sg-dark .official-badge,body.sg-dark .meta-chip{background:#1d4a4a !important;color:#d4f1f1 !important}
+body.sg-dark select,body.sg-dark #agriRegionSel{background:#0f1f1d !important;color:#e6f4ea !important;border-color:#2c4a45 !important}
+body.sg-dark a:not(.em-num):not(.about-link):not(.btn),body.sg-dark .pulse-link{color:#8fe3d9 !important}
+body.sg-dark .lvl-tip,body.sg-dark .scale-range,body.sg-dark .hospital-body small,body.sg-dark .forecast-temp span,body.sg-dark .rain-cell span,body.sg-dark .safety-label,body.sg-dark .smart-widget .muted,body.sg-dark .lvl-more,body.sg-dark button[data-scale]{color:#b7c9c6 !important}
+body.sg-dark #rainfall,body.sg-dark .metric-primary strong,body.sg-dark .metric-primary b{color:#e6f4ea !important}
+body.sg-dark .agri-note{color:#e6f4ea !important}
+body.sg-dark .agri-note.tier-wet{background:#14301f !important}
+body.sg-dark .agri-note.tier-mid{background:#33301a !important}
+body.sg-dark .agri-note.tier-dry{background:#38201e !important}
+body.sg-dark .rain-high{background:#12324d !important;color:#cfe8ff !important}
+body.sg-dark .rain-low{background:#2b3138 !important;color:#e3e8ec !important}
+body.sg-dark .flood-status-icon,body.sg-dark .flood-status-icon span{background:#1d4a4a !important;color:#d4f1f1 !important}
+body.sg-dark #floodHubLink{color:#8fe3d9 !important}
+body.sg-dark #emergencyCard h4,body.sg-dark .emergency-card h4{color:#e6f4ea !important}
+body.sg-dark .quiet-btn-link{background:#0f1f1d !important;border-color:#2c4a45 !important}
+
+
+/* ===== Dark mode fixes (v7.5.1): light leftovers, low-contrast badges, chart labels ===== */
+html.sg-dark, body.sg-dark { --deep: #0a4f4a; } /* keeps white-on-green active tabs */
+body.sg-dark .cmp-blk, body.sg-dark #compareCharts .cmp-blk, body.sg-dark .cmp-details, body.sg-dark .cmp-how { background:#0e2418 !important; border-color:#1e422e !important; color:#e6f4ea !important; }
+body.sg-dark .cmp-chip { background:#112b1d !important; color:#e6f4ea !important; border-color:#1e422e !important; }
+body.sg-dark .cmp-chip.up { background:#33301a !important; border-color:#7a5b00 !important; }
+body.sg-dark .cmp-chip.down { background:#12324d !important; border-color:#2c5f8f !important; }
+body.sg-dark .cmp-chip.in { background:#14301f !important; border-color:#2a6b45 !important; }
+body.sg-dark .cmp-table thead th { background:#112b1d !important; color:#b7c9c6 !important; }
+body.sg-dark .cmp-table td, body.sg-dark .cmp-table th, body.sg-dark .cmp-head, body.sg-dark .cmp-details summary, body.sg-dark .cmp-method, body.sg-dark .cmp-blk strong { color:#e6f4ea !important; }
+body.sg-dark .cmp-state { color:#b7c9c6 !important; }
+body.sg-dark .cmp-below .cmp-state, body.sg-dark .cmp-above .cmp-state { color:#f0b429 !important; }
+body.sg-dark .cmp-in .cmp-state { color:#4ade80 !important; }
+body.sg-dark .cmp-seg.is-on { box-shadow:0 0 0 2px #0e2418, 0 0 0 4px var(--accent); }
+body.sg-dark .cmp-blk svg text, body.sg-dark #compareCharts svg text { fill:#e6f4ea; }
+body.sg-dark .risk-score.low, body.sg-dark .lvl-pill.t1 { background:#14301f !important; color:#86efac !important; }
+body.sg-dark .risk-score.medium, body.sg-dark .lvl-pill.t2, body.sg-dark .lvl-pill.t3 { background:#33301a !important; color:#f6d36b !important; }
+body.sg-dark .risk-score.high, body.sg-dark .lvl-pill.t4, body.sg-dark .lvl-pill.t5 { background:#38201e !important; color:#ffb4ab !important; }
+body.sg-dark .safety-badge { background:#1d4a4a; color:#d4f1f1; }
+body.sg-dark .safety-badge.good { background:#14301f; color:#86efac; }
+body.sg-dark .safety-badge.watch { background:#33301a; color:#f6d36b; }
+body.sg-dark .safety-badge.urgent { background:#38201e; color:#ffb4ab; }
+body.sg-dark .rain-mid, body.sg-dark .rain-mid * { color:#f0b429 !important; }
+body.sg-dark .rain-low { color:#4ade80; }
+body.sg-dark .rain-high { color:#ff8a80 !important; }
+
+body.sg-dark .temperature-value, body.sg-dark .temperature-axis, body.sg-dark .temperature-weekday, body.sg-dark .temperature-date { fill:#e6f4ea; }
+body.sg-dark .temperature-point { stroke:#0e2418; }
+body.sg-dark .temperature-value { stroke:#0e2418; }
+body.sg-dark .hd-stat, body.sg-dark .hd-card, body.sg-dark .hd-row, body.sg-dark .health-tip, body.sg-dark .hospital-item, body.sg-dark .forecast-row, body.sg-dark .flood-status, body.sg-dark .source-status, body.sg-dark .guide-grid article { background:#112b1d !important; border-color:#1e422e !important; color:#e6f4ea !important; }
+body.sg-dark .search-box, body.sg-dark .location-select { background:#0f1f1d !important; color:#e6f4ea !important; border-color:#2c4a45 !important; }
+body.sg-dark .search-box input { background:transparent !important; color:#e6f4ea !important; }
+body.sg-dark #status, body.sg-dark .status-box, body.sg-dark .error-box { background:#38201e; color:#ffd7d2; border-color:#7a2f29; }
+#moonCard .kv-list li{gap:12px} #moonCard .kv-list li b{text-align:right}
+
+/* Compare tab: month-by-month vs normal (monthly_compare.js) */
+.mc-place{margin:2px 0 6px;font-size:15px}
+.mc-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:10px 0 8px;border:1px solid var(--line,#d3e4e2);border-radius:16px;background:var(--tint2,#f4f9f8)}
+.mc-tab{min-height:48px;padding:6px 8px;border:0;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:14px;font-weight:600;line-height:1.4;cursor:pointer}
+.mc-tab.active,.mc-tab[aria-selected="true"]{background:linear-gradient(135deg,#137a36,#4ade80);color:#fff;box-shadow:0 1px 6px rgba(11,83,40,.25)}
+.mc-chart{max-width:560px;margin:4px auto 0;color:var(--text,#10292a)}
+.mc-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.mc-sw{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--c,currentColor)}
+.mc-sw.hatch{background:repeating-linear-gradient(45deg,var(--c,currentColor) 0 2px,transparent 2px 5px);border:1px solid var(--c,currentColor)}
+.mc-details{margin-top:12px}
+.mc-details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+body.sg-dark .mc-tabs{background:#0f1f1d;border-color:#1e422e}
+body.sg-dark .mc-tab{color:#e6f4ea}
+body.sg-dark .mc-tab.active,body.sg-dark .mc-tab[aria-selected="true"]{background:linear-gradient(135deg,#137a36,#4ade80);color:#06210f}
+body.sg-dark .mc-chart{color:#e6f4ea}
+body.sg-dark .mc-chart svg text{fill:#e6f4ea}
+body.sg-dark .hour.selected,body.sg-dark .hour[aria-pressed="true"]{border-color:#4ade80 !important;background:#133322 !important;box-shadow:0 0 0 2px rgba(74,222,128,.25)}
+body.sg-dark .hd-stat{background:#0e2418 !important}
+body.sg-dark .temperature-line-high{stroke:#fbbf24}body.sg-dark .temperature-line-low{stroke:#4ade80}
+body.sg-dark .temperature-point.temperature-high,body.sg-dark .tl-high i{background:#fbbf24 !important;fill:#fbbf24}body.sg-dark .temperature-point.temperature-low,body.sg-dark .tl-low i{background:#4ade80;fill:#4ade80}
+body.sg-dark .temperature-value.temperature-low{fill:#b7c9c6}
+.mc-ytd{margin:6px 0 10px;padding:10px 12px;border-radius:12px;background:var(--tint2,#f4f9f8);border:1px solid var(--line,#d3e4e2);font-size:14px;line-height:1.7}
+body.sg-dark .mc-ytd{background:#112b1d;border-color:#1e422e}
+.mm-day{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--muted);line-height:1.5}
+.mm-day.mm-uposatha{color:var(--warn,#8a5a04);font-weight:700}
+body.sg-dark .mm-day.mm-uposatha{color:#f0b429}
+
+/* While a place is loading, the Stop button must stay on screen even if the person had scrolled down before searching */
+#loading:not([hidden]){position:sticky;top:8px;z-index:60;box-shadow:0 6px 20px rgba(11,83,40,.18)}
+body.sg-dark #loading{background:#0e2418 !important;color:#e6f4ea !important;border-color:#1e422e !important}
+body.sg-dark #loadingCancel{background:#133020 !important;color:#e6f4ea !important;border-color:#244f37 !important}
+.fc-date{display:block;font-size:12px;color:var(--muted);line-height:1.5}
+@media(max-width:650px){.forecast-head,.forecast-row{grid-template-columns:1.4fr 1.05fr .8fr .7fr !important;gap:6px !important}}
+
+.clock-pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;color:var(--text);font-size:12px;font-weight:700;white-space:nowrap}
+body.sg-dark .clock-pill{background:var(--surface);color:var(--text);border-color:var(--line)}
+@media(max-width:480px){.clock-pill{font-size:11.5px;padding:8px 10px}}
+/* location row: data-time pill on its own line, then clock + change button side by side */
+.loc-actions .update-pill{order:0;flex:1 1 100%;text-align:center}
+.loc-actions .clock-pill{order:1}
+.loc-actions .change-btn{order:2}
+@media(min-width:651px){.loc-actions .update-pill{flex:0 1 auto;order:0}}
+
+/* v7.6.4 farming tab in dark mode: --deep stays dark teal (for white-on-green active tabs), so anything that used it as TEXT colour needs a light one; crop cards had a hard-coded white background */
+body.sg-dark .zone-chip,
+body.sg-dark .agri-root h4,
+body.sg-dark .kvl dt,
+body.sg-dark .fold > summary,
+body.sg-dark .bd.lvl-info,
+body.sg-dark .vt-u { color: #8fe3b9 !important; }
+body.sg-dark .crop { background: #12261f !important; border-color: #2c4a45 !important; color: #e6f4ea; }
+body.sg-dark .crop.plant, body.sg-dark .crop.harvest { background: #17332a !important; border-color: #3f8f6a !important; }
+body.sg-dark .crop .kv, body.sg-dark .crop b { color: #e6f4ea; }
+body.sg-dark .crop .tiny, body.sg-dark .crop .muted, body.sg-dark .crop .kv.unk, body.sg-dark .crop .kv.unk b { color: #b7c9c6 !important; }
+body.sg-dark .crop a { color: #8fe3d9; }
+body.sg-dark .crop-adv { background: #0f1f1d; color: #e6f4ea; }
+body.sg-dark .bd-plant { background: #1c7a4d; color: #fff; }
+body.sg-dark .bd-harvest, body.sg-dark .bd.lvl-watch, body.sg-dark .evb-general { background: #3b3315; color: #f3dc8a; }
+body.sg-dark .bd-idle { background: #1c332d; color: #b7c9c6; }
+body.sg-dark .bd.lvl-warning, body.sg-dark .evb-insufficient { background: #3d1f1e; color: #ffb4ae; }
+body.sg-dark .evb-official { background: #14301f; color: #9be8b9; }
+body.sg-dark .evb-modelled { background: #172b45; color: #a9cdf5; }
+body.sg-dark .evb-inventory { background: #2b2140; color: #cdb9f2; }
+body.sg-dark .mb { background: #1c332d; color: #b7c9c6; }
+body.sg-dark .mb.pl { background: #1c7a4d; color: #fff; }
+body.sg-dark .mb.hv { background: #c9a540; color: #2b1f00; }
+body.sg-dark #farmView h4, body.sg-dark #farmView summary, body.sg-dark #farmView dt { color: #8fe3b9 !important; }

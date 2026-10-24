@@ -1,0 +1,31 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+
+# Local/deployment secrets
+.env.local
+.env.production
+.env.development
+
+# Local environments / tooling
+.venv/
+.venv-linux/
+.idea/
+.vscode/
+risk_engine/data/official_alerts_state.json
+
+# SQLite temporary files
+*.db-shm
+*.db-wal
+
+# Test output
+test-results/
+playwright-report/
+node_modules/
+.ruff_cache/
+
+frontend/node_modules/

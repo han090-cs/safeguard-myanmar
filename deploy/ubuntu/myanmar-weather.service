@@ -1,0 +1,25 @@
+# /etc/systemd/system/myanmar-weather.service
+# Replace USERNAME and the paths, then:  sudo systemctl daemon-reload && sudo systemctl enable --now myanmar-weather
+[Unit]
+Description=Myanmar Weather (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=USERNAME
+WorkingDirectory=/home/USERNAME/myanmar-weather
+EnvironmentFile=-/home/USERNAME/myanmar-weather/.env
+# One worker: the rate limiter and caches live in memory.
+Environment=WEB_CONCURRENCY=1
+# Caddy is the proxy in front: believe its X-Forwarded-* headers (per-visitor rate limit, correct public URL).
+Environment=TRUST_PROXY_HEADERS=true
+# Listen only on localhost; the reverse proxy (Caddy) is the public entrance.
+ExecStart=/home/USERNAME/myanmar-weather/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

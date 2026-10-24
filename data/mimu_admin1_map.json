@@ -1,0 +1,21 @@
+{
+  "_comment": "MIMU admin1 P-code -> canonical region/state name, matched against risk_engine/data/location_context.json's 'regions' list where possible. Derived by looking up known state/region capital towns in mimu_locations.db (e.g. MMR001 contains Myitkyina -> Kachin).",
+  "MMR001": {"region": "Kachin", "name_my": "ကချင်ပြည်နယ်"},
+  "MMR002": {"region": "Kayah", "name_my": "ကယားပြည်နယ်"},
+  "MMR003": {"region": "Kayin", "name_my": "ကရင်ပြည်နယ်"},
+  "MMR004": {"region": "Chin", "name_my": "ချင်းပြည်နယ်"},
+  "MMR005": {"region": "Sagaing", "name_my": "စစ်ကိုင်းတိုင်းဒေသကြီး"},
+  "MMR006": {"region": "Tanintharyi", "name_my": "တနင်္သာရီတိုင်းဒေသကြီး"},
+  "MMR007": {"region": "Bago", "name_my": "ပဲခူးတိုင်းဒေသကြီး (အရှေ့)"},
+  "MMR008": {"region": "Bago", "name_my": "ပဲခူးတိုင်းဒေသကြီး (အနောက်)"},
+  "MMR009": {"region": "Magway", "name_my": "မကွေးတိုင်းဒေသကြီး"},
+  "MMR010": {"region": "Mandalay", "name_my": "မန္တလေးတိုင်းဒေသကြီး"},
+  "MMR011": {"region": "Mon", "name_my": "မွန်ပြည်နယ်"},
+  "MMR012": {"region": "Rakhine", "name_my": "ရခိုင်ပြည်နယ်"},
+  "MMR013": {"region": "Yangon", "name_my": "ရန်ကုန်တိုင်းဒေသကြီး"},
+  "MMR014": {"region": "Shan", "name_my": "ရှမ်းပြည်နယ် (တောင်ပိုင်း)"},
+  "MMR015": {"region": "Shan", "name_my": "ရှမ်းပြည်နယ် (မြောက်ပိုင်း)"},
+  "MMR016": {"region": "Shan", "name_my": "ရှမ်းပြည်နယ် (အရှေ့ပိုင်း)"},
+  "MMR017": {"region": "Ayeyarwady", "name_my": "ဧရာဝတီတိုင်းဒေသကြီး"},
+  "MMR018": {"region": "Naypyitaw", "name_my": "နေပြည်တော် ပြည်ထောင်စုနယ်မြေ"}
+}

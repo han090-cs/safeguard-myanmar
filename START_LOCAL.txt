@@ -1,0 +1,28 @@
+MYANMAR WEATHER — LOCAL LINUX START
+
+1. Extract the project ZIP.
+2. Open a terminal in the folder containing this file.
+3. Run:
+
+   chmod +x start-linux.sh
+   ./start-linux.sh
+
+The launcher first checks whether FastAPI/Uvicorn/httpx/etc. are already installed.
+It does NOT contact PyPI if the required packages are already available.
+
+If packages are missing, it tries PyPI. If the computer has no DNS/internet access,
+it stops with a clear message instead of showing the misleading
+"No matching distribution found for fastapi" error.
+
+Useful network checks:
+   ping -c 3 8.8.8.8
+   ping -c 3 pypi.org
+
+Dashboard:
+   http://127.0.0.1:8000/
+
+Health:
+   http://127.0.0.1:8000/health
+
+API status:
+   http://127.0.0.1:8000/api/status

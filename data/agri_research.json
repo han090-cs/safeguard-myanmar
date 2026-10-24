@@ -1,0 +1,941 @@
+{
+ "dataset_version": "2026-10-10",
+ "note_en": "Research foundation, not a complete national database. Unknown values are intentional and are shown as unknown.",
+ "note_my": "ဒါက သုတေသန အခြေခံဒေတာပါ၊ နိုင်ငံတစ်ခုလုံးရဲ့ ပြည့်စုံတဲ့ ဒေတာဘေ့စ် မဟုတ်ပါဘူး။ မသိရသေးတာတွေကို မသိရသေးဘူးလို့ပဲ ပြထားပါတယ်။",
+ "sources": {
+  "SRC001": {
+   "source_title": "FAO GIEWS Country Brief: Myanmar",
+   "publisher": "FAO",
+   "url": "https://cb.apps.fao.org/country.jsp?code=MMR",
+   "publication_or_reference_date": "2026-09-18",
+   "geographic_coverage": "Myanmar national; crop-season and production context",
+   "relevant_fields": "Paddy season, production outlook, maize season, flood-related crop impacts",
+   "reuse_license_note": "Reuse terms must be checked at source; factual citation and data redistribution are distinct",
+   "data_quality_or_caveat": "Official international monitoring source; country brief",
+   "access_date": "2026-10-10"
+  },
+  "SRC002": {
+   "source_title": "Global Agro-Ecological Zones (GAEZ) v5",
+   "publisher": "FAO / IIASA",
+   "url": "https://www.fao.org/gaez/en",
+   "publication_or_reference_date": "2025",
+   "geographic_coverage": "Global gridded; applicable to Myanmar",
+   "relevant_fields": "Crop suitability, attainable yield, climate/soil/terrain indicators",
+   "reuse_license_note": "Check portal dataset-specific licence and attribution requirements",
+   "data_quality_or_caveat": "Modelled/mapped estimate; not field measurement",
+   "access_date": "2026-10-10"
+  },
+  "SRC003": {
+   "source_title": "GAEZ v4 Data Portal and documentation",
+   "publisher": "FAO / IIASA",
+   "url": "https://gaez.fao.org/",
+   "publication_or_reference_date": "2021 baseline; portal now points users to v5",
+   "geographic_coverage": "Global; approx. 5 arc-minute core raster for v4",
+   "relevant_fields": "Soil/water, agroclimate, suitability, yield, production and gaps",
+   "reuse_license_note": "Check dataset-specific terms before redistribution",
+   "data_quality_or_caveat": "Modelled/mapped estimate; historical baseline",
+   "access_date": "2026-10-10"
+  },
+  "SRC004": {
+   "source_title": "FAO/UNESCO Soil Map of the World",
+   "publisher": "FAO / UNESCO",
+   "url": "https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/faounesco-soil-map-of-the-world/en/",
+   "publication_or_reference_date": "1980s-era map series",
+   "geographic_coverage": "Global overview; 1:5,000,000 mapping scale",
+   "relevant_fields": "Broad soil associations and classification context",
+   "reuse_license_note": "Check map/product-specific terms",
+   "data_quality_or_caveat": "Generalized mapped soil reference; not site-scale measurement",
+   "access_date": "2026-10-10"
+  },
+  "SRC005": {
+   "source_title": "World Reference Base for Soil Resources",
+   "publisher": "IUSS / FAO Soil Portal",
+   "url": "https://www.fao.org/soils-portal/soil-survey/soil-classification/world-reference-base/en",
+   "publication_or_reference_date": "Current portal; WRB standard",
+   "geographic_coverage": "Global classification framework",
+   "relevant_fields": "Standardized soil group terminology",
+   "reuse_license_note": "Follow WRB publication/software terms",
+   "data_quality_or_caveat": "Classification standard; does not itself provide Myanmar sample values",
+   "access_date": "2026-10-10"
+  },
+  "SRC006": {
+   "source_title": "ASEAN Guidelines on Soil and Nutrient Management (Myanmar soil-map inventory excerpt)",
+   "publisher": "ASEAN / FAOLEX-hosted document",
+   "url": "https://faolex.fao.org/docs/pdf/asean214453.pdf",
+   "publication_or_reference_date": "2018 document; references Myanmar soil mapping 2004 and 2014–15",
+   "geographic_coverage": "Myanmar soil-map inventory; regional/state and district/township map projects",
+   "relevant_fields": "Reports 2004 soil map and analyzed profile inventory; 2014–15 mapping inventory",
+   "reuse_license_note": "Verify original dataset access and reuse terms; excerpt says some data not published",
+   "data_quality_or_caveat": "Secondary inventory description; underlying data not directly inspected",
+   "access_date": "2026-10-10"
+  },
+  "SRC007": {
+   "source_title": "Myanmar Ministry of Agriculture, Livestock and Irrigation (MOALI)",
+   "publisher": "MOALI",
+   "url": "https://www.moali.gov.mm/",
+   "publication_or_reference_date": "Website; publication date varies",
+   "geographic_coverage": "Myanmar",
+   "relevant_fields": "Potential official crop statistics, crop calendars, soil/land-use publications",
+   "reuse_license_note": "Check each publication's terms",
+   "data_quality_or_caveat": "Source discovery portal; individual datasets need verification",
+   "access_date": "2026-10-10"
+  },
+  "SRC008": {
+   "source_title": "Myanmar Department of Meteorology and Hydrology (DMH)",
+   "publisher": "DMH",
+   "url": "https://www.moezala.gov.mm/",
+   "publication_or_reference_date": "Website; publication date varies",
+   "geographic_coverage": "Myanmar",
+   "relevant_fields": "Climate context; not a substitute for crop/soil observations",
+   "reuse_license_note": "Check site terms and data permissions",
+   "data_quality_or_caveat": "Official source discovery portal",
+   "access_date": "2026-10-10"
+  }
+ },
+ "regions": [
+  {
+   "id": "R01",
+   "name_en": "Central Dry Zone",
+   "name_my": "အလယ်ပိုင်း မိုးနည်းဒေသ (Central Dry Zone)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Primarily central Myanmar; overlaps parts of administrative regions",
+   "scope_my": "အဓိကအားဖြင့် မြန်မာနိုင်ငံ အလယ်ပိုင်းပါ၊ တိုင်းဒေသကြီးတချို့ရဲ့ အစိတ်အပိုင်းတွေနဲ့ ထပ်နေပါတယ်။",
+   "climate_en": "Hot, seasonally dry; rainfall and irrigation access vary locally",
+   "climate_my": "ပူပြီး ရာသီအလိုက် ခြောက်သွေ့ပါတယ်။ မိုးရေနဲ့ ရေသွင်းနိုင်မှုက နေရာအလိုက် ကွာပါတယ်။",
+   "main_crops_en": "Pulses, oilseeds, sesame, groundnut, pulses and cereals; exact local mix requires crop-statistics validation",
+   "main_crops_my": "ပဲအမျိုးမျိုး၊ ဆီထွက်သီးနှံ၊ နှမ်း၊ မြေပဲနဲ့ ကောက်သီးနှံ။ ဒေသတွင်း အတိအကျ ရောနှောပုံကို သီးနှံစာရင်းအင်းနဲ့ ထပ်စစ်ဖို့ လိုပါတယ်။",
+   "constraints_en": "Water scarcity, drought, heat, soil erosion and variable rainfall",
+   "constraints_my": "ရေရှားပါးမှု၊ မိုးခေါင်ခြင်း၊ အပူ၊ မြေတိုက်စားမှုနဲ့ မိုးရေချိန် ပြောင်းလဲမှု။",
+   "evidence_en": "Regional synthesis only; do not infer township-level suitability",
+   "evidence_my": "ဒေသအလိုက် ခြုံငုံသုံးသပ်ချက်သာ ဖြစ်ပါတယ်။ မြို့နယ်တစ်ခုချင်းအတွက် သင့်တော်မှုကို ထင်မြင်ချက်မချပါနဲ့။",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC007"
+   ],
+   "calendar_zone": "dry",
+   "calendar_broad": false
+  },
+  {
+   "id": "R02",
+   "name_en": "Ayeyarwady Delta",
+   "name_my": "ဧရာဝတီ မြစ်ဝကျွန်းပေါ် (Ayeyarwady Delta)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Deltaic parts of Ayeyarwady and adjoining coastal lowlands",
+   "scope_my": "ဧရာဝတီရဲ့ မြစ်ဝကျွန်းပေါ်ပိုင်းနဲ့ ကပ်လျက် ကမ်းရိုးတန်း မြေနိမ့်ပိုင်းတွေ။",
+   "climate_en": "Monsoonal delta; flood and drainage conditions vary",
+   "climate_my": "မုတ်သုံသက်ရောက်တဲ့ မြစ်ဝကျွန်းပေါ်ပါ။ ရေလွှမ်းမှုနဲ့ ရေစီးထွက်မှု အခြေအနေက နေရာအလိုက် ကွာပါတယ်။",
+   "main_crops_en": "Rice/paddy dominant; other crops vary by land, season and salinity",
+   "main_crops_my": "စပါးက အဓိကပါ။ တခြားသီးနှံတွေက မြေ၊ ရာသီနဲ့ ဆားငန်ဓာတ်အလိုက် ကွာပါတယ်။",
+   "constraints_en": "Flooding, drainage, salinity in coastal/deltaic settings, storm impacts",
+   "constraints_my": "ရေလွှမ်းမှု၊ ရေစီးထွက်မှု၊ ကမ်းရိုးတန်း/မြစ်ဝမှာ ဆားငန်ဓာတ်၊ မုန်တိုင်းထိခိုက်မှု။",
+   "evidence_en": "Regional synthesis only; soil chemistry requires mapped or sampled evidence",
+   "evidence_my": "ဒေသအလိုက် ခြုံငုံသုံးသပ်ချက်သာ ဖြစ်ပါတယ်။ မြေဆီမြေသား ဓာတ်ပြုမှုကို မြေပုံ ဒါမှမဟုတ် နမူနာယူစစ်ဆေးတဲ့ အထောက်အထားနဲ့ သိရပါမယ်။",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC004"
+   ],
+   "calendar_zone": "delta",
+   "calendar_broad": false
+  },
+  {
+   "id": "R03",
+   "name_en": "Lower Myanmar coastal zone",
+   "name_my": "အောက်ပိုင်း ကမ်းရိုးတန်းဒေသ (Lower Myanmar coastal zone)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Coastal areas of Rakhine, Tanintharyi and other coastal stretches",
+   "scope_my": "ရခိုင်၊ တနင်္သာရီနဲ့ တခြား ကမ်းရိုးတန်းနေရာတွေ။",
+   "climate_en": "Humid monsoon; coastal exposure and local rainfall vary",
+   "climate_my": "စိုစွတ်တဲ့ မုတ်သုံဒေသပါ။ ကမ်းရိုးတန်း ထိတွေ့မှုနဲ့ ဒေသခံမိုးရေချိန်က ကွာပါတယ်။",
+   "main_crops_en": "Rice and locally important perennial/plantation crops; validate by district statistics",
+   "main_crops_my": "စပါးနဲ့ ဒေသအလိုက် အရေးပါတဲ့ နှစ်ရှည်/စိုက်ခင်းသီးနှံတွေ။ ခရိုင်စာရင်းအင်းနဲ့ ထပ်စစ်ပါ။",
+   "constraints_en": "Flooding, coastal salinity, erosion, storm exposure",
+   "constraints_my": "ရေလွှမ်းမှု၊ ကမ်းရိုးတန်း ဆားငန်ဓာတ်၊ မြေတိုက်စားမှုနဲ့ မုန်တိုင်းထိတွေ့မှု။",
+   "evidence_en": "Do not merge with delta soils; local evidence needed",
+   "evidence_my": "မြစ်ဝကျွန်းပေါ်ဒေသ မြေနဲ့ ပေါင်းမသုံးပါနဲ့။ ဒေသက အထောက်အထား လိုပါတယ်။",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC004"
+   ],
+   "calendar_zone": "coastal",
+   "calendar_broad": false
+  },
+  {
+   "id": "R04",
+   "name_en": "Shan Plateau and eastern highlands",
+   "name_my": "ရှမ်းကုန်းမြင့်နဲ့ အရှေ့ပိုင်း တောင်ပေါ်ဒေသ (Shan Plateau and eastern highlands)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Shan uplands; administrative boundaries do not define AEZ",
+   "scope_my": "ရှမ်းတောင်ပေါ်ဒေသ။ စီမံခန့်ခွဲရေး နယ်နိမိတ်က စိုက်ပျိုးရေး ဒေသကို မသတ်မှတ်ပါ။",
+   "climate_en": "Elevated terrain; temperature, rainfall and soils vary with altitude and aspect",
+   "climate_my": "မြင့်တဲ့ မြေမျက်နှာသွင်ပြင်ပါ။ အပူချိန်၊ မိုးရေချိန်နဲ့ မြေက အမြင့်နဲ့ ကုန်းစောင်းအလိုက် ကွာပါတယ်။",
+   "main_crops_en": "Maize, pulses, vegetables, tea and other upland crops in documented local systems; validate locally",
+   "main_crops_my": "မှတ်တမ်းတင်ထားတဲ့ ဒေသစနစ်တွေမှာ ပြောင်းဖူး၊ ပဲ၊ ဟင်းသီးဟင်းရွက်၊ လက်ဖက်နဲ့ တခြား တောင်ပေါ်သီးနှံ။ ဒေသမှာ ထပ်စစ်ပါ။",
+   "constraints_en": "Slope erosion, soil depth limits, rainfall variability",
+   "constraints_my": "ကုန်းစောင်း မြေတိုက်စားမှု၊ မြေအနက် ကန့်သတ်ချက်၊ မိုးရေချိန် ပြောင်းလဲမှု။",
+   "evidence_en": "Crop presence is broad regional context, not a suitability rating",
+   "evidence_my": "သီးနှံရှိတာကို ဒေသအလိုက် ယေဘုယျ အချက်အဖြစ်သာ ယူပါ၊ သင့်တော်မှု အဆင့်သတ်မှတ်ချက် မဟုတ်ပါ။",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ],
+   "calendar_zone": "hills",
+   "calendar_broad": true
+  },
+  {
+   "id": "R05",
+   "name_en": "Northern mountainous zone",
+   "name_my": "မြောက်ပိုင်း တောင်တန်းဒေသ (Northern mountainous zone)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Northern highlands and mountain landscapes",
+   "scope_my": "မြောက်ပိုင်း တောင်ပေါ်နဲ့ တောင်တန်းဒေသတွေ။",
+   "climate_en": "Cooler high elevations; strong local gradients",
+   "climate_my": "အမြင့်မှာ ပိုအေးပါတယ်။ နေရာအလိုက် ကွာခြားမှု ပြင်းပါတယ်။",
+   "main_crops_en": "Upland cereals, maize, pulses and horticulture in some areas; evidence coverage uneven",
+   "main_crops_my": "တချို့နေရာတွေမှာ တောင်ပေါ် ကောက်သီးနှံ၊ ပြောင်းဖူး၊ ပဲနဲ့ ဥယျာဉ်ခြံသီးနှံ။ အထောက်အထား ရရှိမှုက မညီမျှပါဘူး။",
+   "constraints_en": "Steep-slope erosion, access constraints, shallow soils",
+   "constraints_my": "ကုန်းစောက် မြေတိုက်စားမှု၊ သွားလာရေး အခက်အခဲ၊ မြေပါး။",
+   "evidence_en": "Insufficient evidence for detailed region-wide crop calendar",
+   "evidence_my": "ဒေသတစ်ခုလုံးအတွက် အသေးစိတ် သီးနှံပြက္ခဒိန် ရေးဖို့ အထောက်အထား မလုံလောက်သေးပါ။",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ],
+   "calendar_zone": "hills",
+   "calendar_broad": true
+  },
+  {
+   "id": "R06",
+   "name_en": "Western hilly zone",
+   "name_my": "အနောက်ပိုင်း တောင်ကုန်းဒေသ (Western hilly zone)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Rakhine and Chin hill/coastal transition areas",
+   "scope_my": "ရခိုင်နဲ့ ချင်းရဲ့ တောင်ကုန်း/ကမ်းရိုးတန်း ကူးပြောင်းဒေသတွေ။",
+   "climate_en": "Humid to seasonally variable; strong terrain effects",
+   "climate_my": "စိုစွတ်တာကနေ ရာသီအလိုက် ပြောင်းလဲတာအထိ ရှိပြီး မြေမျက်နှာသွင်ပြင်ရဲ့ သက်ရောက်မှု ပြင်းပါတယ်။",
+   "main_crops_en": "Rice and upland crops; specific crop mix requires local statistics",
+   "main_crops_my": "စပါးနဲ့ တောင်ပေါ်သီးနှံ။ အတိအကျ သီးနှံရောနှောပုံကို ဒေသစာရင်းအင်းနဲ့ စစ်ဖို့ လိုပါတယ်။",
+   "constraints_en": "Erosion, landslides, flooding and access constraints",
+   "constraints_my": "မြေတိုက်စားမှု၊ မြေပြိုမှု၊ ရေလွှမ်းမှုနဲ့ သွားလာရေး အခက်အခဲ။",
+   "evidence_en": "Avoid treating the whole zone as homogeneous",
+   "evidence_my": "ဒေသတစ်ခုလုံးကို တစ်သားတည်းလို မမှတ်ပါနဲ့။",
+   "source_ids": [
+    "SRC001",
+    "SRC002"
+   ],
+   "calendar_zone": "hills",
+   "calendar_broad": true
+  },
+  {
+   "id": "R07",
+   "name_en": "Lower Myanmar / southern alluvial plains",
+   "name_my": "အောက်ပိုင်း / တောင်ပိုင်း နုန်းမြေ လွင်ပြင် (Lower Myanmar / southern alluvial plains)",
+   "type_en": "Agro-ecological / production region",
+   "scope_en": "Lower river plains outside the delta core",
+   "scope_my": "မြစ်ဝကျွန်းပေါ် အလယ်ပိုင်းပြင်ပက မြစ်ဝှမ်း လွင်ပြင်အောက်ပိုင်း။",
+   "climate_en": "Monsoonal; irrigation and floodplain conditions vary",
+   "climate_my": "မုတ်သုံရာသီပါ။ ရေသွင်းမှုနဲ့ မြစ်ကမ်းနံပါး ရေလွှမ်းမြေ အခြေအနေက ကွာပါတယ်။",
+   "main_crops_en": "Rice and other seasonal crops; validate against official statistics",
+   "main_crops_my": "စပါးနဲ့ တခြားရာသီပေါ်သီးနှံ။ တရားဝင်စာရင်းအင်းနဲ့ ထပ်စစ်ပါ။",
+   "constraints_en": "Flooding, waterlogging, drainage and riverbank erosion",
+   "constraints_my": "ရေလွှမ်းမှု၊ ရေဝပ်မှု၊ ရေစီးထွက်မှုနဲ့ မြစ်ကမ်းပါး တိုက်စားမှု။",
+   "evidence_en": "Broad reference only",
+   "evidence_my": "ကျယ်ပြန့်တဲ့ ကိုးကားချက်သာ ဖြစ်ပါတယ်။",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC007"
+   ],
+   "calendar_zone": null,
+   "calendar_broad": false
+  },
+  {
+   "id": "R08",
+   "name_en": "Dry-zone irrigated command areas",
+   "name_my": "မိုးနည်းဒေသ ရေသွင်းစနစ် ဧရိယာများ (Dry-zone irrigated command areas)",
+   "type_en": "Production system overlay",
+   "scope_en": "Irrigated pockets within central dry areas; not a separate administrative unit",
+   "scope_my": "အလယ်ပိုင်း မိုးနည်းဒေသထဲက ရေသွင်းနိုင်တဲ့ နေရာကွက်တွေ။ သီးခြား စီမံခန့်ခွဲရေးယူနစ် မဟုတ်ပါ။",
+   "climate_en": "Water availability depends on infrastructure and allocation",
+   "climate_my": "ရေရရှိနိုင်မှုက အခြေခံအဆောက်အအုံနဲ့ ရေခွဲဝေမှုပေါ် မူတည်ပါတယ်။",
+   "main_crops_en": "Dry-season rice and other irrigated crops where supported; crop-by-crop verification needed",
+   "main_crops_my": "ပံ့ပိုးနိုင်တဲ့ နေရာတွေမှာ နွေစပါးနဲ့ တခြား ရေသွင်းသီးနှံ။ သီးနှံတစ်မျိုးချင်းစီ အတည်ပြုဖို့ လိုပါတယ်။",
+   "constraints_en": "Irrigation reliability, salinity risk in some settings, water competition",
+   "constraints_my": "ရေသွင်းမှု ယုံကြည်စိတ်ချရမှု၊ တချို့နေရာတွေမှာ ဆားငန်ဓာတ် အန္တရာယ်၊ ရေအတွက် ယှဉ်ပြိုင်မှု။",
+   "evidence_en": "Do not generalize irrigated crop calendars across all dry-zone locations",
+   "evidence_my": "ရေသွင်းတဲ့ သီးနှံပြက္ခဒိန်ကို မိုးနည်းဒေသ နေရာအားလုံးအတွက် မယူဆပါနဲ့။",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC007"
+   ],
+   "calendar_zone": null,
+   "calendar_broad": false
+  }
+ ],
+ "crops": [
+  {
+   "id": "C001",
+   "region_name": "Central Dry Zone",
+   "region_id": "R01",
+   "scope": "region",
+   "crop_en": "Sesame",
+   "crop_my": "နှမ်း",
+   "scientific_name": "Sesamum indicum",
+   "type_en": "Oilseed",
+   "type_my": "ဆီထွက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Rainy-season / post-monsoon timing varies by local system",
+     "state": "value",
+     "my": "မိုးရာသီ / မိုးလွန်ကာလ အချိန်က ဒေသစနစ်အလိုက် ကွာပါတယ်။"
+    },
+    "sowing": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Rainfed commonly reported in regional systems; record-level confirmation needed",
+     "state": "value",
+     "my": "ဒေသစနစ်တွေမှာ မိုးသောက်စိုက်တာကို အများဆုံး ဖော်ပြထားပါတယ်။ မှတ်တမ်းတစ်ခုချင်းအတွက် အတည်ပြုချက် လိုပါသေးတယ်။"
+    },
+    "water": {
+     "en": "Moderate-to-low water demand relative to rice; avoid waterlogging (general crop reference)",
+     "state": "value",
+     "my": "ဆန်စပါးနဲ့ယှဉ်ရင် ရေလိုအပ်ချက် အလယ်အလတ်ကနေ နည်းပါတယ်။ ရေဝပ်တာကို ရှောင်ပါ (သီးနှံ အထွေထွေ ကိုးကားချက်)။"
+    },
+    "soil": {
+     "en": "Well-drained soils generally preferred; local soil evidence required",
+     "state": "value",
+     "my": "ရေကောင်းကောင်း စီးထွက်တဲ့ မြေကို ယေဘုယျအားဖြင့် ပိုနှစ်သက်ပါတယ်။ ဒေသက မြေအထောက်အထား လိုပါတယ်။"
+    },
+    "constraints": {
+     "en": "Drought, heat and rainfall timing; exact sensitivity depends on cultivar/stage",
+     "state": "value",
+     "my": "မိုးခေါင်ခြင်း၊ အပူနဲ့ မိုးရွာချိန်။ အတိအကျ ထိခိုက်လွယ်မှုက မျိုးစေ့နဲ့ ကြီးထွားတဲ့ အဆင့်ပေါ် မူတည်ပါတယ်။"
+    },
+    "management": {
+     "en": "General crop reference only; not a verified regional prescription",
+     "state": "value",
+     "my": "သီးနှံ အထွေထွေ ကိုးကားချက်သာ ဖြစ်ပြီး အတည်ပြုထားတဲ့ ဒေသဆိုင်ရာ ညွှန်ကြားချက် မဟုတ်ပါ။"
+    },
+    "yield": {
+     "en": "Area/production/yield not populated: source series required",
+     "state": "value",
+     "my": "ဧရိယာ/ထုတ်လုပ်မှု/အထွက်နှုန်း မထည့်ရသေးပါ (ရင်းမြစ်စီးရီး လိုပါတယ်)။"
+    }
+   },
+   "quality_en": "General regional reference",
+   "quality_my": "ဒေသအလိုက် ယေဘုယျ ကိုးကားချက်",
+   "quality_class": "general",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ]
+  },
+  {
+   "id": "C002",
+   "region_name": "Central Dry Zone",
+   "region_id": "R01",
+   "scope": "region",
+   "crop_en": "Groundnut",
+   "crop_my": "မြေပဲ",
+   "scientific_name": "Arachis hypogaea",
+   "type_en": "Oilseed / pulse",
+   "type_my": "ဆီထွက်သီးနှံ / ပဲ",
+   "fields": {
+    "season": {
+     "en": "Season varies with rainfall and irrigation",
+     "state": "value",
+     "my": "ရာသီက မိုးရေနဲ့ ရေသွင်းနိုင်မှုအလိုက် ကွာပါတယ်။"
+    },
+    "sowing": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Rainfed and irrigated systems may occur; verify locally",
+     "state": "value",
+     "my": "မိုးသောက်နဲ့ ရေသွင်းစနစ် နှစ်မျိုးလုံး ရှိနိုင်ပါတယ်။ ဒေသမှာ စစ်ပါ။"
+    },
+    "water": {
+     "en": "Avoid prolonged waterlogging; water need varies by growth stage",
+     "state": "value",
+     "my": "ရေဝပ်တာကို ကြာကြာ မခံပါနဲ့။ ရေလိုအပ်ချက်က ကြီးထွားတဲ့ အဆင့်အလိုက် ကွာပါတယ်။"
+    },
+    "soil": {
+     "en": "Loose, well-drained soil commonly preferred; verify local conditions",
+     "state": "value",
+     "my": "ပျော့ပြီး ရေကောင်းကောင်းစီးထွက်တဲ့ မြေကို ယေဘုယျအားဖြင့် နှစ်သက်ပါတယ်။ ဒေသအခြေအနေကို စစ်ပါ။"
+    },
+    "constraints": {
+     "en": "Drought, waterlogging and heat at sensitive stages",
+     "state": "value",
+     "my": "ထိခိုက်လွယ်တဲ့ အဆင့်တွေမှာ မိုးခေါင်ခြင်း၊ ရေဝပ်ခြင်းနဲ့ အပူ။"
+    },
+    "management": {
+     "en": "General crop reference only",
+     "state": "value",
+     "my": "သီးနှံ အထွေထွေ ကိုးကားချက်သာ ဖြစ်ပါတယ်။"
+    },
+    "yield": {
+     "en": "Area/production/yield not populated: source series required",
+     "state": "value",
+     "my": "ဧရိယာ/ထုတ်လုပ်မှု/အထွက်နှုန်း မထည့်ရသေးပါ (ရင်းမြစ်စီးရီး လိုပါတယ်)။"
+    }
+   },
+   "quality_en": "General regional reference",
+   "quality_my": "ဒေသအလိုက် ယေဘုယျ ကိုးကားချက်",
+   "quality_class": "general",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ]
+  },
+  {
+   "id": "C003",
+   "region_name": "Central Dry Zone",
+   "region_id": "R01",
+   "scope": "region",
+   "crop_en": "Pigeon pea",
+   "crop_my": "ပဲစင်းငုံ",
+   "scientific_name": "Cajanus cajan",
+   "type_en": "Pulse",
+   "type_my": "ပဲ",
+   "fields": {
+    "season": {
+     "en": "Often associated with monsoon-season systems; exact dates unknown",
+     "state": "value",
+     "my": "မိုးရာသီစနစ်တွေနဲ့ ဆက်စပ်လေ့ရှိပါတယ်။ အတိအကျရက်ကို မသိရသေးပါ။"
+    },
+    "sowing": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Often rainfed in regional systems; verify locally",
+     "state": "value",
+     "my": "ဒေသစနစ်တွေမှာ မိုးသောက်စိုက်တာ များပါတယ်။ ဒေသမှာ စစ်ပါ။"
+    },
+    "water": {
+     "en": "Relatively drought-tolerant compared with many crops; avoid prolonged waterlogging",
+     "state": "value",
+     "my": "တခြားသီးနှံတွေနဲ့ ယှဉ်ရင် မိုးခေါင်ခြင်းကို ခံနိုင်ရည် ပိုရှိပါတယ်။ ရေဝပ်တာကို ကြာကြာ မခံပါနဲ့။"
+    },
+    "soil": {
+     "en": "Broad adaptation; soil suitability must be locally checked",
+     "state": "value",
+     "my": "လိုက်ဖက်မှု ကျယ်ပါတယ်။ မြေ သင့်တော်မှုကို ဒေသမှာ စစ်ရပါမယ်။"
+    },
+    "constraints": {
+     "en": "Drought, waterlogging, pests and diseases",
+     "state": "value",
+     "my": "မိုးခေါင်ခြင်း၊ ရေဝပ်ခြင်း၊ ပိုးမွှားနဲ့ ရောဂါ။"
+    },
+    "management": {
+     "en": "General crop reference only",
+     "state": "value",
+     "my": "သီးနှံ အထွေထွေ ကိုးကားချက်သာ ဖြစ်ပါတယ်။"
+    },
+    "yield": {
+     "en": "Area/production/yield not populated: source series required",
+     "state": "value",
+     "my": "ဧရိယာ/ထုတ်လုပ်မှု/အထွက်နှုန်း မထည့်ရသေးပါ (ရင်းမြစ်စီးရီး လိုပါတယ်)။"
+    }
+   },
+   "quality_en": "General regional reference",
+   "quality_my": "ဒေသအလိုက် ယေဘုယျ ကိုးကားချက်",
+   "quality_class": "general",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ]
+  },
+  {
+   "id": "C004",
+   "region_name": "Ayeyarwady Delta",
+   "region_id": "R02",
+   "scope": "region",
+   "crop_en": "Rice / paddy",
+   "crop_my": "စပါး",
+   "scientific_name": "Oryza sativa",
+   "type_en": "Cereal",
+   "type_my": "ကောက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Main monsoon crop; secondary crop also reported",
+     "state": "value",
+     "my": "အဓိက မိုးရာသီသီးနှံ ဖြစ်ပြီး ဒုတိယသီးနှံလည်း ရှိကြောင်း ဖော်ပြထားပါတယ်။"
+    },
+    "sowing": {
+     "en": "Main crop planting calendar varies; do not use a single date without local source",
+     "state": "value",
+     "my": "အဓိကသီးနှံ စိုက်ချိန်ပြက္ခဒိန်က ကွာပါတယ်။ ဒေသက ရင်းမြစ်မရှိဘဲ ရက်တစ်ခုတည်းကို မသုံးပါနဲ့။"
+    },
+    "harvest": {
+     "en": "Main harvest timing varies; FAO reports 2026/27 main harvest expected to begin end-October",
+     "state": "value",
+     "my": "အဓိက ရိတ်သိမ်းချိန် ကွာပါတယ်။ FAO က ၂၀၂၆/၂၇ အဓိက ရိတ်သိမ်းမှုကို ၂၀၂၆ အောက်တိုဘာလကုန်မှာ စမယ်လို့ မျှော်မှန်းထားပါတယ်။"
+    },
+    "irrigation": {
+     "en": "Rainfed and irrigated systems; local water regime differs",
+     "state": "value",
+     "my": "မိုးသောက်နဲ့ ရေသွင်းစနစ် နှစ်မျိုးလုံး ရှိပြီး ဒေသအလိုက် ရေအခြေအနေ ကွာပါတယ်။"
+    },
+    "water": {
+     "en": "High water demand; drainage and flood depth/duration matter",
+     "state": "value",
+     "my": "ရေလိုအပ်ချက် မြင့်ပါတယ်။ ရေစီးထွက်မှုနဲ့ ရေလွှမ်းတဲ့ အနက်/ကာလက အရေးကြီးပါတယ်။"
+    },
+    "soil": {
+     "en": "Alluvial/delta soils vary; texture and acidity/salinity need local evidence",
+     "state": "value",
+     "my": "နုန်းမြေ/မြစ်ဝကျွန်းပေါ်မြေတွေ ကွာပါတယ်။ မြေဖွဲ့စည်းပုံနဲ့ အက်ဆစ်/ဆားဓာတ်ကို ဒေသအထောက်အထားနဲ့ စစ်ရပါမယ်။"
+    },
+    "constraints": {
+     "en": "Flooding, waterlogging, salinity in coastal areas, drought and storms",
+     "state": "value",
+     "my": "ရေလွှမ်းမှု၊ ရေဝပ်မှု၊ ကမ်းရိုးတန်းမှာ ဆားငန်ဓာတ်၊ မိုးခေါင်ခြင်းနဲ့ မုန်တိုင်း။"
+    },
+    "management": {
+     "en": "Use locally validated water and nutrient management guidance",
+     "state": "value",
+     "my": "ဒေသအလိုက် အတည်ပြုထားတဲ့ ရေနဲ့ အာဟာရ စီမံခန့်ခွဲမှု ညွှန်ကြားချက်ကို သုံးပါ။"
+    },
+    "yield": {
+     "en": "National production: FAO GIEWS forecast 30 million tonnes for 2026/27; not delta-specific; do not assign to region",
+     "state": "value",
+     "my": "နိုင်ငံအဆင့် ထုတ်လုပ်မှု - FAO GIEWS က ၂၀၂၆/၂၇ အတွက် စပါး သန်း ၃၀ တန် ခန့်မှန်းထားပါတယ်။ ဒါက မြစ်ဝကျွန်းပေါ်အတွက် သီးသန့်ကိန်း မဟုတ်လို့ ဒေသတစ်ခုခုနဲ့ မတွဲပါနဲ့။"
+    }
+   },
+   "quality_en": "Official international monitoring source; national forecast",
+   "quality_my": "နိုင်ငံတကာ တရားဝင် စောင့်ကြည့်ရေး ရင်းမြစ် (FAO GIEWS)၊ နိုင်ငံအဆင့် ခန့်မှန်းချက်",
+   "quality_class": "official",
+   "source_ids": [
+    "SRC001",
+    "SRC002",
+    "SRC007"
+   ]
+  },
+  {
+   "id": "C005",
+   "region_name": "Myanmar major rice-producing areas",
+   "region_id": null,
+   "scope": "national",
+   "crop_en": "Rice / paddy — main season",
+   "crop_my": "စပါး — အဓိက (မိုး) ရာသီ",
+   "scientific_name": "Oryza sativa",
+   "type_en": "Cereal",
+   "type_my": "ကောက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Monsoon/main season",
+     "state": "value",
+     "my": "မိုးရာသီ / အဓိကရာသီ"
+    },
+    "sowing": {
+     "en": "2026/27 main harvest expected to begin at end of October (planting date not stated in source)",
+     "state": "value",
+     "my": "၂၀၂၆/၂၇ အဓိကသီးနှံ ရိတ်သိမ်းမှုကို အောက်တိုဘာလကုန်မှာ စမယ်လို့ မျှော်မှန်းပါတယ်။ စိုက်ရက်ကို ရင်းမြစ်က မဖော်ပြပါ။"
+    },
+    "harvest": {
+     "en": "Harvesting expected to begin end-October 2026",
+     "state": "value",
+     "my": "၂၀၂၆ အောက်တိုဘာလကုန်မှာ ရိတ်သိမ်းမှု စမယ်လို့ မျှော်မှန်းထားပါတယ်။"
+    },
+    "irrigation": {
+     "en": "Rainfed/irrigated split not supplied in cited brief",
+     "state": "value",
+     "my": "မိုးသောက်/ရေသွင်း အချိုးကို ကိုးကားထားတဲ့ အကျဉ်းချုပ်မှာ မဖော်ပြပါ။"
+    },
+    "water": {
+     "en": "High water demand; local water regime matters",
+     "state": "value",
+     "my": "ရေလိုအပ်ချက် မြင့်ပါတယ်။ ဒေသက ရေအခြေအနေ အရေးကြီးပါတယ်။"
+    },
+    "soil": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "constraints": {
+     "en": "Localized flood losses reported in July–August 2026",
+     "state": "value",
+     "my": "၂၀၂၆ ဇူလိုင်–ဩဂုတ်လတွေမှာ နေရာအချို့ ရေလွှမ်းပြီး ဆုံးရှုံးမှု ရှိတယ်လို့ ဖော်ပြထားပါတယ်။"
+    },
+    "management": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "yield": {
+     "en": "2026/27 production forecast 30 million tonnes, slightly above average; national figure",
+     "state": "value",
+     "my": "၂၀၂၆/၂၇ စပါးထုတ်လုပ်မှုကို သန်း ၃၀ တန် ခန့်မှန်းထားပြီး ပျမ်းမျှထက် အနည်းငယ်မြင့်ပါတယ်။ နိုင်ငံအဆင့် ကိန်းဂဏန်းပါ။"
+    }
+   },
+   "quality_en": "Official statistics/forecast (FAO GIEWS)",
+   "quality_my": "တရားဝင် စာရင်းအင်း/ခန့်မှန်းချက် (FAO GIEWS)",
+   "quality_class": "official",
+   "source_ids": [
+    "SRC001"
+   ]
+  },
+  {
+   "id": "C006",
+   "region_name": "Myanmar major rice-producing areas",
+   "region_id": null,
+   "scope": "national",
+   "crop_en": "Rice / paddy — secondary season",
+   "crop_my": "စပါး — ဒုတိယ (ဆောင်း/နွေ) ရာသီ",
+   "scientific_name": "Oryza sativa",
+   "type_en": "Cereal",
+   "type_my": "ကောက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Secondary / dry-season crop",
+     "state": "value",
+     "my": "ဒုတိယ / ပိတ်ရာသီသီးနှံ"
+    },
+    "sowing": {
+     "en": "Planting from October onwards in 2026/27 brief",
+     "state": "value",
+     "my": "၂၀၂၆/၂၇ အကျဉ်းချုပ်အရ အောက်တိုဘာကနေ စိုက်ပါမယ်။"
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Irrigation likely important but source brief does not quantify the split",
+     "state": "value",
+     "my": "ရေသွင်းမှု အရေးကြီးနိုင်ပေမဲ့ ရင်းမြစ်အကျဉ်းချုပ်က အချိုးကို မဖော်ပြပါ။"
+    },
+    "water": {
+     "en": "Water requirement and irrigation availability need local data",
+     "state": "value",
+     "my": "ရေလိုအပ်ချက်နဲ့ ရေသွင်းနိုင်မှုကို ဒေသအချက်အလက်နဲ့ စစ်ဖို့ လိုပါတယ်။"
+    },
+    "soil": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "constraints": {
+     "en": "Water availability and input costs; local constraints vary",
+     "state": "value",
+     "my": "ရေရရှိနိုင်မှုနဲ့ စိုက်ကြွေးစရိတ်။ ဒေသအလိုက် ကန့်သတ်ချက်တွေ ကွာပါတယ်။"
+    },
+    "management": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "yield": {
+     "en": "About 20% of annual paddy production attributed to secondary crop in FAO brief; national estimate",
+     "state": "value",
+     "my": "နှစ်စဉ် စပါးထုတ်လုပ်မှုရဲ့ ၂၀% ခန့်ကို ဒုတိယသီးနှံက ထုတ်တယ်လို့ FAO ရဲ့ အကျဉ်းချုပ်မှာ ဖော်ပြထားပါတယ်။ နိုင်ငံအဆင့် ခန့်မှန်းချက်ပါ။"
+    }
+   },
+   "quality_en": "Official international monitoring source",
+   "quality_my": "နိုင်ငံတကာ တရားဝင် စောင့်ကြည့်ရေး ရင်းမြစ် (FAO GIEWS)",
+   "quality_class": "official",
+   "source_ids": [
+    "SRC001"
+   ]
+  },
+  {
+   "id": "C007",
+   "region_name": "Myanmar maize-producing areas",
+   "region_id": null,
+   "scope": "national",
+   "crop_en": "Maize",
+   "crop_my": "ပြောင်းဖူး",
+   "scientific_name": "Zea mays",
+   "type_en": "Cereal",
+   "type_my": "ကောက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Main and second-season systems reported",
+     "state": "value",
+     "my": "ပထမရာသီနဲ့ ဒုတိယရာသီ စနစ်နှစ်မျိုး ရှိကြောင်း ဖော်ပြထားပါတယ်။"
+    },
+    "sowing": {
+     "en": "Second-season planting expected from mid-September in 2026/27; main-season calendar varies",
+     "state": "value",
+     "my": "၂၀၂၆/၂၇ ဒုတိယရာသီ စိုက်ပျိုးမှုကို စက်တင်ဘာလလယ်ကနေ စမယ်လို့ မျှော်မှန်းပါတယ်။ ပထမရာသီ ပြက္ခဒိန်က ကွာပါတယ်။"
+    },
+    "harvest": {
+     "en": "Main-season harvest underway; expected to conclude January 2027",
+     "state": "value",
+     "my": "ပထမရာသီ ရိတ်သိမ်းမှု ဆက်လုပ်နေပြီး ၂၀၂၇ ဇန်နဝါရီမှာ ပြီးမယ်လို့ မျှော်မှန်းထားပါတယ်။"
+    },
+    "irrigation": {
+     "en": "Rainfed/irrigated split not supplied",
+     "state": "value",
+     "my": "မိုးသောက်/ရေသွင်း အချိုး မဖော်ပြပါ။"
+    },
+    "water": {
+     "en": "Stage-specific water needs; local conditions required",
+     "state": "value",
+     "my": "ကြီးထွားတဲ့ အဆင့်အလိုက် ရေလိုအပ်ချက် ကွာပါတယ်။ ဒေသအခြေအနေ လိုပါတယ်။"
+    },
+    "soil": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "constraints": {
+     "en": "Rainfall variability, flooding and access/input constraints",
+     "state": "value",
+     "my": "မိုးရေချိန် ပြောင်းလဲမှု၊ ရေလွှမ်းမှု၊ လယ်ယာသို့ ဝင်ရောက်နိုင်မှုနဲ့ စိုက်ကြွေးစရိတ် ကန့်သတ်ချက်။"
+    },
+    "management": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    },
+    "yield": {
+     "en": "2026/27 output preliminarily forecast 2.1 million tonnes, near average; national figure",
+     "state": "value",
+     "my": "၂၀၂၆/၂၇ ထုတ်လုပ်မှုကို သန်း ၂.၁ တန် ကနဦးခန့်မှန်းထားပြီး ပျမ်းမျှနီးပါးပါ။ နိုင်ငံအဆင့် ကိန်းဂဏန်းပါ။"
+    }
+   },
+   "quality_en": "Official international monitoring source",
+   "quality_my": "နိုင်ငံတကာ တရားဝင် စောင့်ကြည့်ရေး ရင်းမြစ် (FAO GIEWS)",
+   "quality_class": "official",
+   "source_ids": [
+    "SRC001"
+   ]
+  },
+  {
+   "id": "C008",
+   "region_name": "Shan Plateau and eastern highlands",
+   "region_id": "R04",
+   "scope": "region",
+   "crop_en": "Maize",
+   "crop_my": "ပြောင်းဖူး",
+   "scientific_name": "Zea mays",
+   "type_en": "Cereal",
+   "type_my": "ကောက်သီးနှံ",
+   "fields": {
+    "season": {
+     "en": "Season varies by elevation and local system",
+     "state": "value",
+     "my": "ရာသီက အမြင့်နဲ့ ဒေသစနစ်အလိုက် ကွာပါတယ်။"
+    },
+    "sowing": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Rainfed/irrigated status varies; verify locally",
+     "state": "value",
+     "my": "မိုးသောက်/ရေသွင်း အခြေအနေ ကွာပါတယ်။ ဒေသမှာ စစ်ပါ။"
+    },
+    "water": {
+     "en": "Avoid generalized water schedule",
+     "state": "value",
+     "my": "ယေဘုယျ ရေလိုအပ်ချက်ဇယား မသုံးပါနဲ့။"
+    },
+    "soil": {
+     "en": "Soil depth, slope and drainage are site-specific",
+     "state": "value",
+     "my": "မြေအနက်၊ ကုန်းစောင်းနဲ့ ရေစီးထွက်မှုက နေရာအလိုက် ကွာပါတယ်။"
+    },
+    "constraints": {
+     "en": "Erosion on slopes, drought and intense rainfall",
+     "state": "value",
+     "my": "ကုန်းစောင်းမှာ မြေတိုက်စားမှု၊ မိုးခေါင်ခြင်းနဲ့ မိုးသည်းထန်မှု။"
+    },
+    "management": {
+     "en": "Contour/soil conservation guidance should be site-specific",
+     "state": "value",
+     "my": "မြေတိုက်စားမှု ကာကွယ်ရေး (contour) ညွှန်ကြားချက်က နေရာအလိုက် ဖြစ်ရပါမယ်။"
+    },
+    "yield": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    }
+   },
+   "quality_en": "General regional reference; needs official regional statistics",
+   "quality_my": "ဒေသအလိုက် ယေဘုယျ ကိုးကားချက်၊ ဒေသအလိုက် တရားဝင်စာရင်းအင်း လိုပါတယ်",
+   "quality_class": "general",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ]
+  },
+  {
+   "id": "C009",
+   "region_name": "Myanmar agricultural regions",
+   "region_id": null,
+   "scope": "national",
+   "crop_en": "Black gram / green gram and other pulses",
+   "crop_my": "မတ်ပဲ / ပဲတီစိမ်း နဲ့ တခြားပဲအမျိုးမျိုး",
+   "scientific_name": "Vigna spp. (species must be resolved per crop)",
+   "type_en": "Pulse",
+   "type_my": "ပဲ",
+   "fields": {
+    "season": {
+     "en": "Season varies by species and region",
+     "state": "value",
+     "my": "မျိုးစိတ်နဲ့ ဒေသအလိုက် ရာသီ ကွာပါတယ်။"
+    },
+    "sowing": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "harvest": {
+     "en": null,
+     "state": "unknown",
+     "my": null
+    },
+    "irrigation": {
+     "en": "Rainfed/irrigated varies",
+     "state": "value",
+     "my": "မိုးသောက်/ရေသွင်း ကွာပါတယ်။"
+    },
+    "water": {
+     "en": "Crop-specific requirements; do not apply one value to all pulses",
+     "state": "value",
+     "my": "သီးနှံအလိုက် ကွာပါတယ်။ ပဲအမျိုးမျိုးအားလုံးကို တန်ဖိုးတစ်ခုတည်း မသုံးပါနဲ့။"
+    },
+    "soil": {
+     "en": "Species- and site-specific",
+     "state": "value",
+     "my": "မျိုးစိတ်နဲ့ နေရာအလိုက် ကွာပါတယ်။"
+    },
+    "constraints": {
+     "en": "Drought, waterlogging, pests/diseases",
+     "state": "value",
+     "my": "မိုးခေါင်ခြင်း၊ ရေဝပ်ခြင်း၊ ပိုးမွှားနဲ့ ရောဂါ။"
+    },
+    "management": {
+     "en": "Species-specific recommendations required",
+     "state": "value",
+     "my": "မျိုးစိတ်အလိုက် အကြံပြုချက် လိုပါတယ်။"
+    },
+    "yield": {
+     "en": null,
+     "state": "not_specified",
+     "my": null
+    }
+   },
+   "quality_en": "Insufficiently resolved for species-level publication",
+   "quality_my": "မျိုးစိတ်အလိုက် ဖော်ပြဖို့ အချက်အလက် မလုံလောက်သေးပါ",
+   "quality_class": "insufficient",
+   "source_ids": [
+    "SRC002",
+    "SRC007"
+   ]
+  }
+ ],
+ "soils": [
+  {
+   "id": "S001",
+   "coverage_en": "Myanmar national soil-map inventory",
+   "type_en": "Mapped soil-profile inventory",
+   "title_my": "နိုင်ငံအဆင့် မြေပုံ/မြေပရိုဖိုင် စာရင်း",
+   "text_my": "ပရိုဖိုင်ပေါင်း ၅၀၀ ကို ခွဲခြမ်းစိတ်ဖြာထားပြီး (အနက် ၀–၅၀ စင်တီမီတာ)၊ ၁၅၀ ကို မခွဲခြမ်းထားပါဘူး (၀–၉၀ စင်တီမီတာ၊ ၂၀၀၄ စီမံကိန်း) လို့ စာရင်းမှာ ဖော်ပြထားပါတယ်။ pH၊ အာဟာရဓာတ်တန်ဖိုးတွေ မပါပါ။",
+   "classification_en": "FAO classification system (2004 map); FAO-UNESCO 2006 units referenced for 2014–15 project",
+   "detail_en": "Inventory reports 500 main profiles with analyzed samples, 0–50 cm; 150 profiles without analyzed samples, 0–90 cm (2004 project)",
+   "quality_en": "Inventory description only; underlying records not inspected",
+   "quality_my": "စာရင်းဖော်ပြချက်သာ၊ အခြေခံမှတ်တမ်းတွေကို မစစ်ဆေးရသေးပါ",
+   "quality_class": "inventory",
+   "source_ids": [
+    "SRC006"
+   ],
+   "has_measured_values": false
+  },
+  {
+   "id": "S002",
+   "coverage_en": "Myanmar regional/state soil mapping",
+   "type_en": "Mapped soil-profile inventory",
+   "title_my": "တိုင်းဒေသကြီး/ပြည်နယ်အလိုက် မြေပုံ",
+   "text_my": "၂၀၁၄–၁၅ စာရင်းမှာ ခွဲခြမ်းစိတ်ဖြာထားတဲ့ ပရိုဖိုင် ၁၀၀၊ မခွဲခြမ်းထားတာ ၅၀၀ (အနက် ၀–၁၂၀ စင်တီမီတာ)။ ဒေတာက အဲဒီအချိန်က မထုတ်ပြန်ရသေးဘူးလို့ စာရွက်မှာ ဖော်ပြထားပါတယ်။",
+   "classification_en": "FAO soil units (FAO-UNESCO 2006)",
+   "detail_en": "2014–15 inventory reports 100 analyzed profiles and 500 profiles without analyses, depths 0–120 cm",
+   "quality_en": "Inventory description only; document says data not published at the time",
+   "quality_my": "စာရင်းဖော်ပြချက်သာ၊ ဒေတာကို အဲဒီအချိန်က မထုတ်ပြန်ရသေးပါ",
+   "quality_class": "inventory",
+   "source_ids": [
+    "SRC006"
+   ],
+   "has_measured_values": false
+  },
+  {
+   "id": "S003",
+   "coverage_en": "Myanmar; spatial grid",
+   "type_en": "Modelled/mapped soil data",
+   "title_my": "GAEZ v5 မြေ/အရင်းအမြစ် အလွှာများ",
+   "text_my": "မော်ဒယ်/မြေပုံ ခန့်မှန်းချက်ပါ။ တန်ဖိုးတွေကို ဒီစာရင်းထဲ မကူးထားသေးပါ၊ မူရင်း raster ကနေ ထုတ်ယူရဦးမယ်။",
+   "classification_en": "GAEZ v5 soil/resource layers; exact class/value must be extracted from portal",
+   "detail_en": "No values copied into this CSV; acquire source raster and retain cell/grid metadata",
+   "quality_en": "Modelled/mapped estimate; not laboratory measurement",
+   "quality_my": "မော်ဒယ်/မြေပုံ ခန့်မှန်းချက်၊ ဓာတ်ခွဲခန်းတိုင်းတာချက် မဟုတ်ပါ",
+   "quality_class": "modelled",
+   "source_ids": [
+    "SRC002"
+   ],
+   "has_measured_values": false
+  },
+  {
+   "id": "S004",
+   "coverage_en": "Myanmar broad soil overview",
+   "type_en": "Global generalized map",
+   "title_my": "FAO/UNESCO ကမ္ဘာ့မြေပုံ (ယေဘုယျ)",
+   "text_my": "ယေဘုယျ မြေအုပ်စုပုံစံသာ ဖြစ်ပါတယ်။ နေရာတစ်ခုချင်းရဲ့ တိုင်းတာချက်၊ ကိန်းဂဏန်း မပါပါ။",
+   "classification_en": "FAO/UNESCO Soil Map of the World; legacy classification legend",
+   "detail_en": "No site-specific observation or numeric property asserted",
+   "quality_en": "General regional reference; unsuitable for field-level pH/fertility claims",
+   "quality_my": "ဒေသအလိုက် ယေဘုယျ ကိုးကားချက်၊ လယ်ကွက်အဆင့် pH/မြေဆီဓာတ် ပြောဖို့ မသင့်ပါ",
+   "quality_class": "general",
+   "source_ids": [
+    "SRC004"
+   ],
+   "has_measured_values": false
+  }
+ ],
+ "repairs": [
+  {
+   "record_id": "C005",
+   "issue": "row has one extra cell in the source CSV (duplicate 'Not specified' before area_production_yield), shifting area_production_yield, data_quality and source_ids",
+   "fix": "the duplicate cell was removed; no values were changed"
+  },
+  {
+   "record_id": "C006",
+   "issue": "row has one extra cell in the source CSV (duplicate 'Not specified' before area_production_yield), shifting area_production_yield, data_quality and source_ids",
+   "fix": "the duplicate cell was removed; no values were changed"
+  }
+ ]
+}

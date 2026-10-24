@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: myanmar-weather
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: "1"
+      # Render sits behind a proxy: without this every visitor shares the proxy's IP and the whole site
+      # is limited to RATE_LIMIT_MAX API calls per minute combined.
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      - key: WEATHER_MODEL
+        value: ecmwf_ifs
+      - key: RISK_ENGINE_MODE
+        value: production
+      # Optional weather fallbacks: paste the keys in the Render dashboard (never in this file).
+      - key: WEATHERAPI_API_KEY
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false

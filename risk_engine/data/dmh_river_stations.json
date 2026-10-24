@@ -1,0 +1,676 @@
+{
+ "_comment": "River gauging stations named in DMH flood warnings (www.moezala.gov.mm/en/flood-warning, 2019-2026 archive). Coordinates are the station's town; region = state/region at those coordinates (OpenStreetMap boundaries), which matched GeoNames' own admin area for every located station. name_my is for display and needs the same Burmese review as the rest of the text. A station with lat/lon null is known but not located.",
+ "stations": [
+  {
+   "id": "myitkyina",
+   "name_en": "Myitkyina",
+   "name_my": "မြစ်ကြီးနား",
+   "river": "Ayeyarwady",
+   "lat": 25.383,
+   "lon": 97.396,
+   "region": "Kachin",
+   "variants": [
+    "Myitkyina"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "bhamo",
+   "name_en": "Bhamo",
+   "name_my": "ဗန်းမော်",
+   "river": "Ayeyarwady",
+   "lat": 24.253,
+   "lon": 97.234,
+   "region": "Kachin",
+   "variants": [
+    "Bhamo"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "shwegu",
+   "name_en": "Shwegu",
+   "name_my": "ရွှေကူ",
+   "river": "Ayeyarwady",
+   "lat": 24.227,
+   "lon": 96.791,
+   "region": "Kachin",
+   "variants": [
+    "Shwegu"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "katha",
+   "name_en": "Katha",
+   "name_my": "ကသာ",
+   "river": "Ayeyarwady",
+   "lat": 24.175,
+   "lon": 96.341,
+   "region": "Sagaing",
+   "variants": [
+    "Katha"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "thabeikkyin",
+   "name_en": "Thabeikkyin",
+   "name_my": "သပိတ်ကျင်း",
+   "river": "Ayeyarwady",
+   "lat": 22.885,
+   "lon": 95.974,
+   "region": "Mandalay",
+   "variants": [
+    "Thabeikkyin",
+    "Thabeikyin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "mandalay",
+   "name_en": "Mandalay",
+   "name_my": "မန္တလေး",
+   "river": "Ayeyarwady",
+   "lat": 21.975,
+   "lon": 96.084,
+   "region": "Mandalay",
+   "variants": [
+    "Mandalay"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "sagaing",
+   "name_en": "Sagaing",
+   "name_my": "စစ်ကိုင်း",
+   "river": "Ayeyarwady",
+   "lat": 21.879,
+   "lon": 95.98,
+   "region": "Sagaing",
+   "variants": [
+    "Sagaing"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "myinmu",
+   "name_en": "Myinmu",
+   "name_my": "မြင်းမူ",
+   "river": "Ayeyarwady",
+   "lat": 21.924,
+   "lon": 95.577,
+   "region": "Sagaing",
+   "variants": [
+    "Myinmu"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "pakokku",
+   "name_en": "Pakokku",
+   "name_my": "ပခုက္ကူ",
+   "river": "Ayeyarwady",
+   "lat": 21.335,
+   "lon": 95.084,
+   "region": "Magway",
+   "variants": [
+    "Pakokku"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "nyaung_u",
+   "name_en": "Nyaung-U",
+   "name_my": "ညောင်ဦး",
+   "river": "Ayeyarwady",
+   "lat": 21.201,
+   "lon": 94.908,
+   "region": "Mandalay",
+   "variants": [
+    "Nyaung-U",
+    "Nyaung U",
+    "Nyaung Oo",
+    "NyaungOo"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "chauk",
+   "name_en": "Chauk",
+   "name_my": "ချောက်",
+   "river": "Ayeyarwady",
+   "lat": 20.899,
+   "lon": 94.818,
+   "region": "Magway",
+   "variants": [
+    "Chauk"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "magway",
+   "name_en": "Magway",
+   "name_my": "မကွေး",
+   "river": "Ayeyarwady",
+   "lat": 20.15,
+   "lon": 94.932,
+   "region": "Magway",
+   "variants": [
+    "Magway",
+    "Magwe"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "minbu",
+   "name_en": "Minbu",
+   "name_my": "မင်းဘူး",
+   "river": "Ayeyarwady",
+   "lat": 20.181,
+   "lon": 94.876,
+   "region": "Magway",
+   "variants": [
+    "Minbu"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "aunglan",
+   "name_en": "Aunglan",
+   "name_my": "အောင်လံ",
+   "river": "Ayeyarwady",
+   "lat": 19.368,
+   "lon": 95.215,
+   "region": "Magway",
+   "variants": [
+    "Aunglan",
+    "Myede"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0) (listed as Myaydo)"
+  },
+  {
+   "id": "pyay",
+   "name_en": "Pyay",
+   "name_my": "ပြည်",
+   "river": "Ayeyarwady",
+   "lat": 18.82,
+   "lon": 95.216,
+   "region": "Bago",
+   "variants": [
+    "Pyay",
+    "Prome"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "seiktha",
+   "name_en": "Seiktha",
+   "name_my": null,
+   "river": "Ayeyarwady",
+   "lat": null,
+   "lon": null,
+   "region": null,
+   "variants": [
+    "Seiktha",
+    "Seitha"
+   ],
+   "location_source": "not located: DMH gauge on the Ayeyarwady between Pyay and Hinthada; the site could not be confirmed"
+  },
+  {
+   "id": "hinthada",
+   "name_en": "Hinthada",
+   "name_my": "ဟင်္သာတ",
+   "river": "Ayeyarwady",
+   "lat": 17.649,
+   "lon": 95.457,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Hinthada"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "zalun",
+   "name_en": "Zalun",
+   "name_my": "ဇလွန်",
+   "river": "Ayeyarwady",
+   "lat": 17.479,
+   "lon": 95.559,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Zalun"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "hkamti",
+   "name_en": "Hkamti",
+   "name_my": "ခန္တီး",
+   "river": "Chindwin",
+   "lat": 26.002,
+   "lon": 95.692,
+   "region": "Sagaing",
+   "variants": [
+    "Hkamti",
+    "Khamti",
+    "H kamti"
+   ],
+   "location_source": "Wikipedia (Hkamti, Myanmar)"
+  },
+  {
+   "id": "homalin",
+   "name_en": "Homalin",
+   "name_my": "ဟုမ္မလင်း",
+   "river": "Chindwin",
+   "lat": 24.867,
+   "lon": 94.909,
+   "region": "Sagaing",
+   "variants": [
+    "Homalin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "paungbyin",
+   "name_en": "Paungbyin",
+   "name_my": "ဖောင်းပြင်",
+   "river": "Chindwin",
+   "lat": 24.27,
+   "lon": 94.814,
+   "region": "Sagaing",
+   "variants": [
+    "Phaungpyin",
+    "Phaung Pyin",
+    "PhaungPyin",
+    "Paungbyin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "mawlaik",
+   "name_en": "Mawlaik",
+   "name_my": "မော်လိုက်",
+   "river": "Chindwin",
+   "lat": 23.643,
+   "lon": 94.405,
+   "region": "Sagaing",
+   "variants": [
+    "Mawlaik"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "kalewa",
+   "name_en": "Kalewa",
+   "name_my": "ကလေးဝ",
+   "river": "Chindwin",
+   "lat": 23.198,
+   "lon": 94.302,
+   "region": "Sagaing",
+   "variants": [
+    "Kalewa",
+    "Kalawa"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "mingin",
+   "name_en": "Mingin",
+   "name_my": "မင်းကင်း",
+   "river": "Chindwin",
+   "lat": 22.878,
+   "lon": 94.495,
+   "region": "Sagaing",
+   "variants": [
+    "Mingin",
+    "Minkin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "kani",
+   "name_en": "Kani",
+   "name_my": "ကနီ",
+   "river": "Chindwin",
+   "lat": 22.441,
+   "lon": 94.848,
+   "region": "Sagaing",
+   "variants": [
+    "Kani"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "monywa",
+   "name_en": "Monywa",
+   "name_my": "မုံရွာ",
+   "river": "Chindwin",
+   "lat": 22.109,
+   "lon": 95.136,
+   "region": "Sagaing",
+   "variants": [
+    "Monywa",
+    "Monwya"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "kalay",
+   "name_en": "Kalay",
+   "name_my": "ကလေး",
+   "river": "Myittha",
+   "lat": 23.19,
+   "lon": 94.064,
+   "region": "Sagaing",
+   "variants": [
+    "Kalay",
+    "Kale",
+    "Kalemyo",
+    "Kalaymyo"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0) (listed as Kalemyo)"
+  },
+  {
+   "id": "myitnge",
+   "name_en": "Myitnge",
+   "name_my": "မြစ်ငယ်",
+   "river": "Dokehtawady",
+   "lat": 21.858,
+   "lon": 96.066,
+   "region": "Mandalay",
+   "variants": [
+    "Myitnge"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "shwesaryan",
+   "name_en": "Shwesaryan",
+   "name_my": "ရွှေစာရံ",
+   "river": "Dokehtawady",
+   "lat": 21.84,
+   "lon": 96.214,
+   "region": "Mandalay",
+   "variants": [
+    "Shwesaryan",
+    "Shwe Sar Yan"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0) (Shwe Sar Yan); river not stated by DMH"
+  },
+  {
+   "id": "mogaung",
+   "name_en": "Mogaung",
+   "name_my": "မိုးကောင်း",
+   "river": "Nankaung (Mogaung) Stream",
+   "lat": 25.305,
+   "lon": 96.935,
+   "region": "Kachin",
+   "variants": [
+    "Moekaung",
+    "Mogaung",
+    "Moe kaung"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "mohnyin",
+   "name_en": "Mohnyin",
+   "name_my": "မိုးညှင်း",
+   "river": "Nanyin Stream",
+   "lat": 24.778,
+   "lon": 96.369,
+   "region": "Kachin",
+   "variants": [
+    "Moenyin",
+    "Mohnyin",
+    "Moeyin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "taungoo",
+   "name_en": "Taungoo",
+   "name_my": "တောင်ငူ",
+   "river": "Sittaung",
+   "lat": 18.943,
+   "lon": 96.434,
+   "region": "Bago",
+   "variants": [
+    "Taungoo",
+    "Toungoo"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "madauk",
+   "name_en": "Madauk",
+   "name_my": "မဒေါက်",
+   "river": "Sittaung",
+   "lat": 17.914,
+   "lon": 96.846,
+   "region": "Bago",
+   "variants": [
+    "Madauk"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "shwegyin",
+   "name_en": "Shwegyin",
+   "name_my": "ရွှေကျင်",
+   "river": "Shwegyin",
+   "lat": 17.921,
+   "lon": 96.877,
+   "region": "Bago",
+   "variants": [
+    "Shwegyin",
+    "Shwegin",
+    "Shwehyin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "bago",
+   "name_en": "Bago",
+   "name_my": "ပဲခူး",
+   "river": "Bago",
+   "lat": 17.335,
+   "lon": 96.481,
+   "region": "Bago",
+   "variants": [
+    "Bago"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "bilin",
+   "name_en": "Bilin",
+   "name_my": "ဘီးလင်း",
+   "river": "Bilin",
+   "lat": 17.226,
+   "lon": 97.239,
+   "region": "Mon",
+   "variants": [
+    "Bilin",
+    "Billin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "hpa_an",
+   "name_en": "Hpa-an",
+   "name_my": "ဘားအံ",
+   "river": "Thanlwin",
+   "lat": 16.89,
+   "lon": 97.635,
+   "region": "Kayin",
+   "variants": [
+    "Hpa-an",
+    "Hpaan",
+    "Hpa-An",
+    "H paan"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "hpasawng",
+   "name_en": "Hpasawng",
+   "name_my": "ဖားဆောင်း",
+   "river": "Thanlwin",
+   "lat": 18.833,
+   "lon": 97.267,
+   "region": "Kayah",
+   "variants": [
+    "Hpasawng"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "myawaddy",
+   "name_en": "Myawaddy",
+   "name_my": "မြဝတီ",
+   "river": "Thaungyin",
+   "lat": 16.689,
+   "lon": 98.509,
+   "region": "Kayin",
+   "variants": [
+    "Myawaddy",
+    "Myawady"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "maubin",
+   "name_en": "Maubin",
+   "name_my": "မအူပင်",
+   "river": "Toe",
+   "lat": 16.731,
+   "lon": 95.654,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Maubin"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "ngathaingchaung",
+   "name_en": "Ngathaingchaung",
+   "name_my": "ငသိုင်းချောင်း",
+   "river": "Ngawun",
+   "lat": 17.393,
+   "lon": 95.071,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Ngathaingchaung",
+    "Ngathiangchaung",
+    "Ngathaing Chaung",
+    "Ngathaing-Chaung",
+    "Ngathainggyaung",
+    "NTG"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0) (listed as Ngathainggyaung)"
+  },
+  {
+   "id": "thabaung",
+   "name_en": "Thabaung",
+   "name_my": "သာပေါင်း",
+   "river": "Ngawun",
+   "lat": 17.04,
+   "lon": 94.805,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Thabaung",
+    "Thaboung"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "pathein",
+   "name_en": "Pathein",
+   "name_my": "ပုသိမ်",
+   "river": "Ngawun",
+   "lat": 16.779,
+   "lon": 94.732,
+   "region": "Ayeyarwady",
+   "variants": [
+    "Pathein"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "kyauktaw",
+   "name_en": "Kyauktaw",
+   "name_my": "ကျောက်တော်",
+   "river": "Kaladan",
+   "lat": 20.845,
+   "lon": 92.975,
+   "region": "Rakhine",
+   "variants": [
+    "Kyauktaw"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "paletwa",
+   "name_en": "Paletwa",
+   "name_my": "ပလက်ဝ",
+   "river": "Kaladan",
+   "lat": 21.304,
+   "lon": 92.856,
+   "region": "Chin",
+   "variants": [
+    "Paletwa"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "mrauk_u",
+   "name_en": "Mrauk-U",
+   "name_my": "မြောက်ဦး",
+   "river": "Lemro",
+   "lat": 20.59,
+   "lon": 93.191,
+   "region": "Rakhine",
+   "variants": [
+    "Mrauk-U",
+    "Mrauk U",
+    "Myauk U",
+    "Myauk-U"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "thandwe",
+   "name_en": "Thandwe",
+   "name_my": "သံတွဲ",
+   "river": "Thandwe",
+   "lat": 18.465,
+   "lon": 94.366,
+   "region": "Rakhine",
+   "variants": [
+    "Thandwe"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0)"
+  },
+  {
+   "id": "tachileik",
+   "name_en": "Tachileik",
+   "name_my": "တာချီလိတ်",
+   "river": "Mae Sai Stream",
+   "lat": 20.484,
+   "lon": 99.935,
+   "region": "Shan",
+   "variants": [
+    "Tachileik",
+    "Lwal Taw Hkam",
+    "Lwaltawhkam",
+    "LwalTawHkam",
+    "Lwaltawkham",
+    "Lawl Taw Kham",
+    "LTK"
+   ],
+   "location_source": "GeoNames (via Open-Meteo geocoding API, CC BY 4.0) (Tachileik airport, ~7 km from the gauge)"
+  }
+ ]
+}
