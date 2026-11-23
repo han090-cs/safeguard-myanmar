@@ -31,44 +31,78 @@
 <link href="apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>မှီခိုရာ — SafeGuard Myanmar Weather &amp; Disaster Intelligence</title>
 <script src="theme_init.js"></script>
+<script src="error_report.js"></script>
+<link rel="preload" href="fonts/noto-myanmar-400.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+<link rel="preload" href="fonts/noto-myanmar-700.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+<link rel="preload" href="i18n/my.json" as="fetch" crossorigin="anonymous"/>
+<link rel="preload" href="i18n/en.json" as="fetch" crossorigin="anonymous"/>
+<link rel="preload" href="i18n/scales.json" as="fetch" crossorigin="anonymous"/>
+<link rel="preload" href="i18n/weather_codes.json" as="fetch" crossorigin="anonymous"/>
+<link rel="modulepreload" href="i18n.js"/>
+<link rel="modulepreload" href="core.js"/>
+<link rel="modulepreload" href="views.js"/>
+<link rel="modulepreload" href="net.js"/>
+<link rel="modulepreload" href="interaction.js"/>
+<link rel="modulepreload" href="weather_script.js"/>
 <link href="styles.css" rel="stylesheet"/>
 <link href="ux.css" rel="stylesheet"/>
+<link href="pro.css" rel="stylesheet"/>
 </head>
 <body class="weather-clear">
 <a class="skip-link" href="#searchForm">Skip to weather</a>
 <main class="app-shell">
 <header class="topbar">
-<a aria-label="SafeGuard Myanmar home" class="brand" href="./">
+<a aria-label="မှီခိုရာ SafeGuard Myanmar" class="brand" href="./">
 <img alt="မှီခိုရာ" class="brand-logo" height="46" src="icon-192.png" width="46"/>
 <span class="brand-text">
 <strong class="brand-title-my"><span class="my-green">မှီခို</span><span class="my-gold">ရာ</span></strong>
 <small class="brand-title-en"><span class="en-green">SafeGuard</span> <span class="en-gold">Myanmar</span></small>
 </span>
 </a>
+<form class="top-search" id="topSearch" role="search" novalidate="" hidden>
+<input aria-label="Search another place" autocomplete="off" id="topSearchInput" inputmode="search" list="locationSuggestions" placeholder="🔍 မြို့ / Search place" spellcheck="false"/>
+</form>
 <div class="top-actions">
-<div aria-label="စာလုံးအရွယ်အစား" class="font-controls" role="group">
-<button aria-label="စာလုံးသေးရန်" class="top-btn font-btn" id="fontDown" type="button">A−</button>
-<button aria-label="စာလုံးပုံမှန်အရွယ်" class="top-btn font-btn font-size-label" id="fontReset" type="button">100%</button>
-<button aria-label="စာလုံးကြီးရန်" class="top-btn font-btn" id="fontUp" type="button">A+</button>
-</div>
 <button aria-label="Dark mode" class="top-btn" id="themeToggle" type="button">🌙</button>
-<button aria-label="Temperature unit °C / °F" class="top-btn" id="unitToggle" type="button">°C</button>
 <button aria-label="Language / ဘာသာစကား" class="top-btn" id="languageToggle" type="button">EN</button>
+<button aria-controls="topMore" aria-expanded="false" aria-label="Settings" class="top-btn top-more-btn" id="topMoreBtn" type="button">⚙️</button>
+</div>
+<div class="top-more" id="topMore">
+<div aria-label="စာလုံးအရွယ်အစား" class="font-controls" role="group">
+<button aria-label="A− စာလုံးသေးရန်" class="top-btn font-btn" id="fontDown" type="button">A−</button>
+<button aria-label="စာလုံးပုံမှန်အရွယ်" class="top-btn font-btn font-size-label" id="fontReset" type="button">100%</button>
+<button aria-label="A+ စာလုံးကြီးရန်" class="top-btn font-btn" id="fontUp" type="button">A+</button>
+</div>
+<button aria-label="Temperature unit °C / °F" class="top-btn" id="unitToggle" type="button">°C</button>
 <button aria-label="Notifications" aria-pressed="false" class="top-btn" id="notificationToggle" type="button">🔔</button>
 <button aria-label="About" class="top-btn" id="aboutBtn" type="button">ℹ️</button>
 </div>
 </header>
 
+<p class="global-note" id="globalNote" role="note" data-i18n="global_note">ဒီနေရာက မြန်မာပြင်ပမို့ ရာသီဥတု၊ ခန့်မှန်းချက်၊ Compare၊ မုန်တိုင်း/ငလျင် အချက်အလက်ပဲ ပြပါတယ်။ ဒေသတွင်း တရားဝင်သတိပေးချက်ကို အဲဒီနိုင်ငံရဲ့ မိုးလေဝသအဖွဲ့က ကြည့်ပါ။</p>
 <div aria-label="Mode" class="mode-switch" role="tablist">
 <button aria-selected="true" class="mode-btn" data-mode="weather" id="modeWeather" role="tab" type="button"><span aria-hidden="true">🌤️</span><b data-i18n="ui_weather">မိုးလေဝသ</b></button>
 <button aria-selected="false" class="mode-btn" data-mode="farm" id="modeFarm" role="tab" type="button"><span aria-hidden="true">🌾</span><b data-i18n="ui_farming">စိုက်ပျိုးရေး</b></button>
 </div>
 
+<div class="sheet-backdrop" id="sheetBackdrop" hidden=""></div>
+<div class="sheet-backdrop" id="langBackdrop" hidden=""></div>
+<div class="lang-sheet" id="langSheet" role="dialog" aria-modal="true" aria-labelledby="langSheetTitle" hidden="">
+<div class="sheet-grip"></div>
+<h3 id="langSheetTitle">Language · ဘာသာစကား · 言語</h3>
+<button type="button" role="radio" aria-checked="false" data-lang="my"><strong>မြန်မာ</strong><small>Burmese</small></button>
+<button type="button" role="radio" aria-checked="false" data-lang="en"><strong>English</strong><small>English</small></button>
+<button type="button" role="radio" aria-checked="false" data-lang="ja"><strong>日本語</strong><small>Japanese</small></button>
+<button type="button" role="radio" aria-checked="false" data-lang="easy"><strong>やさしい日本語</strong><small>Easy Japanese · ひらがな</small></button>
+</div>
+<div class="ptr" id="ptr" aria-hidden="true"><span id="ptrText" data-i18n="ptr_pull">အောက်ဆွဲပြီး ပြန်လည်ရယူပါ</span></div>
+<div class="notify-tip" id="notifyTip" hidden="" role="region" aria-label="Notifications"><span data-i18n="notify_tip">🔔 မိုးသက်ရောက်မှု သတိပေးချက်တွေ ဖုန်းမှာ ပေါ်စေချင်လား? (အက်ပ်ဖွင့်ထားချိန်မှာသာ စစ်ပါတယ်)</span><button class="ghost-btn" id="notifyYes" type="button" data-i18n="notify_yes">ဖွင့်မယ်</button><button class="ghost-btn" id="notifyLater" type="button" data-i18n="notify_later">နောက်မှ</button></div>
 <div id="weatherView" class="ux-weather-view">
-<section class="search-hero">
+<section class="search-hero" id="placeSheet">
+<div class="sheet-grip" aria-hidden="true"></div><button class="sheet-close" id="sheetClose" type="button" data-i18n="sheet_close">ပိတ်မယ်</button>
 <div class="hero-copy">
-<h1 data-i18n="headline">ဒီနေ့ ရာသီဥတု</h1>
-<p data-i18n="subheadline">မြို့ / မြို့နယ် ရှာပါ</p>
+<h1 data-i18n="headline">မှီခိုရာ — မိုးလေဝသ၊ စိုက်ပျိုးရေးနဲ့ ဘေးအန္တရာယ် ကာကွယ်ရေး</h1>
+<p data-i18n="subheadline">မြန်မာနိုင်ငံအဝှမ်း မြို့နယ်နဲ့ ကျေးရွာပေါင်း ၅၆,၀၀၀ ကျော်၏ မိုးလေဝသ၊ စိုက်ပျိုးရေး အကြံပြုချက်နဲ့ တရားဝင်သတိပေးချက်များကို တစ်နေရာတည်းတွင် ကြည့်ရှုပါ။</p>
 </div>
 <form class="search-form" id="searchForm" novalidate="">
 <label class="search-box"><span>⌕</span><input aria-label="Location search" autocomplete="off" id="locationInput" aria-describedby="status" inputmode="search" list="locationSuggestions" placeholder="မြို့ / မြို့နယ် ရှာရန်" spellcheck="false"/></label>
@@ -76,12 +110,12 @@
 </form>
 <datalist id="locationSuggestions"></datalist>
 <div id="searchResults" class="chips" role="group" hidden></div>
-<details class="picker-more"><summary data-i18n="ui_choose_region">ဒေသအလိုက် ရွေးရန်</summary><div aria-label="Quick location picker" class="location-picker">
+<details class="picker-more"><summary data-i18n="ui_choose_region">🗺️ တိုင်းဒေသကြီး / ပြည်နယ်အလိုက် ရွေးချယ်ရန်</summary><div aria-label="Quick location picker" class="location-picker">
 <select class="location-select" id="regionSelect"><option value="">တိုင်းဒေသကြီး / ပြည်နယ် ရွေးရန်</option></select>
 <select class="location-select" disabled="" id="townSelect"><option value="">မြို့ ရွေးရန်</option></select>
 </div></details>
 <div class="quick-actions">
-<button class="ghost-btn" data-i18n="useLocation" id="currentLocation" type="button">⌖ လက်ရှိနေရာ</button>
+<button class="ghost-btn" data-i18n="useLocation" id="currentLocation" type="button">📍 လက်ရှိနေရာ</button>
 <div class="chips" id="recentLocations"></div>
 </div>
 </section>
@@ -97,29 +131,32 @@
 <h2 id="locationName">—</h2>
 <p class="muted" id="locationMeta">—</p>
 </div>
-<div class="loc-actions"><div class="clock-pill" id="placeClockPill"><span class="live-dot"></span><time id="placeClock">—</time> <span id="placeTzName">Yangon Time Zone</span></div><div class="update-pill"><span class="live-dot"></span><time id="updatedAt">—</time></div><button class="ghost-btn change-btn" data-act="pick" data-i18n="ui_change" type="button">📍 ပြောင်းရန်</button></div>
+<div class="loc-actions"><div class="clock-pill" id="placeClockPill"><span class="live-dot"></span><time id="placeClock">—</time> <span id="placeTzName">Yangon Time Zone</span></div><div class="update-pill"><span class="live-dot"></span><time id="updatedAt">—</time></div><button class="ghost-btn change-btn" data-act="pick" data-i18n="ui_change" type="button">📍 ပြောင်းရန်</button><button class="ghost-btn share-btn" id="shareFab" type="button">↗ <span data-i18n="fab_share">မျှဝေ</span></button></div>
 </section>
 
 <section class="decision-grid">
 <article class="today-brief glass">
-<div class="card-kicker">🧭 <span data-i18n="riskTitle">ဒီနေ့ သိထားသင့်တာတွေ</span></div>
+<div class="card-kicker">🧭 <span data-i18n="riskTitle">ယနေ့ အဓိက သတိထားရမည့် အချက်များ</span></div>
 <div class="brief-main"><div class="risk-score low" id="riskScore">—</div><p id="riskNarrative">—</p></div>
 <div aria-live="polite" class="official-pulse" id="officialPulse"></div><div aria-live="polite" class="brief-list" id="wmtList"></div>
 </article>
 <details class="health-card glass fold-health" id="healthTips">
-<summary class="card-kicker">🛡️ <span data-i18n="ui_health_safety">ကျန်းမာရေးနဲ့ ဘေးကင်းရေး</span><span class="auto-badge">AUTO</span></summary>
+<summary class="card-kicker">🛡️ <span data-i18n="ui_health_safety">ကျန်းမာရေးနဲ့ ဘေးကင်းရေး လမ်းညွှန်</span><span class="auto-badge">AUTO</span></summary>
 <p class="muted" data-i18n="ui_tips_update_automatically_current_conditions" id="healthTipsIntro">လက်ရှိအခြေအနေအလိုက် လုပ်သင့်တာတွေကို အလိုအလျောက် ပြပေးပါမယ်။</p>
 <div aria-live="polite" class="health-tips" id="healthTipsList"></div>
 </details>
 </section>
 
 <section class="current-card glass">
+<div aria-hidden="true" class="sky-fx"><i></i><i></i><i></i><i></i></div>
 <div class="current-main">
 <div aria-hidden="true" class="weather-icon" id="weatherIcon">🌤️</div>
-<div><div class="hero-temp"><span id="temperature">—</span><sup class="temp-unit">°C</sup></div><p class="condition" id="condition">—</p><p class="muted"><span data-i18n="feelsLike">Feels like</span> <strong id="feelsLike">—</strong> <span id="feelsLevel"></span></p></div>
+<div><div class="hero-temp"><span id="temperature">—</span><sup class="temp-unit">°C</sup></div><p class="condition" id="condition">—</p><p class="muted"><span data-i18n="feelsLike">ခံစားရတဲ့ အပူချိန်</span> <strong id="feelsLike">—</strong> <span id="feelsLevel"></span></p></div>
 </div>
 <div class="current-status"><span class="badge normal" hidden="" id="severityBadge"></span><div class="source-mini" id="sourceMini">Live</div></div>
 </section>
+
+<section class="card glass hourly-card"><div class="section-heading"><div><h3 data-i18n="hourly">နောက် ၂၄ နာရီ</h3><p class="muted" data-i18n="ui_sky_temperature_wind_rain_chance">မိုး • အပူချိန် • လေ • မိုးရွာနိုင်ခြေ</p></div><span class="source-tag" data-i18n="tag_live">တိုက်ရိုက် ခန့်မှန်းချက်</span></div><div class="hourly-strip" id="hourlyForecast" tabindex="0" role="region" aria-label="Hourly forecast"></div><div id="hourlyDetail"></div></section>
 
 <section class="metric-grid">
 <article class="metric metric-primary glass"><span>🌧️</span><div><p><span data-i18n="ui_rainfall">မိုးရေချိန်</span> <small data-i18n="ui_24h">၂၄ နာရီ</small></p><strong id="rainfall">—</strong><em id="rainfallSource">trailing 24h</em></div></article>
@@ -137,42 +174,52 @@
 <section aria-live="polite" class="scale-panel glass" hidden="" id="scalePanel"></section>
 
 <nav aria-label="Dashboard sections" class="tabbar" role="tablist">
-<button aria-selected="true" class="tab active" data-i18n="tabToday" data-tab="today" role="tab">ယနေ့</button>
-<button aria-selected="false" class="tab" data-i18n="tabForecast" data-tab="forecast" role="tab">၇ ရက်</button>
-<button aria-selected="false" class="tab" data-i18n="tabFlood" data-tab="flood" role="tab">🌊 ရေကြီး</button>
-<button aria-selected="false" class="tab" data-i18n="tabHospitals" data-tab="hospitals" role="tab">🏥 ဆေးရုံ</button>
-<button aria-selected="false" class="tab" data-i18n="tabHazards" data-tab="hazards" role="tab">⚠️ သတိပေး</button>
-<button aria-selected="false" class="tab" data-i18n="tabCompare" data-tab="compare" role="tab">📊 Compare</button>
+<button aria-selected="true" class="tab active" data-tab="today" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span data-i18n="tabToday">ယနေ့</span></button>
+<button aria-selected="false" class="tab" data-tab="forecast" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M4 5h16v16H4zM4 10h16M9 3v4M15 3v4"/></svg></span><span data-i18n="tabForecast">၇ ရက်</span></button>
+<button aria-selected="false" class="tab" data-tab="hazards" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M12 3l10 18H2zM12 10v5M12 18v.5"/></svg></span><span data-i18n="tabHazards">သတိပေး</span></button>
+<button aria-selected="false" class="tab t2" data-tab="flood" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.5 9 7 12 3z"/></svg></span><span data-i18n="tabFlood">ရေကြီး</span></button>
+<button aria-selected="false" class="tab t2" data-tab="hospitals" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M4 4h16v16H4zM12 8v8M8 12h8"/></svg></span><span data-i18n="tabHospitals">ဆေးရုံ</span></button>
+<button aria-selected="false" class="tab t2" data-tab="compare" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><span data-i18n="tabCompare">နှိုင်းယှဉ်</span></button>
+<button aria-selected="false" class="tab t2" data-tab="world" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></span><span data-i18n="tabWorld">ကမ္ဘာ</span></button>
+<button aria-selected="false" class="tab t2" data-tab="lab" role="tab"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span data-i18n="tabLab">Lab</span></button>
+<button aria-selected="false" class="navx tab-farm" data-go="farm" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14zM5 19c2-4 5-7 9-9"/></svg></span><span data-i18n="ui_farming">စိုက်ပျိုးရေး</span></button>
+<button aria-expanded="false" aria-haspopup="true" aria-selected="false" class="navx tab-more" data-go="more" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg></span><span data-i18n="ui_more">နောက်ထပ်</span></button>
 </nav>
 
 <div class="tab-panel" data-panel="today">
-<section class="card glass" id="todayBrief"></section>
-<section class="card glass hourly-card"><div class="section-heading"><div><h3 data-i18n="hourly">နောက် ၂၄ နာရီ</h3><p class="muted" data-i18n="ui_sky_temperature_wind_rain_chance">မိုး • အပူချိန် • လေ • မိုးရွာနိုင်ခြေ</p></div><span class="source-tag">Live forecast</span></div><div class="hourly-strip" id="hourlyForecast" tabindex="0" role="region" aria-label="Hourly forecast"></div><div id="hourlyDetail"></div></section>
-<section class="card glass" id="wxEnsoCard"><div id="wxEnso"></div></section>
+<section class="card glass fa-card" id="faCard" hidden></section>
 <section class="card glass" id="moonCard"></section>
+<section class="card glass" id="todayBrief"></section>
+<section class="card glass" id="wxEnsoCard"><div id="wxEnso"></div></section>
 </div>
 
-<div class="tab-panel" data-panel="compare" hidden="">
-<section class="card glass" id="compareCharts"></section>
+<div class="tab-panel" data-panel="compare" data-view="now" hidden="">
+<div class="cmp-views" data-i18n-aria="cmp_seg_aria" id="cmpSeg" role="tablist">
+<button aria-selected="true" data-cmp-view="now" data-i18n="cmp_seg_now" role="tab" tabindex="0" type="button">အခု</button>
+<button aria-selected="false" data-cmp-view="year" data-i18n="cmp_seg_year" role="tab" tabindex="-1" type="button">ဒီနှစ်</button>
+<button aria-selected="false" data-cmp-view="hist" data-i18n="cmp_seg_hist" role="tab" tabindex="-1" type="button">နှစ်ရှည်</button>
+</div>
+<section class="card glass" data-seg="now" id="compareCharts"></section>
 <div hidden="" id="conditions"></div>
-<section class="card glass" id="monthlyCompareCard"><div id="monthlyCompareBody"></div></section>
-<section class="card glass" id="rainLogCard"></section>
-<section class="card glass" id="historyCard"><div id="historyBody"></div></section>
+<section class="card glass" data-seg="now" id="rainLogCard"></section>
+<section class="card glass" data-seg="year" id="monthlyCompareCard"><div id="monthlyCompareBody"></div></section>
+<section class="card glass" data-seg="hist" id="historyCard"><div id="historyBody"></div></section>
 </div>
 
 <div class="tab-panel" data-panel="forecast" hidden="">
-<section class="card glass"><div class="section-heading"><div><h3 data-i18n="sevenDay">၇ ရက်စာ ခန့်မှန်းချက်</h3><p class="muted" data-i18n="ui_daily_temperature_rainfall_rain_chance">နေ့တိုင်း အပူချိန်၊ မိုးရေချိန်နဲ့ မိုးရွာနိုင်ခြေ</p></div><span class="source-tag">7-day</span></div><div id="forecast"></div></section>
-<div class="chart-grid"><section class="card glass chart-card"><div class="section-heading"><h3 data-i18n="tempTrend">အပူချိန်လမ်းကြောင်း</h3></div><div class="chart-surface" id="tempChart"></div></section><section class="card glass chart-card"><div class="section-heading"><h3 data-i18n="rainTrend">မိုးရွာနိုင်ခြေ</h3></div><div class="rain-bars" id="rainChart"></div></section></div>
+<section class="card glass"><div class="section-heading"><div><h3 data-i18n="sevenDay">၇ ရက်စာ ခန့်မှန်းချက်</h3><p class="muted" data-i18n="ui_daily_temperature_rainfall_rain_chance">နေ့တိုင်း အပူချိန်၊ မိုးရေချိန်နဲ့ မိုးရွာနိုင်ခြေ</p></div><span class="source-tag" data-i18n="tag_7day">၇ ရက်</span></div><div id="forecast"></div></section>
+<details class="fold-charts" id="foldCharts" open><summary class="ghost-btn">📈 <span data-i18n="tempTrend">အပူချိန်လမ်းကြောင်း</span> / <span data-i18n="rainTrend">မိုးရွာနိုင်ခြေ</span></summary><div class="chart-grid"><section class="card glass chart-card"><div class="section-heading"><h3 data-i18n="tempTrend">အပူချိန်လမ်းကြောင်း</h3></div><div class="chart-surface" id="tempChart"></div></section><section class="card glass chart-card"><div class="section-heading"><h3 data-i18n="rainTrend">မိုးရွာနိုင်ခြေ</h3></div><div class="rain-bars" id="rainChart"></div></section></div></details>
 </div>
 
 <div class="tab-panel" data-panel="flood" hidden="">
-<section class="card glass flood-card"><div class="section-heading"><div><h3 data-i18n="ui_flood_status" id="floodTitle">🌊 ရေကြီးမှုအခြေအနေ</h3></div><span class="source-tag">Flood intelligence</span></div><div class="flood-status" id="floodStatus"><div aria-hidden="true" class="flood-status-icon"><span>Flood</span></div><div><strong id="floodStatusTitle">စစ်နေပါတယ်…</strong><p class="muted" id="floodStatusText">—</p></div></div><div class="flood-actions"><a class="quiet-btn-link" href="https://sites.research.google/floods/" id="floodHubLink" rel="noopener noreferrer" target="_blank">Flood Hub map ↗</a><button class="ghost-btn" id="floodRefresh" type="button">↻ Refresh</button></div></section>
+<section class="card glass flood-card"><div class="section-heading"><div><h3 data-i18n="ui_flood_status" id="floodTitle">🌊 ရေကြီးမှုအခြေအနေ</h3></div><span class="source-tag" data-i18n="tag_flood">ရေကြီးအချက်အလက်</span></div><div class="flood-status" id="floodStatus"><div aria-hidden="true" class="flood-status-icon"><span>Flood</span></div><div><strong id="floodStatusTitle">စစ်နေပါတယ်…</strong><p class="muted" id="floodStatusText">—</p></div></div><div class="flood-actions"><a class="quiet-btn-link" href="https://sites.research.google/floods/" id="floodHubLink" rel="noopener noreferrer" target="_blank">Flood Hub map ↗</a><button class="ghost-btn" id="floodRefresh" type="button">↻ Refresh</button></div></section>
 <section class="card glass" id="riverCard"></section>
 <section class="card glass" id="seaCard"></section>
 </div>
 
 <div class="tab-panel" data-panel="hazards" hidden="">
 <section class="card glass"><div class="section-heading"><div><h3 data-i18n="hazards">အန္တရာယ်အခြေအနေ</h3></div></div><div id="hazards"></div></section>
+<section class="card glass" id="watchCard" hidden></section>
 <section class="card glass" id="feedCard"></section>
 <section class="card glass" id="heatCard"></section>
 <section class="card glass" id="cycloneCard"></section>
@@ -181,9 +228,17 @@
 <section class="card glass emergency-card" id="emergencyCard"></section>
 </div>
 
+<div class="tab-panel" data-panel="world" hidden="">
+<section class="card glass" id="worldCard"></section>
+</div>
+
+<div class="tab-panel" data-panel="lab" hidden="">
+<section class="card glass lf-card" id="leafCard"></section>
+</div>
+
 <div class="tab-panel" data-panel="hospitals" hidden="">
 <section class="card glass">
-<div class="section-heading"><div><h3 data-i18n="hospitalTitle">အနီးဆုံးဆေးရုံ</h3><p class="muted" data-i18n="hospitalHint">ရွေးထားတဲ့နေရာအနီးက ဆေးရုံတွေ</p></div><button class="ghost-btn" id="hospitalRefresh" data-i18n-aria="ux_refresh_hospitals" aria-label="Refresh nearby hospitals" type="button">↻</button></div>
+<div class="section-heading"><div><h3 data-i18n="hospitalTitle">အနီးဆုံးဆေးရုံ</h3><p class="muted" data-i18n="hospitalHint">ရွေးထားတဲ့နေရာအနီးမှာရှိတဲ့ ဆေးရုံတွေ</p></div><button class="ghost-btn" id="hospitalRefresh" data-i18n-aria="ux_refresh_hospitals" aria-label="Refresh nearby hospitals" type="button">↻</button></div>
 <div class="hospital-list" id="hospitalList"><div class="empty-state">—</div></div>
 <p class="tiny hospital-source" hidden="" id="hospitalSource"></p>
 </section>
@@ -193,10 +248,11 @@
 </div>
 <section aria-label="Farming" id="farmView">
 <nav aria-label="Farming" class="tabbar farm-tabbar-top" id="farmTabbar" role="tablist">
-<button aria-selected="true" class="ftab" data-ftab="now" data-i18n="ui_now" role="tab" type="button">🌱 အခု</button>
-<button aria-selected="false" class="ftab" data-ftab="crops" data-i18n="ui_crops" role="tab" type="button">🌾 သီးနှံ</button>
-<button aria-selected="false" class="ftab" data-ftab="season" data-i18n="ui_season" role="tab" type="button">🌦️ ရာသီ</button>
-<button aria-selected="false" class="ftab" data-ftab="soil" data-i18n="ui_soil" role="tab" type="button">🧪 မြေ</button>
+<button aria-selected="false" class="fnavx" data-go="weather" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17.5 18z"/></svg></span><span data-i18n="ui_weather">မိုးလေဝသ</span></button>
+<button aria-selected="true" class="ftab" data-ftab="now" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M12 21v-8M12 13c0-4-3-6-7-6 0 4 3 6 7 6zM12 13c0-3 2-5 6-5 0 3-2 5-6 5z"/></svg></span><span data-i18n="ui_now">ဒီလ လုပ်ငန်း</span></button>
+<button aria-selected="false" class="ftab" data-ftab="crops" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M12 3v18M12 8c-3 0-4-2-4-4 3 0 4 2 4 4zM12 8c3 0 4-2 4-4-3 0-4 2-4 4zM12 14c-3 0-4-2-4-4 3 0 4 2 4 4zM12 14c3 0 4-2 4-4-3 0-4 2-4 4z"/></svg></span><span data-i18n="ui_crops">သီးနှံများ</span></button>
+<button aria-selected="false" class="ftab" data-ftab="season" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M7 15a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 5.5 4.5 4.5 0 0 1 17.5 15zM8 19l-1 2M12 19l-1 2M16 19l-1 2"/></svg></span><span data-i18n="ui_season">ရာသီဥတု</span></button>
+<button aria-selected="false" class="ftab" data-ftab="soil" role="tab" type="button"><span aria-hidden="true" class="ti"><svg aria-hidden="true" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></span><span data-i18n="ui_soil">မြေဆီလွှာ</span></button>
 </nav>
 <div class="card glass farm-head" id="farmHead"></div>
 <div class="farm-panel" data-fpanel="now">
@@ -208,6 +264,7 @@
 <div class="farm-panel" data-fpanel="crops" hidden="">
 <section class="card glass" id="agriCrops"></section>
 <section class="card glass" id="agriCropMatrix"></section>
+<section class="card glass" id="pestCard"></section>
 </div>
 <div class="farm-panel" data-fpanel="season" hidden="">
 <section class="card glass" id="agriBeh"></section>
@@ -220,16 +277,19 @@
 </div>
 </section>
 
-<footer>Myanmar Weather · <button class="about-link" id="aboutLink" type="button">About</button> · <button class="about-link" id="sosLink" type="button">🆘 SOS</button></footer>
+<div class="install-tip" id="installTip" hidden="" role="region" aria-label="Install"><span id="installText"></span><button class="ghost-btn" id="installBtn" type="button" hidden=""></button><button class="ghost-btn" id="installClose" type="button"></button></div>
+<footer>Myanmar Weather · <button class="about-link" id="aboutLink" type="button">About</button> · <a class="about-link" href="legal.html" data-i18n="ui_legal_link">အရင်းအမြစ်နဲ့ မူဝါဒ</a> · <button class="about-link" id="sosLink" type="button">🆘 SOS</button></footer>
 </main>
 <script defer="" src="agri.js" type="module"></script>
 <script defer="" src="feeds.js" type="module"></script>
+<script defer="" src="world.js" type="module"></script>
 <script defer="" src="history.js" type="module"></script>
 <script defer="" src="monthly_compare.js" type="module"></script>
 <script defer="" src="compare.js" type="module"></script>
 <script defer="" src="help.js" type="module"></script>
 <script defer="" src="brief.js" type="module"></script>
 <script defer="" src="rainlog.js" type="module"></script>
+<script defer="" src="leaf.js" type="module"></script>
 <script defer="" src="about.js" type="module"></script>
 <script defer="" src="app_boot.js" type="module"></script>
 <script defer="" src="risk_panel.js" type="module"></script>

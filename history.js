@@ -1,6 +1,6 @@
 import { fetchJSON, preserveView } from "./interaction.js";
 import { L } from "./i18n.js";
-import { mountHistoryView } from "./views.js";
+import { mountHistoryView } from "./lazy_views.js";
 /* Climate history cards (Today tab + Farming tab): /api/history, modelled 1985-present data for the nearest state/region.
    Every chart has labelled axes/values and a one-line plain-language caption. Informational only, never an official warning. */
 (function(){
@@ -8,7 +8,7 @@ import { mountHistoryView } from "./views.js";
   const isMy=()=>(window.__mwLang?window.__mwLang():"my")==="my";
   let LOC=null, DATA=null, FAIL=false, ENSO=null, refocus=false;
   let REGION="";
-  // Drawn by React (frontend/src/history_view.jsx -> views.js); this file keeps the data, the events and the language hook.
+  // Drawn by Preact (frontend/src/history_view.jsx -> views.js); this file keeps the data, the events and the language hook.
   let VIEW=null;
   const render=()=>{
     if(!document.getElementById("historyBody")&&!document.getElementById("agriHistory")) return;

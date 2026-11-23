@@ -32,9 +32,17 @@ GEOCODE_CACHE_TTL = int(os.getenv("GEOCODE_CACHE_TTL", "2592000"))
 WEATHER_STALE_TTL = int(os.getenv("WEATHER_STALE_TTL", "21600"))
 MAX_CACHE_ITEMS = 300
 REQUEST_TIMEOUT = float(os.getenv("WEATHER_HTTP_TIMEOUT", "12"))
-RATE_LIMIT_MAX = int(os.getenv("RATE_LIMIT_MAX", "120"))
+RATE_LIMIT_MAX = int(os.getenv("RATE_LIMIT_MAX", "600"))
 RATE_LIMIT_WINDOW = float(os.getenv("RATE_LIMIT_WINDOW", "60"))
 RATE_LIMIT_MAX_CLIENTS = 5000
+# Endpoints that fan out to upstream services get their own, tighter budget per client.
+EXPENSIVE_PREFIXES = ("/api/weather", "/api/climate", "/api/history", "/api/forecast-alerts", "/api/geocode",
+                      "/api/local-extras", "/api/hazard-feed", "/api/recent-rain", "/api/flood", "/api/v1/")
+EXPENSIVE_MAX = int(os.getenv("RATE_LIMIT_EXPENSIVE_MAX", "240"))
+# Number of trusted reverse proxies in front of the app: the client IP is the Nth entry from the RIGHT of X-Forwarded-For
+# (entries to the left are written by the client and can be forged).
+PROXY_HOPS = int(os.getenv("TRUSTED_PROXY_HOPS", "0") or 0)   # 0 = not set
+MAX_QUERY_LEN = 2048
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 AIR_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 OPENWEATHER_URL = "https://api.openweathermap.org/data/3.0/onecall"
@@ -80,9 +88,12 @@ def _trust_proxy(request) -> bool:
 
 def _client_ip(request) -> str:
     if _trust_proxy(request):
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
+        parts = [p.strip() for p in (request.headers.get("x-forwarded-for") or "").split(",") if p.strip()]
+        if parts:
+            hops = PROXY_HOPS if PROXY_HOPS > 0 else (1 if _peer_is_loopback(request) else 0)
+            if hops <= 0:           # TRUST_PROXY_HEADERS=true without a hop count: legacy behaviour (leftmost, forgeable)
+                return parts[0]
+            return parts[-hops] if len(parts) >= hops else parts[0]
     return request.client.host if request.client else "unknown"
 
 

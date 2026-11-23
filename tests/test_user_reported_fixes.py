@@ -26,7 +26,7 @@ def test_change_place_button_opens_the_search_again():
 def test_forecast_is_seven_days_everywhere():
     from app.providers import uv_params, weather_params
     assert weather_params(16.8, 96.1)["forecast_days"] == 7 and uv_params(16.8, 96.1)["forecast_days"] == 7
-    assert "၇ ရက်</button>" in HTML and 'class="source-tag">7-day<' in HTML
+    assert 'data-i18n="tabForecast">၇ ရက်</span>' in HTML and 'data-i18n="tag_7day">၇ ရက်<' in HTML
     for lang, word in (("my", "၇"), ("en", "7")):
         assert word in I[lang]["sevenDay"] and word in I[lang]["tabForecast"]
     blob = json.dumps(I["my"], ensure_ascii=False) + json.dumps(I["en"]) + "".join(JS[f] for f in ("help.js", "about.js"))

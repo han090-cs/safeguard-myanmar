@@ -16,6 +16,7 @@ export function weather(lat){
 }
 export function climate(lat){const v=lat>20?31:36;return {generated_at:stamp(),conditions:[{kind:'temperature_max',title:{en:'Daytime high',my:'နေ့အပူချိန်'},headline:{en:`Place comparison ${v} °C`,my:`${v} °C`},level:'above_normal',level_label:{en:'Warmer than usual',my:'ပုံမှန်ထက်ပူ'},metrics:[{key:'forecast_tmax',value:v},{key:'normal_p10',value:24},{key:'normal_p90',value:32},{key:'normal_mean',value:28}],limitations:[],sources:[]}]};}
 export async function mockApis(page,{weatherDelay=0,hospitalDelay=0}={}){
+  await page.addInitScript(()=>{document.addEventListener("DOMContentLoaded",()=>{document.getElementById("topMore")?.classList.add("open")})});
  const counts={};await page.addInitScript(()=>localStorage.setItem('lang','en'));
  await page.route('**/api/**',async route=>{
    const u=new URL(route.request().url()),path=u.pathname;counts[path]=(counts[path]||0)+1;
@@ -30,6 +31,7 @@ export async function mockApis(page,{weatherDelay=0,hospitalDelay=0}={}){
    else if(path==='/api/dmh/alerts')data={alerts:[],source_status:{last_success_at:stamp(),stale:false,importer_enabled:true}};
    else if(path==='/api/flood')data={status:'not_configured',gauges:[]};
    else if(path==='/api/hospitals/nearest'){if(hospitalDelay)await new Promise(r=>setTimeout(r,hospitalDelay));data={source:'Fixture',total_available:6,results:Array.from({length:6},(_,i)=>({name:`${lat>20?'Shwebo':'Yangon'} Hospital ${i}`,name_en:`${lat>20?'Shwebo':'Yangon'} Hospital ${i}`,level:'General',township:'Township',beds:100,latitude:lat,longitude:96,distance_km:i+1,confidence:'high'}))};}
+   else if(path==='/api/world-hazards')data={alerts:[{id:'usgs:1',source:'USGS',kind:'earthquake',level:'warning',title:'M 7.1 - Test Sea',magnitude:7.1,time:stamp(),lat:35.6,lon:139.7,url:'https://earthquake.usgs.gov/x'},{id:'eonet:1',source:'NASA EONET',kind:'wildfire',level:'info',title:'Wildfire Test',time:stamp(),lat:38.2,lon:-120.5,url:'javascript:alert(1)'}],errors:{},stale:false,fetched_at:stamp()};
    else if(path==='/api/hazard-feed')data={alerts:[],errors:{},fetched_at:stamp()};
    else if(path==='/api/local-extras')data={water:{balance_mm:-20,rain_mm:4,et0_mm:24}};
    else if(path==='/api/history')return route.fulfill({status:503,json:{detail:'Fixture history failure'}});
@@ -40,7 +42,16 @@ export async function mockApis(page,{weatherDelay=0,hospitalDelay=0}={}){
  });return counts;
 }
 export async function choose(page,name){
- if(await page.locator('#dashboard').isVisible())await page.locator('[data-act=pick]').click();
+ if(await page.locator('#dashboard').isVisible())await page.locator('[data-act=pick]:visible').first().click();
  await page.locator('#locationInput').fill(name);await page.locator('#searchForm button[type=submit]').click();
  await page.locator('#loading').waitFor({state:'hidden'});
+}
+
+/** Phone: Flood, Hospitals, Compare and Lab sit behind the bottom bar's More button; wider screens show them directly. */
+export async function openTab(page,name){
+  if(['flood','hospitals','compare','lab'].includes(name)&&await page.locator('.tab-more').isVisible())await page.locator('.tab-more').click();
+  await page.locator('[data-tab='+name+']').click();
+}
+export async function openFarm(page){
+  const go=page.locator('.tab-farm');if(await go.isVisible())await go.click();else await page.locator('#modeFarm').click();
 }

@@ -1,6 +1,6 @@
 // Today / Forecast tab cards in React: hourly strip + detail, 7-10 day list, temperature and rain charts, local rain / heat / cyclone cards.
 // Only draws. Data preparation and event wiring stay in render_cards.js. Markup is identical to the former string templates.
-import { Fragment } from "react";
+import { Fragment } from "preact";
 import { put, clearSlot } from "./slots.js";
 
 
@@ -8,9 +8,8 @@ function Hours({ rows, sel, x }) {
   return rows.map(r => {
     const wi = x.weatherInfo(r.c), on = r.t === sel;
     return (
-      <button key={r.t} type="button" className={`hour${on ? " selected" : ""}`} data-hour={r.t} aria-pressed={on}
-        aria-label={x.fmtTime(r.t) + " " + (x.my ? wi[1] : wi[0]) + " " + x.temp(r.T)}>
-        <small>{x.fmtTime(r.t)}</small><span className="emoji" aria-hidden="true">{wi[2]}</span><strong>{x.temp(r.T)}</strong><small>{Math.round(r.p)}% ☔</small>
+      <button key={r.t} type="button" className={`hour${on ? " selected" : ""}`} data-hour={r.t} aria-pressed={on}>
+        <small>{x.fmtTime(r.t)}</small><span className="emoji" aria-hidden="true" dangerouslySetInnerHTML={{ __html: x.wxIcon(r.c, x.isDayAtLocal(r.t)) }} /><strong>{x.temp(r.T)}</strong><small>{Math.round(r.p)}% ☔</small><span className="sr-only"> {x.my ? wi[1] : wi[0]}</span>
       </button>
     );
   });
@@ -25,7 +24,7 @@ function HourDetail({ rows, sel, x }) {
   const Ts = rows.map(q => q.T).filter(v => v != null && !isNaN(v)), sum = rows.reduce((s, q) => s + (Number(q.r) || 0), 0);
   return (
     <div className="hd-card" role="region" aria-live="polite" aria-label={x.fmtTime(r.t)}>
-      <div className="hd-top"><span className="hd-emoji" aria-hidden="true">{wi[2]}</span>
+      <div className="hd-top"><span className="hd-emoji" aria-hidden="true" dangerouslySetInnerHTML={{ __html: x.wxIcon(r.c, x.isDayAtLocal(r.t)) }} />
         <div className="hd-when"><strong>{x.fmtTime(r.t)}</strong><span className="muted">{x.fmtDay(r.t)}</span><span className="hd-sky">{x.my ? wi[1] : wi[0]}</span></div>
         <b className="hd-temp">{x.temp(r.T)}</b></div>
       <div className="hd-grid">
@@ -53,7 +52,7 @@ function Forecast({ rows, x }) {
             {i < 0 ? <strong>{r.dayText}</strong> : <><strong>{r.dayText.slice(0, i)}</strong><small className="fc-date">{r.dayText.slice(i + 3)}</small></>}
             {r.cal ? <small className={`mm-day${r.cal.u ? " mm-uposatha" : ""}`}>{r.cal.text}</small> : null}
           </div>
-          <div><span className="condition-text">{x.my ? wi[1] : wi[0]}</span></div>
+          <div className="fc-cond"><span className="fc-ic" aria-hidden="true" dangerouslySetInnerHTML={{ __html: x.wxIcon(r.code, true) }} /><span className="condition-text">{x.my ? wi[1] : wi[0]}</span></div>
           <div className="forecast-temp"><strong>{x.temp(r.max)}</strong><span>{x.temp(r.min)}</span></div>
           <div className="rain-cell"><strong className={rainClass}>{r.rain}%</strong><span>{r.mm.toFixed(1)} mm{r.rain >= 70 && r.mm < 1 ? " · " + L("rain_low_amt") : ""}</span></div>
         </div>
@@ -77,7 +76,7 @@ function TempChart({ c, L }) {
   const dots = (key, cls, dy) => points.map((p, i) => Number.isFinite(p[key]) ? (
     <Fragment key={i}>
       <circle className={`temperature-point ${cls}`} cx={x(i)} cy={y(p[key])} r="4.5" />
-      <text className={`temperature-value ${cls}`} x={x(i)} y={y(p[key]) + dy} textAnchor="middle">{valueLabel(p[key])}</text>
+      <text className={`temperature-value ${cls}`} x={x(i)} y={y(p[key]) + dy} text-anchor="middle">{valueLabel(p[key])}</text>
     </Fragment>) : null);
   return (<>
     <div className="temperature-chart-legend"><span className="tl-high"><i aria-hidden="true"></i>{L("chart_daily_high")}</span>{hasLow ? <span className="tl-low"><i aria-hidden="true"></i>{L("chart_daily_low")}</span> : null}<span className="temperature-chart-unit">{unit}</span></div>
@@ -87,14 +86,14 @@ function TempChart({ c, L }) {
       {ticks.map(v => (
         <Fragment key={v}>
           <line className="temperature-grid" x1={left} x2={width - right} y1={y(v)} y2={y(v)} />
-          <text className="temperature-axis" x={left - 10} y={y(v) + 5} textAnchor="end">{number(v)}°</text>
+          <text className="temperature-axis" x={left - 10} y={y(v) + 5} text-anchor="end">{number(v)}°</text>
         </Fragment>
       ))}
       {hasLow ? lines("low") : null}{lines("value")}{hasLow ? dots("low", "temperature-low", 22) : null}{dots("value", "temperature-high", -13)}
       {points.map((p, i) => (
         <g key={i}><title>{`${p.day} ${p.dateLabel}`}</title>
-          {Number.isFinite(p.value) || Number.isFinite(p.low) ? null : <text className="temperature-missing" x={x(i)} y={(plotTop + plotBottom) / 2} textAnchor="middle">{L("wx_unavailable")}</text>}
-          <text className="temperature-weekday" x={x(i)} y="215" textAnchor="middle">{p.shortDay}</text><text className="temperature-date" x={x(i)} y="238" textAnchor="middle">{p.dateLabel}</text></g>
+          {Number.isFinite(p.value) || Number.isFinite(p.low) ? null : <text className="temperature-missing" x={x(i)} y={(plotTop + plotBottom) / 2} text-anchor="middle">{L("wx_unavailable")}</text>}
+          <text className="temperature-weekday" x={x(i)} y="215" text-anchor="middle">{p.shortDay}</text><text className="temperature-date" x={x(i)} y="238" text-anchor="middle">{p.dateLabel}</text></g>
       ))}
     </svg>
     <p className="temperature-chart-note">{L("chart_date_format")}</p>
@@ -118,21 +117,25 @@ function LocalRain({ p, L }) {
 }
 
 function Heat({ p, L }) {
-  return (<>
-    <div className="section-heading"><div><h3>🌡️ {L("wx_heat_notice")}</h3><p className="muted">{p.place} · {L("wx_highest_next_3_days")}: <b>{p.max.toFixed(0)}°C</b></p></div></div>
-    <p className={`agri-note tier-${p.tier}`}>{p.text}</p>
-    {p.hydration ? <div className="hyd-box"><h4>{p.hydration.title}</h4>
-      <p className="tiny muted">{p.hydration.feels}</p>
-      <ul className="guide-list">{p.hydration.items.map((t, i) => <li key={i}>{t}</li>)}</ul></div> : null}
-    <p className="tiny muted">{L("wx_levels_app_estimates_not_official")}</p>
-  </>);
+  return (
+    <details className="fold-card" data-detail-key="wx-heat" open={p.tier !== "wet"}>
+      <summary><span className="fold-t">🌡️ {L("wx_heat_notice")}</span><span className="fold-s">{p.place} · {L("wx_highest_next_3_days")}: <b>{p.max.toFixed(0)}°C</b></span></summary>
+      <p className={`agri-note tier-${p.tier}`}>{p.text}</p>
+      {p.hydration ? <details className="fold-card fold-in hyd-box" data-detail-key="wx-hyd">
+        <summary><span className="fold-t">{p.hydration.title}</span><span className="fold-s">{p.hydration.feels}</span></summary>
+        <ul className="guide-list">{p.hydration.items.map((t, i) => <li key={i}>{t}</li>)}</ul></details> : null}
+      <p className="tiny muted">{L("wx_levels_app_estimates_not_official")}</p>
+    </details>
+  );
 }
 function Cyclone({ L }) {
-  return (<>
-    <div className="section-heading"><div><h3>🌀 {L("wx_cyclone_season")}</h3><p className="muted">{L("wx_bay_bengal_storms_most_common")}</p></div></div>
-    <p className="tiny muted">{L("wx_check_official_storm_warnings_dmh")}</p>
-    <a className="em-num" href="https://www.moezala.gov.mm/" target="_blank" rel="noopener">moezala.gov.mm ↗</a>
-  </>);
+  return (
+    <details className="fold-card" data-detail-key="wx-cyclone">
+      <summary><span className="fold-t">🌀 {L("wx_cyclone_season")}</span><span className="fold-s">{L("wx_bay_bengal_storms_most_common")}</span></summary>
+      <p className="tiny muted">{L("wx_check_official_storm_warnings_dmh")}</p>
+      <a className="em-num" href="https://www.moezala.gov.mm/" target="_blank" rel="noopener">moezala.gov.mm ↗</a>
+    </details>
+  );
 }
 
 export function mountWeatherView() {

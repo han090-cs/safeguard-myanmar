@@ -1,9 +1,9 @@
 /* "Did it rain?" check: the app saves the first forecast it showed for each day and place, you answer later, and the
    card counts how often high-chance days really got rain at YOUR place. Stored only in this browser (localStorage). */
-import { mountRainLogView, clearSlot } from "./views.js";
+import { clearSlot } from "./views.js";
+import { mountRainLogView } from "./lazy_views.js";
 {
   const KEY="mw_rain_log_v1";
-  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const my=()=>(window.__mwLang?window.__mwLang():"my")==="my";
   const num=(n,d=0)=>{const s=Number(n).toFixed(d);return my()?s.replace(/\d/g,x=>"၀၁၂၃၄၅၆၇၈၉"[x]):s;};
   const S={
@@ -30,7 +30,7 @@ import { mountRainLogView, clearSlot } from "./views.js";
     clear:["မှတ်တမ်းဖျက်မယ်","Clear my log"],
   };
   const tx=k=>S[k][my()?0:1];
-  let draw=null, CUR=null, TODAY="", UNDO=null,SAVE_FAILED=false;
+  let draw=null, CUR=null, TODAY="", UNDO=null,SAVE_FAILED=false,EDITOPEN=false;
   const load=()=>{try{const j=JSON.parse(localStorage.getItem(KEY)||"null");return j&&j.v===1?j:{v:1,s:{}};}catch{return {v:1,s:{}};}};
   const save=j=>{try{localStorage.setItem(KEY,JSON.stringify(j));SAVE_FAILED=false;return true;}catch{SAVE_FAILED=true;return false;}};
   const preserve=fn=>window.MWUX?window.MWUX.preserveView(fn):fn();
@@ -57,13 +57,13 @@ import { mountRainLogView, clearSlot } from "./views.js";
     }
     const na=done.filter(x=>!x.ans).length;
     const on={
-      answer:(key,a)=>{const jj=load(), e=jj.s[key]; if(e){UNDO={[key]:{...e}};e.ans=a;save(jj);}preserve(render);el.querySelector("[data-rl-undo]")?.focus({preventScroll:true});},
-      clear:()=>{const jj=load();UNDO={};Object.entries(jj.s).forEach(([key,x])=>{if(x.k===pl&&!x.archived){UNDO[key]={...x};x.archived=true;}});save(jj);preserve(render);},
-      undo:()=>{const jj=load();Object.assign(jj.s,UNDO);save(jj);UNDO=null;preserve(render);},
-      restore:()=>{const jj=load();Object.values(jj.s).forEach(x=>{if(x.k===pl)x.archived=false;});save(jj);preserve(render);},
+      answer:(key,a)=>{const jj=load(), e=jj.s[key]; EDITOPEN=true;if(e){UNDO={[key]:{...e}};e.ans=a;save(jj);}preserve(render);el.querySelector("[data-rl-undo]")?.focus({preventScroll:true});},
+      clear:()=>{EDITOPEN=false;const jj=load();UNDO={};Object.entries(jj.s).forEach(([key,x])=>{if(x.k===pl&&!x.archived){UNDO[key]={...x};x.archived=true;}});save(jj);preserve(render);},
+      undo:()=>{EDITOPEN=false;const jj=load();Object.assign(jj.s,UNDO);save(jj);UNDO=null;preserve(render);},
+      restore:()=>{EDITOPEN=false;const jj=load();Object.values(jj.s).forEach(x=>{if(x.k===pl)x.archived=false;});save(jj);preserve(render);},
     };
     draw=draw||mountRainLogView();
-    draw({head:tx("head"),none:tx("none"),editLabel:my()?"အဖြေကို ပြင်ရန်":"Edit recent answers",statsHead:tx("stats"),accHead:tx("acchead"),accFew:tx("accfew"),
+    draw({editOpen:EDITOPEN,head:tx("head"),none:tx("none"),editLabel:my()?"အဖြေကို ပြင်ရန်":"Edit recent answers",moreLabel:my()?"စာရင်းနဲ့ တိကျမှု (အသေးစိတ်)":"Totals and accuracy",statsHead:tx("stats"),accHead:tx("acchead"),accFew:tx("accfew"),
       open:open.map(x=>({id:x.k+"|"+x.date,day:dn(x.date),fc:S.fc(x.chance,x.mm),auto:x.auto!=null?S.auto(x.auto):"",btns:btnsFor(x,false)})),
       answered:answered.map(x=>({id:x.k+"|"+x.date,day:dn(x.date),btns:btnsFor(x,true)})),
       rows,acc,brier,src:S.src(na,done.length-na),canArchive:done.length>0,archiveLabel:my()?"ဤနေရာ၏ မှတ်တမ်းကို သိမ်းပိတ်ရန်":"Archive this place’s log",

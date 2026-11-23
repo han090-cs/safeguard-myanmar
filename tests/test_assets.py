@@ -30,7 +30,7 @@ def test_seven_day_forecast_and_compare_tab():
     panel = html.split('data-panel="compare"', 1)[1].split('data-panel="forecast"', 1)[0]
     assert 'id="compareCharts"' in panel
     forecast = html.split('data-panel="forecast"', 1)[1]
-    assert 'class="source-tag">7-day<' in forecast  # the forecast covers 7 days
+    assert 'data-i18n="tag_7day">၇ ရက်<' in forecast  # the forecast covers 7 days
 
 
 def test_glossary_lives_in_about_not_in_tabs():
@@ -40,7 +40,7 @@ def test_glossary_lives_in_about_not_in_tabs():
     about = (ROOT / "about.js").read_text(encoding="utf-8")
     for needle in ("Open-Meteo", "MIMU", "Copernicus", "DMH"):
         assert needle in about, needle
-    assert 'data-help="all"' in (ROOT / "frontend" / "src" / "about_view.jsx").read_text(encoding="utf-8")  # the dialog body is drawn by React
+    assert 'data-help="all"' in (ROOT / "frontend" / "src" / "about_view.jsx").read_text(encoding="utf-8")  # the dialog body is drawn by Preact
     js = (ROOT / "help.js").read_text(encoding="utf-8")
     ids = set(re.findall(r'"([a-z0-9]+)"', js.split("TOPICS=", 1)[1].split(";", 1)[0]))
     for lang in ("my", "en"):
@@ -51,7 +51,9 @@ def test_glossary_lives_in_about_not_in_tabs():
 
 def test_brief_and_rain_log_cards_wired():
     html = (ROOT / "weather.html").read_text(encoding="utf-8")
-    assert html.index('id="todayBrief"') < html.index('class="card glass hourly-card"')
+    # v9.24: the hourly card sits right under the current weather, above the Today panel (warnings come before it)
+    assert html.index('class="current-card') < html.index('class="card glass hourly-card"') < html.index('class="metric-grid"')
+    assert html.index('class="card glass hourly-card"') < html.index('data-panel="today"') < html.index('id="todayBrief"')
     assert 'id="rainLogCard"' in html.split('data-panel="compare"', 1)[1].split('data-panel="forecast"', 1)[0]
     js = "\n".join(p.read_text(encoding="utf-8") for p in source_js())  # the page code is split across modules
     assert "renderTodayBrief" in js and "rainLogSnapshot" in js and "setBriefOfficial" in js
@@ -70,3 +72,13 @@ def test_about_people_endpoint():
     import main
     r = TestClient(main.app).get("/api/about-people")
     assert r.status_code == 200 and isinstance(r.json(), list)
+
+
+def test_pro_look_layer_wired_last():
+    """pro.css (calmer look) loads after ux.css so it wins; deleting its <link> brings the previous look back."""
+    html = (ROOT / "weather.html").read_text(encoding="utf-8")
+    assert html.index('href="ux.css"') < html.index('href="pro.css"')
+    from app.web import PUBLIC_FILES as P
+    assert "pro.css" in P and '"./pro.css"' in (ROOT / "sw.js").read_text(encoding="utf-8")
+    css = (ROOT / "pro.css").read_text(encoding="utf-8")
+    assert "html.sg-dark" in css and 'html[lang="my"]' in css      # dark mode and Burmese line height are covered

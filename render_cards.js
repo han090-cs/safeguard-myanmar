@@ -1,16 +1,17 @@
 // Pure rendering of the main cards: current conditions, hourly, 7-10 day forecast, charts and weather theme.
-import { $, els, esc, fmtDay, fmtTime, speed, state, temp, weatherInfo } from "./core.js";
+import { $, fmtDay, fmtTime, speed, state, temp, weatherInfo } from "./core.js";
 import { renderEnso } from "./enso_card.js";
 import { L } from "./i18n.js";
-import { hydrationModel, renderDisease, moonDayText } from "./field_guides.js";
+import { hydrationModel, renderDisease, renderPests, moonDayText } from "./field_guides.js";
 import { myanmarDateOf, uposatha } from "./mm_calendar.js";
+import { wxIcon, isDayAtLocal } from "./wxicon.js";
 import { mountWeatherView, clearSlot } from "./views.js";
 
-// The cards below are drawn by React (frontend/src/weather_view.jsx -> views.js). This file prepares the data and wires events.
+// The cards below are drawn by Preact (frontend/src/weather_view.jsx -> views.js). This file prepares the data and wires events.
 let V=null;
 const view=()=>V||(V=mountWeatherView());
-const X=()=>({L,my:state.lang==="my",temp,fmtTime,fmtDay,speed,weatherInfo});
-// Other modules that used to empty a card with replaceChildren() call this so React and the DOM stay in step.
+const X=()=>({L,my:state.lang==="my",temp,fmtTime,fmtDay,speed,weatherInfo,wxIcon,isDayAtLocal});
+// Other modules that used to empty a card with replaceChildren() call this so Preact and the DOM stay in step.
 
 // ---------------------------------------------------------------------------------------------------------------
 // Level scales ("how high is high?") for every reading, in the style of the UV index. Each step: upper bound
@@ -125,7 +126,7 @@ export function renderLocal(d,loc){
   if(!d?.weather?.current?.time){window.renderTodayBrief?.(null,loc);window.renderAgri?.(null,loc);["agriLocal","heatCard","cycloneCard"].forEach(clearSlot);clearSlot("diseaseCard");return;}
   try{window.renderTodayBrief&&window.renderTodayBrief(d,loc);}catch{} try{window.rainLogSnapshot&&window.rainLogSnapshot(d,loc);}catch{}
   try{window.renderAgri&&window.renderAgri(d,loc);}catch{}
-  try{renderDisease(d.weather.hourly);}catch{}
+  try{renderDisease(d.weather.hourly);}catch{} try{renderPests(d.weather.hourly);}catch{}
   const my=state.lang==="my", w=(d&&d.weather)||{}, di=w.daily||{};
   const place=(my?loc.name:(loc.name_en||loc.name))||"";
   const rain=(di.precipitation_sum||[]).slice(0,7).map(Number).filter(Number.isFinite);

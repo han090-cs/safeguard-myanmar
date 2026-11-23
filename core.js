@@ -1,5 +1,5 @@
 // Shared state, DOM references and small formatting helpers used by every part of the weather page.
-import { L, WEATHER_CODES, t } from "./i18n.js";
+import { L, WEATHER_CODES, isJapanese, t } from "./i18n.js";
 
 export const $ = s => document.querySelector(s);
 
@@ -60,7 +60,7 @@ const MY_DAYS=["တနင်္ဂနွေ","တနင်္လာ","အင်�
 const EN_DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 export function digits(v){ const s=String(v); return state.lang==="my" ? s.replace(/\d/g,x=>"၀၁၂၃၄၅၆၇၈၉"[x]) : s; }
 export function placeTz(){ return state.data?.weather?.timezone || "Asia/Yangon"; }
-function mdText(m,d){ return state.lang==="my" ? `${MY_MONTHS[m-1]} ${digits(d)} ရက်` : `${EN_MONTHS[m-1]} ${d}`; }
+function mdText(m,d){ if(isJapanese()) return `${m}月${d}日`; return state.lang==="my" ? `${MY_MONTHS[m-1]} ${digits(d)} ရက်` : `${EN_MONTHS[m-1]} ${d}`; }
 // An instant (Date / epoch) shown on the clock of the place it belongs to, not of the viewer's phone.
 export function fmtPlaceDateTime(when,tz=placeTz()){
   const dt=when instanceof Date ? when : new Date(when);
@@ -69,6 +69,13 @@ export function fmtPlaceDateTime(when,tz=placeTz()){
   try{ for(const p of new Intl.DateTimeFormat("en-GB",{timeZone:tz,month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(dt)) o[p.type]=p.value; }
   catch{ return tz!=="Asia/Yangon" ? fmtPlaceDateTime(dt,"Asia/Yangon") : "—"; }
   return `${mdText(+o.month,+o.day)} ${digits(o.hour+":"+o.minute)}`;
+}
+// "Nov 8 14:20 · 3 h ago": the date and clock of the place AND how old the item is, so a person can judge freshness at a glance.
+export function fmtWhen(iso){
+  const v=Date.parse(iso&&!/[zZ]|[+-]\d\d:?\d\d$/.test(iso)?iso+"Z":iso); if(!isFinite(v)) return "";
+  const m=Math.max(0,Math.round((Date.now()-v)/60000)), h=Math.round(m/60);
+  const rel=m<60?L("feed_minutes",{n:m}):h<48?L("feed_hours",{n:h}):L("feed_days",{n:Math.round(h/24)});
+  return `${fmtPlaceDateTime(v)} · ${rel}`;
 }
 // 12-hour clock with AM/PM on the clock of the place ("3:05 PM"); same text on every phone.
 export function fmtClock12(when,tz=placeTz()){
@@ -94,6 +101,7 @@ export function fmtWallDateTime(str){
 export function fmtDay(str){
   const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(str||"")); if(!m) return "";
   const wd=new Date(Date.UTC(+m[1],+m[2]-1,+m[3])).getUTCDay();
+  if(isJapanese()) return `${mdText(+m[2],+m[3])}（${"日月火水木金土"[wd]}）`;
   return state.lang==="my" ? `${MY_DAYS[wd]} · ${mdText(+m[2],+m[3])}` : `${EN_DAYS[wd]}, ${mdText(+m[2],+m[3])}`; // English keeps the familiar "Sat, Oct 17"
 }
 

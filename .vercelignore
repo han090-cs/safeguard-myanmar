@@ -1,9 +1,0 @@
-tests
-tools
-deploy
-docs
-frontend/node_modules
-.github
-*.pdf
-Dockerfile
-render.yaml

@@ -1,5 +1,5 @@
 // About dialog body (purpose, limits, glossary, privacy, credits) in React. The long texts and data loading stay in about.js / help.js.
-import { Fragment } from "react";
+import { Fragment } from "preact";
 import { put } from "./slots.js";
 
 const Link = ({ n, u }) => (u ? <a href={u} target="_blank" rel="noopener">{n}</a> : n);

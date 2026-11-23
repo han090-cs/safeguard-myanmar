@@ -3,7 +3,7 @@ export const placeKey = loc => loc ? `${Number(loc.lat).toFixed(4)},${Number(loc
 export const readLocal = (key, fallback = null) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
 export const writeLocal = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
 const namedPlace = loc => loc && !String(loc.id).startsWith("geo:") && Number.isFinite(loc.lat) && Number.isFinite(loc.lon) ? {...loc} : null;
-const weatherTabs = ["today", "forecast", "flood", "hospitals", "hazards", "compare"];
+const weatherTabs = ["today", "forecast", "flood", "hospitals", "hazards", "compare", "world", "lab"];
 const farmTabs = ["now", "crops", "season", "soil"];
 const legacy = key => { try { return localStorage.getItem(key); } catch { return null; } };
 const saved = readLocal("mw_navigation_v1", {});

@@ -12,6 +12,14 @@ Application code is MIT-licensed (see `LICENSE`). Data and services below keep t
 ## Noto Sans Myanmar (fonts/)
 SIL Open Font License 1.1, via @fontsource/noto-sans-myanmar. Bundled so Burmese text renders correctly on every device.
 
+## Leaf photo check in the Lab tab (`vendor/ort/`, `models/leaf/`)
+
+- **ONNX Runtime Web 1.20.1** (Microsoft): MIT licence. Bundled in `vendor/ort/` (the WebAssembly file is stored in four parts).
+- **Rice model** (`rice_student_mbv3s.onnx`): a small student distilled from the ixrbhii rice ConvNeXt model (CC-BY-4.0) on photos from the Paddy Doctor dataset (doi 10.21227/hz4v-af08). Credit: ixrbhii; Paddy Doctor authors.
+- **Potato and cucurbit model** (`pv_int8.onnx`): int8 export of LourivalGontijo/plantvillage-mobilenetv2 (Apache-2.0), trained on the PlantVillage dataset.
+- Provenance, measured numbers and limits are in `models/leaf/MODELS.md`. **The owner should confirm that the training-data licences allow this use before a public launch.**
+- The optional AI second look sends the photo to Anthropic using the key the visitor pastes into the Lab (or, only if the owner sets `SG_LEAF_SHARE_SERVER_KEY=1`, the owner's `ANTHROPIC_API_KEY`); Anthropic's terms apply and the cost is the key holder's. Nothing is sent unless a key is in use.
+
 ## Agriculture and soil research sources (`data/agri_research/`)
 
 The Farming tab quotes short facts and figures from the sources below, each with its source id and reference date. The app does not

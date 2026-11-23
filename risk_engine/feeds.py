@@ -3,6 +3,7 @@
 Sources
   usgs   USGS earthquake catalog (FDSN event service, GeoJSON)      https://earthquake.usgs.gov/fdsnws/event/1/
   gdacs  GDACS events: earthquake / tropical cyclone / flood (GeoJSON) https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH
+  eonet  NASA EONET open natural events worldwide (wildfire, storm, volcano, flood) https://eonet.gsfc.nasa.gov/api/v3/events
   glofas GloFAS river discharge via Open-Meteo Flood API             https://flood-api.open-meteo.com/v1/flood
   marine Open-Meteo Marine API: wave height / period on the coast    https://marine-api.open-meteo.com/v1/marine
   water  Open-Meteo forecast: rain, ET0 and top-soil moisture (farming) https://api.open-meteo.com/v1/forecast
@@ -26,6 +27,7 @@ CYCLONE_BBOX = {"minlat": 5.0, "maxlat": 28.0, "minlon": 80.0, "maxlon": 102.5}
 USER_AGENT = os.getenv("APP_USER_AGENT", "MyanmarWeather/9 (hazard feeds)")
 USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 GDACS_URL = "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH"
+EONET_URL = "https://eonet.gsfc.nasa.gov/api/v3/events"
 FLOOD_URL = "https://flood-api.open-meteo.com/v1/flood"
 MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -253,7 +255,117 @@ async def pull_regional(timeout: float = 15.0) -> dict[str, Any]:
             errors[n] = f"{type(res).__name__}: {str(res)[:120]}"
         else:
             alerts.extend(res)
-    return {"alerts": alerts, "errors": errors, "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    return {"alerts": drop_expired(alerts), "errors": errors, "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+
+
+# ---------------------------------------------------------------- what has ended is not shown
+QUAKE_MAX_AGE = timedelta(days=float(os.getenv("QUAKE_MAX_AGE_DAYS", "3")))
+
+
+def drop_expired(alerts: list[dict[str, Any]], now: datetime | None = None) -> list[dict[str, Any]]:
+    """Keep only what is still going on. A storm, flood, volcano or fire that GDACS marks as no longer current is
+    dropped at once instead of lingering for the whole fetch window; an earthquake is shown for QUAKE_MAX_AGE
+    (3 days) after it happened. Events from sources without an "ended" flag (USGS, EONET open events) are kept as they are."""
+    cutoff = (now or datetime.now(timezone.utc)).timestamp() - QUAKE_MAX_AGE.total_seconds()
+    keep = []
+    for a in alerts:
+        if a.get("kind") == "earthquake":
+            t = _epoch(a.get("time"))
+            if t and t < cutoff:
+                continue
+        elif a.get("current") is False:
+            continue
+        keep.append(a)
+    return keep
+
+
+# ---------------------------------------------------------------- worldwide feed (World tab)
+_EONET_KIND = {"wildfires": "wildfire", "severeStorms": "storm", "volcanoes": "volcano", "floods": "flood",
+               "drought": "drought", "landslides": "landslide", "tempExtremes": "heat", "seaLakeIce": None, "dustHaze": None,
+               "snow": "snow", "earthquakes": "earthquake"}
+
+
+def parse_eonet(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """NASA EONET events: one entry per open event, located at its latest geometry point."""
+    out = []
+    for ev in (payload or {}).get("events") or []:
+        cats = ev.get("categories") or []
+        kind = next((_EONET_KIND.get(str(c.get("id"))) for c in cats if _EONET_KIND.get(str(c.get("id")))), None)
+        geos = [g for g in (ev.get("geometry") or []) if isinstance(g.get("coordinates"), list)]
+        if kind is None or not geos or ev.get("closed"):
+            continue
+        g = geos[-1]
+        c = g["coordinates"]
+        while c and isinstance(c[0], list):        # polygons: use the first vertex
+            c = c[0]
+        if len(c) < 2:
+            continue
+        lon, lat = _num(c[0]), _num(c[1])
+        if lat is None or lon is None:
+            continue
+        src = next((s.get("url") for s in (ev.get("sources") or []) if s.get("url")), None) or ev.get("link")
+        out.append({"id": "eonet:" + str(ev.get("id")), "source": "NASA EONET", "kind": kind, "level": "info",
+                    "title": str(ev.get("title") or kind), "time": g.get("date"), "lat": lat, "lon": lon, "url": src,
+                    "magnitude": _num(g.get("magnitudeValue")), "detail": g.get("magnitudeUnit")})
+    return out
+
+
+async def fetch_world_usgs(client: httpx.AsyncClient, days: int = 7, minmag: float = 5.0) -> list[dict[str, Any]]:
+    start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    data = await _get_json(client, USGS_URL, {"format": "geojson", "starttime": start, "minmagnitude": minmag,
+                                              "orderby": "time", "limit": 100})
+    return parse_usgs(data)
+
+
+async def fetch_world_gdacs(client: httpx.AsyncClient, days: int = 10) -> list[dict[str, Any]]:
+    today = datetime.now(timezone.utc).date()
+    base = {"eventlist": "EQ;TC;FL;VO;DR;WF", "fromdate": (today - timedelta(days=days)).isoformat(), "todate": today.isoformat()}
+    res = await asyncio.gather(*(_get_json(client, GDACS_URL, {**base, "alertlevel": lv}) for lv in ("Red", "Orange")),
+                               return_exceptions=True)
+    if all(isinstance(r, BaseException) for r in res):
+        raise res[0]
+    found: dict[str, dict[str, Any]] = {}
+    for r in res:
+        if not isinstance(r, BaseException):
+            for a in parse_gdacs(r):
+                found[a["id"]] = a
+    return list(found.values())
+
+
+async def fetch_world_eonet(client: httpx.AsyncClient, days: int = 10) -> list[dict[str, Any]]:
+    data = await _get_json(client, EONET_URL, {"status": "open", "days": days, "limit": 80})
+    return parse_eonet(data)
+
+
+WORLD_SOURCES: dict[str, Callable[..., Awaitable[Any]]] = {"usgs": fetch_world_usgs, "gdacs": fetch_world_gdacs, "eonet": fetch_world_eonet}
+
+
+def merge_world(alerts: list[dict[str, Any]], limit: int = 80) -> list[dict[str, Any]]:
+    """Drop quakes reported by both USGS and GDACS (same place within 80 km, 3 h), then most severe + most recent first."""
+    keep: list[dict[str, Any]] = []
+    for a in sorted(alerts, key=lambda a: LEVELS.get(a["level"], 0), reverse=True):
+        dup = any(b["kind"] == a["kind"] == "earthquake" and b["source"] != a["source"]
+                  and haversine_km(a["lat"], a["lon"], b["lat"], b["lon"]) < 80
+                  and abs(_epoch(a.get("time")) - _epoch(b.get("time"))) < 3 * 3600 for b in keep)
+        if not dup:
+            keep.append(a)
+    keep.sort(key=lambda a: (LEVELS.get(a["level"], 0), _epoch(a.get("time"))), reverse=True)
+    return keep[:limit]
+
+
+async def pull_world(timeout: float = 7.0) -> dict[str, Any]:
+    """All three sources in parallel, each capped at `timeout` s so the whole call stays under serverless limits (10 s)."""
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+        names = list(WORLD_SOURCES)
+        results = await asyncio.gather(*(asyncio.wait_for(WORLD_SOURCES[n](client), timeout + 1) for n in names),
+                                       return_exceptions=True)
+    alerts, errors = [], {}
+    for n, res in zip(names, results, strict=True):
+        if isinstance(res, BaseException):
+            errors[n] = type(res).__name__
+        else:
+            alerts.extend(res)
+    return {"alerts": merge_world(drop_expired(alerts)), "errors": errors, "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
 
 async def pull_river(lat: float, lon: float, timeout: float = 15.0) -> dict[str, Any] | None:

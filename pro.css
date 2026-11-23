@@ -1,0 +1,769 @@
+/* ===== pro.css — calm, professional look with a clear identity (v9.27.0) =====================================================
+   Loaded LAST (after ux.css). Only changes how things look, never what they do: no markup or script depends on it.
+   To go back to the previous look, delete the <link rel="stylesheet" href="pro.css"> line in weather.html.
+   Why !important: ux.css and styles.css already use it nearly everywhere; every rule here starts with `body` so it wins by
+   specificity and by order without touching those files.
+
+   Principles
+   · one radius scale (cards 12px, controls 10px), one hairline border, no shadows on cards
+   · one type scale: 12 / 14 / 16 / 20 / 28 / 52. Numbers use tabular figures
+   · brand green is for actions and the active item; the page itself is a soft green-grey tint (v9.15), not pure white
+   · ONE bold element: the weather band at the top. It follows the sky (clear, rain, storm, fog, heat, night) and carries the
+     temperature, and its sky moves gently (rain, clouds, stars; off for reduced motion); everything below it stays quiet and flat
+   · three tiers of card: the band (bold), the two decision cards (stripe + icon tile), everything else (flat, hairline)
+   · v9.20 calm layer (last block): secondary cards fold, a card is one surface, one type scale 14 / 16 / 18 / 22 / 28
+   · line icons with a small colour per kind of measure (blue rain, amber sun, teal humidity …), never emoji, never decoration
+   ------------------------------------------------------------------------------------------------------------- */
+
+:root {
+  --pro-bg: #dde8e0;
+  --pro-surface: #f0f6f2;
+  --pro-sunken: #e2ece5;
+  --pro-line: #c2d2c6;
+  --pro-ink: #15241b;
+  --pro-muted: #5b6a61;
+  --pro-brand: #136a32;
+  --pro-brand-deep: #0b4a23;
+  --pro-brand-soft: #e7f2ea;
+  --pro-gold: #a8710c;
+  --pro-r-card: 12px;
+  --pro-r-ctl: 10px;
+}
+html.sg-dark {   /* same OLED green-black palette ux.css already uses for dark mode */
+  --pro-bg: #07170e;
+  --pro-surface: #0e2418;
+  --pro-sunken: #112b1d;
+  --pro-line: #1e422e;
+  --pro-ink: #dcebe1;
+  --pro-muted: #9ab8a5;
+  --pro-brand: #4ade80;
+  --pro-brand-deep: #86efac;
+  --pro-brand-soft: rgba(74, 222, 128, .14);
+  --pro-gold: #f0b429;
+}
+
+/* ---------- page, text, links ---------- */
+body { background: var(--pro-bg) !important; color: var(--pro-ink) !important; font-size: 15px; line-height: 1.6; }
+body .muted, body .tiny, body small, body .source-mini { color: var(--pro-muted) !important; }
+body .card h3, body .section-heading h3, body .section-heading h2 { font-size: 17px !important; font-weight: 700 !important; line-height: 1.4 !important; letter-spacing: 0 !important; }
+body .eyebrow { font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; color: var(--pro-muted) !important; }
+body .card-kicker { font-size: 15px !important; font-weight: 700 !important; letter-spacing: 0 !important; text-transform: none !important; color: var(--pro-ink) !important; }
+body .app-shell { padding-top: 0; }
+
+/* ---------- header: logo, search, two icon buttons, one settings menu ---------- */
+body .topbar {
+  background: var(--pro-surface) !important; border-bottom: 1px solid var(--pro-line) !important; box-shadow: none !important;
+  position: relative; padding: 10px 0 !important; margin-bottom: 14px !important; gap: 16px !important;
+}
+body .brand-logo { width: 38px; height: 38px; border: 1px solid var(--pro-line) !important; box-shadow: none !important; border-radius: 10px; }
+body .brand .brand-text, body .brand strong, body .brand span { font-size: 15px !important; font-weight: 700 !important; letter-spacing: 0 !important; }
+body .top-search input { border-radius: var(--pro-r-ctl) !important; border: 1px solid var(--pro-line) !important; background: var(--pro-sunken) !important; box-shadow: none !important; min-height: 40px !important; font-size: 14px !important; }
+body .top-btn, body .top-actions .top-btn {
+  background: transparent !important; border: 1px solid transparent !important; box-shadow: none !important; color: var(--pro-ink) !important;
+  min-height: 40px !important; min-width: 40px !important; padding: 0 12px !important; border-radius: var(--pro-r-ctl) !important; font-size: 14px !important; font-weight: 600 !important;
+}
+body .top-btn:hover { background: var(--pro-sunken) !important; }
+body .top-btn[aria-pressed="true"], body .top-btn[aria-expanded="true"] { background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; }
+
+@media (min-width: 651px) {
+  /* the header band still runs edge to edge (drawn by ::before), but the header itself is exactly as wide as the page below,
+     so the logo, the buttons and the settings menu line up with the content instead of hugging the screen edge */
+  body .topbar { margin-inline: 0 !important; padding-inline: 0 !important; background: transparent !important; border-bottom: 0 !important; backdrop-filter: none !important; }
+  body .topbar::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: calc(50% - 50vw); right: calc(50% - 50vw); background: var(--pro-surface); border-bottom: 1px solid var(--pro-line); pointer-events: none; }
+  /* the rarely used controls (text size, °C, alerts, about) move into one menu behind the gear */
+  body .top-more-btn { display: inline-flex !important; }
+  body .top-more {
+    display: none !important; position: absolute; right: 0; top: calc(100% + 6px); z-index: 70; width: max-content; min-width: 252px; max-width: min(360px, calc(100vw - 32px));
+    padding: 10px; gap: 6px !important; border: 1px solid var(--pro-line); border-radius: var(--pro-r-card);
+    background: var(--pro-surface); box-shadow: 0 12px 32px rgba(10, 30, 18, .16);
+  }
+  body .top-more.open { display: grid !important; grid-template-columns: repeat(3, minmax(max-content, 1fr)); }   /* each column is as wide as its longest label (Burmese "Alerts" was 16 px too wide) */
+  body .top-more .font-controls { grid-column: 1 / -1; display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  body .top-more .top-btn { border-color: var(--pro-line) !important; justify-content: center; min-width: 0 !important; padding: 0 8px !important; white-space: nowrap; }
+}
+
+/* ---------- Weather | Farming: a small segmented control, not a banner ---------- */
+body .mode-switch {
+  display: inline-flex !important; width: auto !important; gap: 2px !important; padding: 3px !important; margin: 0 0 14px !important;
+  background: var(--pro-sunken) !important; border: 1px solid var(--pro-line) !important; border-radius: 12px !important; box-shadow: none !important;
+}
+body .mode-btn { min-height: 36px !important; padding: 0 18px !important; border-radius: 9px !important; font-size: 14px !important; color: var(--pro-muted) !important; background: transparent !important; box-shadow: none !important; gap: 8px; }
+body .mode-btn b { font-weight: 600 !important; }
+body .mode-btn[aria-selected="true"] { background: var(--pro-surface) !important; color: var(--pro-ink) !important; box-shadow: 0 1px 2px rgba(10, 30, 18, .12) !important; }
+body .mode-btn[aria-selected="true"] b { font-weight: 700 !important; }
+
+/* ---------- side / bottom navigation: quiet, the active item is tinted ---------- */
+body .tab.active, body .ftab[aria-selected="true"] { background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; box-shadow: none !important; }
+
+/* ---------- cards ---------- */
+body .card, body .glass, body .metric, body .today-brief, body .scale-panel {
+  background: var(--pro-surface) !important; border: 1px solid var(--pro-line) !important; border-radius: var(--pro-r-card) !important;
+  box-shadow: none !important;   /* (backdrop-filter is left alone: switching it off lets the scrolling hourly strip widen the whole page) */
+}
+body .card { padding: 18px 20px !important; }
+
+/* ---------- hero: the weather band. Colour follows body.weather-* (set by render_cards.js); white text is >= 4.5:1 on every stop ---------- */
+body .current-card, body .current-card.card, body .current-card.glass {
+  --sky-a: #09512a; --sky-b: #0e6a34; --sky-glow: rgba(245, 190, 60, .22);
+  position: relative; overflow: hidden; isolation: isolate;
+  background: radial-gradient(340px circle at calc(100% - 30px) -30px, var(--sky-glow) 0, transparent 100%), linear-gradient(135deg, var(--sky-a), var(--sky-b)) !important;
+  color: #fff !important; border: 0 !important; border-radius: 20px !important; box-shadow: 0 14px 30px -16px rgba(8, 60, 28, .7) !important;
+  padding: 22px 26px !important; min-height: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 16px;
+}
+body .current-card::after { content: ""; position: absolute; z-index: -1; right: -46px; bottom: -70px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255, 255, 255, .07); pointer-events: none; }
+body.weather-rain .current-card { --sky-a: #0a3f52; --sky-b: #0f5873; --sky-glow: rgba(125, 205, 240, .22); }
+body.weather-storm .current-card { --sky-a: #262d4d; --sky-b: #36406e; --sky-glow: rgba(190, 170, 255, .2); }
+body.weather-fog .current-card { --sky-a: #2f4038; --sky-b: #445850; --sky-glow: rgba(255, 255, 255, .12); }
+body.weather-hot .current-card { --sky-a: #682c03; --sky-b: #823905; --sky-glow: rgba(255, 205, 90, .3); }
+body.weather-night .current-card { --sky-a: #06241a; --sky-b: #0c3324; --sky-glow: rgba(232, 236, 200, .26); }
+body.weather-night.weather-rain .current-card { --sky-a: #072d3b; --sky-b: #0b4458; --sky-glow: rgba(125, 205, 240, .22); }
+body.weather-night.weather-storm .current-card { --sky-a: #171c33; --sky-b: #262d4d; --sky-glow: rgba(190, 170, 255, .2); }
+body .current-card .current-main { display: flex !important; align-items: center !important; gap: 18px !important; }
+body .current-card .weather-icon { flex: none; font-size: 52px !important; width: 68px; height: 68px; display: grid; place-items: center; border-radius: 20px; background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .24); filter: none !important; }
+body .current-card .current-main > div:last-child { display: grid !important; grid-template-columns: auto 1fr; column-gap: 20px; align-items: center; }
+body .current-card .hero-temp { grid-row: 1 / span 2; font-size: 64px !important; line-height: 1 !important; font-weight: 800 !important; color: #fff !important; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+body .current-card .hero-temp .temp-unit, body .current-card .temp-unit { font-size: 22px !important; font-weight: 600 !important; color: rgba(255, 255, 255, .85) !important; vertical-align: top; top: .25em; }
+body .current-card .condition { font-size: 20px !important; font-weight: 700 !important; color: #fff !important; margin: 0 !important; align-self: end; }
+body .current-card p.muted, body .current-card .muted { color: rgba(255, 255, 255, .92) !important; font-size: 14px !important; margin: 0 !important; align-self: start; opacity: 1 !important; }
+body .current-card .muted strong, body .current-card strong { color: #fff !important; }
+body .current-card .current-status { align-self: flex-start; text-align: right; }
+body .current-card .current-main, body .current-card .current-status { text-shadow: 0 1px 3px rgba(0, 0, 0, .32); }
+body .current-card .badge { text-shadow: none; }
+body .current-card .source-mini { color: rgba(255, 255, 255, .86) !important; font-size: 12px !important; }
+body .current-card .badge, body .current-card .badge.normal { background: rgba(255, 255, 255, .92) !important; color: #14301f !important; border: 0 !important; font-weight: 700; }
+body .current-card .badge.hot { background: #ffecc2 !important; color: #6b3500 !important; }
+body .current-card .badge.cool { background: #dff1ff !important; color: #0b4a73 !important; }
+
+/* ---------- key numbers: even cards, label small, value large ---------- */
+body .metric-grid { gap: 10px !important; }
+body .metric { padding: 14px 14px !important; min-height: 0 !important; align-items: flex-start !important; gap: 12px !important; }
+body .metric p { font-size: 12px !important; font-weight: 600 !important; color: var(--pro-muted) !important; margin: 0 0 2px !important; }
+body .metric strong { font-size: 21px !important; font-weight: 700 !important; color: var(--pro-ink) !important; font-variant-numeric: tabular-nums; line-height: 1.25; }
+body .metric small, body .metric em { font-size: 12px !important; color: var(--pro-muted) !important; font-style: normal; }
+body .metric-primary strong { color: var(--pro-brand-deep) !important; }
+/* ---------- key numbers (v9.14): a coloured line icon per measure instead of emoji. Order matches weather.html ---------- */
+body .metric > span:first-child { font-size: 0 !important; filter: none !important; opacity: 1 !important; flex: none; width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--tile-bg, var(--pro-sunken)); color: var(--tile-fg, var(--pro-muted)); }
+body .metric > span:first-child::before { content: ""; width: 22px; height: 22px; background: currentColor; -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
+body .metric-grid > .metric:nth-child(1) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2'/%3E%3Cpath d='M16 14v6'/%3E%3Cpath d='M8 14v6'/%3E%3Cpath d='M12 16v6'/%3E%3C/svg%3E"); --tile-bg: #e2f0f8; --tile-fg: #1b6a9e; }
+body .metric-grid > .metric:nth-child(2) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12a10 10 0 0 0-20 0z'/%3E%3Cpath d='M12 12v8a2 2 0 0 0 4 0'/%3E%3Cpath d='M12 2v1'/%3E%3C/svg%3E"); --tile-bg: #e2f0f8; --tile-fg: #1b6a9e; }
+body .metric-grid > .metric:nth-child(3) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-4l-3 9L9 3l-3 9H2'/%3E%3C/svg%3E"); --tile-bg: #e1f2e6; --tile-fg: #136a32; }
+body .metric-grid > .metric:nth-child(4) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2'/%3E%3Cpath d='M12 20v2'/%3E%3Cpath d='M4.9 4.9l1.4 1.4'/%3E%3Cpath d='M17.7 17.7l1.4 1.4'/%3E%3Cpath d='M2 12h2'/%3E%3Cpath d='M20 12h2'/%3E%3Cpath d='M4.9 19.1l1.4-1.4'/%3E%3Cpath d='M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E"); --tile-bg: #fbefd2; --tile-fg: #8a5a06; }
+body .metric-grid > .metric:nth-child(5) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'/%3E%3C/svg%3E"); --tile-bg: #dcf3ef; --tile-fg: #0f766e; }
+body .metric-grid > .metric:nth-child(6) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.6 4.6A2 2 0 1 1 11 8H2'/%3E%3Cpath d='M12.6 19.4A2 2 0 1 0 14 16H2'/%3E%3Cpath d='M17.7 7.7A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E"); --tile-bg: #e8edf2; --tile-fg: #475569; }
+body .metric-grid > .metric:nth-child(7) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 14l4-4'/%3E%3Cpath d='M3.3 19a10 10 0 1 1 17.4 0'/%3E%3C/svg%3E"); --tile-bg: #e8edf2; --tile-fg: #475569; }
+body .metric-grid > .metric:nth-child(8) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); --tile-bg: #e8edf2; --tile-fg: #475569; }
+body .metric-grid > .metric:nth-child(9) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v8'/%3E%3Cpath d='M4.9 10.9l1.4 1.4'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='M19.1 10.9l-1.4 1.4'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='M8 6l4-4 4 4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E"); --tile-bg: #fbefd2; --tile-fg: #8a5a06; }
+body .metric-grid > .metric:nth-child(10) { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 10V2'/%3E%3Cpath d='M4.9 10.9l1.4 1.4'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='M19.1 10.9l-1.4 1.4'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='M16 6l-4 4-4-4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E"); --tile-bg: #fde7d4; --tile-fg: #a54908; }
+html.sg-dark body .metric-grid > .metric:nth-child(1) { --tile-bg: rgba(96,176,226,.18); --tile-fg: #8fcdf2; }
+html.sg-dark body .metric-grid > .metric:nth-child(2) { --tile-bg: rgba(96,176,226,.18); --tile-fg: #8fcdf2; }
+html.sg-dark body .metric-grid > .metric:nth-child(3) { --tile-bg: rgba(74,222,128,.16); --tile-fg: #86efac; }
+html.sg-dark body .metric-grid > .metric:nth-child(4) { --tile-bg: rgba(240,180,41,.18); --tile-fg: #f6cf6a; }
+html.sg-dark body .metric-grid > .metric:nth-child(5) { --tile-bg: rgba(45,212,191,.16); --tile-fg: #7be3d3; }
+html.sg-dark body .metric-grid > .metric:nth-child(6) { --tile-bg: rgba(148,163,184,.18); --tile-fg: #c0cddb; }
+html.sg-dark body .metric-grid > .metric:nth-child(7) { --tile-bg: rgba(148,163,184,.18); --tile-fg: #c0cddb; }
+html.sg-dark body .metric-grid > .metric:nth-child(8) { --tile-bg: rgba(148,163,184,.18); --tile-fg: #c0cddb; }
+html.sg-dark body .metric-grid > .metric:nth-child(9) { --tile-bg: rgba(240,180,41,.18); --tile-fg: #f6cf6a; }
+html.sg-dark body .metric-grid > .metric:nth-child(10) { --tile-bg: rgba(251,146,60,.18); --tile-fg: #fdba74; }
+
+/* ---------- the two decision cards: a line icon on a soft tile in front of the heading (emoji text node is hidden by font-size 0) ---------- */
+body .today-brief > .card-kicker, body .health-card > summary.card-kicker { font-size: 0 !important; gap: 0 !important; align-items: center; }
+body .today-brief > .card-kicker > span:not(.auto-badge), body .health-card > summary.card-kicker > span:not(.auto-badge) { font-size: 17px; font-weight: 700; line-height: 1.5; }
+body .today-brief > .card-kicker::before, body .health-card > summary.card-kicker::before {
+  content: "" !important; display: block !important; transform: none !important; transition: none; flex: none; width: 34px; height: 34px; margin-right: 10px; border-radius: 10px;
+  background: var(--ic) center / 20px 20px no-repeat, var(--pro-brand-soft); box-shadow: inset 0 0 0 1px var(--pro-line);
+}
+body .today-brief > .card-kicker { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23136a32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16.2 7.8l-2.1 6.3-6.3 2.1 2.1-6.3z'/%3E%3C/svg%3E"); }
+body .health-card > summary.card-kicker { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23136a32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E"); }
+html.sg-dark body .today-brief > .card-kicker { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16.2 7.8l-2.1 6.3-6.3 2.1 2.1-6.3z'/%3E%3C/svg%3E"); }
+html.sg-dark body .health-card > summary.card-kicker { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E"); }
+
+/* ---------- labels: plain text, not filled pills ---------- */
+body .source-tag, body .auto-badge, body .update-pill, body .meta-chip {
+  background: transparent !important; color: var(--pro-muted) !important; border: 1px solid var(--pro-line) !important; border-radius: 6px !important;
+  font-size: 12px !important; font-weight: 600 !important; padding: 1px 8px !important; box-shadow: none !important;
+}
+body .update-pill { border-radius: 999px !important; padding: 4px 12px !important; }
+body .live-dot { box-shadow: none !important; }
+
+/* ---------- buttons ---------- */
+body .ghost-btn, body .quiet-btn-link {
+  background: var(--pro-surface) !important; color: var(--pro-ink) !important; border: 1px solid var(--pro-line) !important; border-radius: var(--pro-r-ctl) !important;
+  box-shadow: none !important; font-size: 14px !important; font-weight: 600 !important; min-height: 38px !important;
+}
+body .ghost-btn:hover { background: var(--pro-sunken) !important; }
+body .search-btn { background: var(--pro-brand) !important; color: #fff !important; box-shadow: none !important; border-radius: var(--pro-r-ctl) !important; font-weight: 600 !important; }
+html.sg-dark body .search-btn { color: #07140c !important; }
+
+/* ---------- place heading ---------- */
+body .location-row h2 { font-size: 28px !important; font-weight: 700 !important; letter-spacing: -.01em; line-height: 1.25 !important; }
+body .location-row .eyebrow { margin-bottom: 2px; }
+
+/* ---------- search hero (first screen): light, not a green slab ---------- */
+body .search-hero {
+  background: var(--pro-surface) !important; color: var(--pro-ink) !important; border: 1px solid var(--pro-line) !important; border-radius: var(--pro-r-card) !important; box-shadow: none !important;
+}
+body .search-hero h1 { color: var(--pro-ink) !important; }
+body .search-hero p, body .search-hero .eyebrow { color: var(--pro-muted) !important; }
+
+/* ---------- icons: the moon / gear emoji buttons become line icons that follow the text colour ---------- */
+body #themeToggle, body #topMoreBtn { font-size: 0 !important; }
+body #themeToggle::before, body #topMoreBtn::before { content: ""; display: block; width: 20px; height: 20px; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+body #themeToggle::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E"); }
+html.sg-dark body #themeToggle::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E"); }
+body #topMoreBtn::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6'/%3E%3C/svg%3E"); }
+
+/* "Feels like" label: styles.css forces a pale colour meant for the old dark card */
+body .current-card p.muted > span[data-i18n]:not(.lvl-pill), body .current-card p.muted > span:not(.lvl-pill) { color: rgba(255, 255, 255, .92) !important; }
+/* the "very hot / caution" level pill keeps its own light background and dark text (styles.css / ux.css) */
+body .current-card .lvl-pill { font-weight: 700; }
+body .current-card .lvl-pill.t1 { background: #e7f7ef !important; color: #135c36 !important; }
+body .current-card .lvl-pill.t2, body .current-card .lvl-pill.t3 { background: #fbeccd !important; color: #6b3d00 !important; }
+body .current-card .lvl-pill.t4, body .current-card .lvl-pill.t5 { background: #fde4e4 !important; color: #9b1f2a !important; }
+
+/* ---------- small things ---------- */
+body .update-pill { border-radius: 8px !important; min-height: 32px !important; padding: 4px 10px !important; font-size: 12px !important; font-weight: 600 !important; }
+
+@media (max-width: 650px) {
+  body .topbar { margin-bottom: 8px !important; padding: 8px 0 !important; }
+  body .ghost-btn, body .quiet-btn-link { min-height: 44px !important; }
+  body .topbar .top-more.open { padding: 10px !important; gap: 6px !important; border: 1px solid var(--pro-line) !important; border-radius: var(--pro-r-card) !important; background: var(--pro-surface) !important; box-shadow: none !important; }
+  body .topbar .top-more .top-btn { min-height: 44px !important; border: 1px solid var(--pro-line) !important; font-size: 14px !important; font-weight: 600 !important; }
+  body .current-card { padding: 18px 18px !important; flex-wrap: wrap; gap: 8px 16px !important; }
+  body .current-card .current-status { width: 100%; text-align: left; }
+  body .current-card .weather-icon { width: 56px; height: 56px; font-size: 42px !important; }
+  body .current-card .hero-temp { font-size: 54px !important; }
+}
+
+body .current-card .current-status { border: 0 !important; padding: 0 !important; margin: 0 !important; }
+body .clock-pill { border-radius: 8px !important; min-height: 32px !important; padding: 4px 10px !important; font-size: 12px !important; font-weight: 600 !important; background: transparent !important; border: 1px solid var(--pro-line) !important; box-shadow: none !important; color: var(--pro-ink) !important; }
+
+/* ---------- dark mode: ux.css styles it with body.sg-dark rules, so the same properties are set again with more weight ---------- */
+html body.sg-dark { background: var(--pro-bg) !important; color: var(--pro-ink) !important; }
+html body.sg-dark .topbar { background: var(--pro-surface) !important; border-bottom-color: var(--pro-line) !important; }
+html body.sg-dark .card, html body.sg-dark .glass, html body.sg-dark .metric, html body.sg-dark .today-brief, html body.sg-dark .scale-panel {
+  background: var(--pro-surface) !important; border-color: var(--pro-line) !important; box-shadow: none !important;
+}
+html body.sg-dark .current-card, html body.sg-dark .current-card.card, html body.sg-dark .current-card.glass {
+  background: radial-gradient(340px circle at calc(100% - 30px) -30px, var(--sky-glow) 0, transparent 100%), linear-gradient(135deg, var(--sky-a), var(--sky-b)) !important;
+  color: #fff !important; border: 1px solid rgba(255, 255, 255, .12) !important; box-shadow: none !important;
+}
+html.sg-dark body.weather-clear .current-card, html.sg-dark body .current-card { --sky-a: #06401d; --sky-b: #0b5a2b; }
+html.sg-dark body.weather-rain .current-card { --sky-a: #08374a; --sky-b: #0d5069; }
+html.sg-dark body.weather-storm .current-card { --sky-a: #1f2540; --sky-b: #333b68; }
+html.sg-dark body.weather-fog .current-card { --sky-a: #2a3a34; --sky-b: #3b4d45; }
+html.sg-dark body.weather-hot .current-card { --sky-a: #6a2d03; --sky-b: #8a3d06; }
+html.sg-dark body.weather-night .current-card { --sky-a: #04180f; --sky-b: #09271b; }
+html body.sg-dark .search-hero { background: var(--pro-surface) !important; color: var(--pro-ink) !important; border: 1px solid var(--pro-line) !important; }
+html body.sg-dark .top-btn, html body.sg-dark .top-actions .top-btn { background: transparent !important; border-color: transparent !important; color: var(--pro-ink) !important; }
+html body.sg-dark .top-btn:hover { background: var(--pro-sunken) !important; }
+html body.sg-dark .top-more .top-btn { border-color: var(--pro-line) !important; }
+html body.sg-dark .ghost-btn, html body.sg-dark .quiet-btn-link { background: var(--pro-surface) !important; border-color: var(--pro-line) !important; color: var(--pro-ink) !important; }
+html body.sg-dark .ghost-btn:hover { background: var(--pro-sunken) !important; }
+html body.sg-dark .update-pill, html body.sg-dark .clock-pill { background: transparent !important; border-color: var(--pro-line) !important; color: var(--pro-ink) !important; }
+html body.sg-dark .source-tag, html body.sg-dark .auto-badge, html body.sg-dark .meta-chip { background: transparent !important; color: var(--pro-muted) !important; border-color: var(--pro-line) !important; }
+html body.sg-dark .mode-switch { background: var(--pro-sunken) !important; border-color: var(--pro-line) !important; }
+html body.sg-dark .mode-btn { color: var(--pro-muted) !important; background: transparent !important; }
+html body.sg-dark .mode-btn[aria-selected="true"] { background: var(--pro-surface) !important; color: var(--pro-ink) !important; box-shadow: 0 1px 2px rgba(0, 0, 0, .4) !important; }
+html body.sg-dark .tab.active, html body.sg-dark .ftab[aria-selected="true"] { background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; }
+html body.sg-dark .search-btn { color: #07140c !important; background: var(--pro-brand) !important; }
+html body.sg-dark .metric p, html body.sg-dark .metric small, html body.sg-dark .metric em { color: var(--pro-muted) !important; }
+html body.sg-dark .metric strong { color: var(--pro-ink) !important; }
+html body.sg-dark .current-card .hero-temp, html body.sg-dark .current-card .condition, html body.sg-dark .current-card strong { color: #fff !important; }
+html body.sg-dark .current-card .muted, html body.sg-dark .current-card p.muted > span:not(.lvl-pill) { color: rgba(255, 255, 255, .92) !important; }
+html body.sg-dark .current-card .source-mini { color: rgba(255, 255, 255, .86) !important; }
+html body.sg-dark .current-card .weather-icon { background: rgba(255, 255, 255, .16) !important; }
+html body.sg-dark .metric-primary strong { color: var(--pro-brand-deep) !important; }
+html body.sg-dark .top-search input { background: var(--pro-sunken) !important; border-color: var(--pro-line) !important; }
+body #currentLocation { min-height: 52px !important; }   /* the big first-open button keeps its thumb-sized height */
+
+/* El Niño link and similar: a quiet outlined button (the filled pill stays for emergency phone numbers) */
+body .enso-link .em-num { background: transparent !important; color: var(--pro-brand-deep) !important; border: 1px solid var(--pro-line) !important; border-radius: var(--pro-r-ctl) !important; min-height: 40px; font-weight: 600 !important; }
+body .enso-link .em-num:hover { background: var(--pro-sunken) !important; }
+
+/* Burmese needs more line height than Latin: stacked vowel signs are clipped below about 1.6 */
+html[lang="my"] body { line-height: 1.8; }
+html[lang="my"] body .card h3, html[lang="my"] body .section-heading h3, html[lang="my"] body .card-kicker { line-height: 1.7 !important; }
+html[lang="my"] body .location-row h2 { line-height: 1.6 !important; }
+html[lang="my"] body .metric strong, html[lang="my"] body .current-card .condition { line-height: 1.5 !important; }
+html[lang="my"] body .mode-btn b, html[lang="my"] body .top-btn { line-height: 1.6; }
+
+/* ---------- v9.14 identity: soft green wash behind the top of the page, status stripe on the decision card, tinted show-more buttons ---------- */
+body { background: var(--pro-bg) linear-gradient(180deg, #c2d9c9 0, var(--pro-bg) 380px) no-repeat !important; }
+html.sg-dark body, html body.sg-dark { background: var(--pro-bg) linear-gradient(180deg, #0c2d1a 0, var(--pro-bg) 360px) no-repeat !important; }
+body .today-brief { border-left: 4px solid var(--pro-brand) !important; }
+body .today-brief:has(.risk-score.medium) { border-left-color: #c98a0b !important; }
+body .today-brief:has(.risk-score.high) { border-left-color: #c43a3a !important; }
+body .m-fold-btn { background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; border-color: transparent !important; font-weight: 700 !important; transition: transform .08s ease; }
+body .m-fold-btn:active { transform: scale(.98); }
+body .m-fold-btn:focus-visible { outline: 3px solid var(--pro-brand); outline-offset: 2px; }
+html body.sg-dark .m-fold-btn { background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; border-color: transparent !important; }
+body .mwr-link-btn:active { transform: scale(.98); }
+
+/* ---------- Compare tab (v9.15): one big number per card; the numbers are plain text, the picture only shows where they sit ---------- */
+body #compareCharts .agri-note { font-size: 13px !important; line-height: 1.7; padding: 10px 12px !important; margin: 8px 0 !important; }
+body .cmp-how { padding: 8px 12px !important; gap: 4px 14px !important; font-size: 13px !important; background: var(--pro-sunken) !important; border-color: var(--pro-line) !important; }
+body .cmp-sum { margin: 0 0 12px; }
+body #compareCharts .cmp-grid { gap: 12px; }
+body #compareCharts .cmp-blk { padding: 14px 16px; gap: 6px; border-radius: 14px; border: 1px solid var(--pro-line); border-left-width: 5px; background: var(--pro-surface); }
+body #compareCharts .cmp-blk.cmp-up { border-left-color: #c98a0b; background: #fbf1d8; }
+body #compareCharts .cmp-blk.cmp-down { border-left-color: #2f78b7; background: #e3edf7; }
+body #compareCharts .cmp-blk.cmp-in { border-left-color: #2f9d5b; background: #e3f1e7; }
+body .cmp-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; }
+body .cmp-title { font-size: 15px; }
+body #compareCharts .cmp-state { display: inline-flex; font-size: 12.5px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: rgba(255, 255, 255, .72); border: 1px solid var(--pro-line); }
+body .cmp-big { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 2px; }
+body .cmp-val { font-size: 30px; font-weight: 800; line-height: 1.35; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+body .cmp-val small { font-size: 15px; font-weight: 600; color: var(--pro-muted); letter-spacing: 0; }
+body .cmp-delta { font-size: 15px; font-weight: 700; padding: 3px 11px; border-radius: 999px; background: rgba(255, 255, 255, .8); border: 1px solid var(--pro-line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+body .cmp-delta.up { background: #fff0c9; border-color: #e3bd63; color: #7a4d00; }
+body .cmp-delta.down { background: #d9e8f7; border-color: #8fb4d9; color: #174f82; }
+body .cmp-delta.in { background: #d7eddd; border-color: #8fcaa4; color: #135c36; }
+body .cmp-track { position: relative; height: 28px; margin: 6px 8px 2px; }
+body .cmp-track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: currentColor; opacity: .25; border-radius: 2px; }
+body .cmp-band { position: absolute; top: 50%; height: 14px; margin-top: -7px; border-radius: 4px; background: #16a34a; opacity: .4; }
+body .cmp-mid { position: absolute; top: 50%; width: 2px; height: 24px; margin: -12px 0 0 -1px; background: currentColor; }
+body .cmp-dot { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--accent, #0f5e34); border: 2.5px solid #fff; box-sizing: border-box; box-shadow: 0 0 0 1px rgba(0, 0, 0, .3); }
+body .cmp-normal { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 2px 0 0; font-size: 13.5px; color: var(--pro-muted); }
+body .cmp-normal strong { color: var(--pro-ink); font-variant-numeric: tabular-nums; }
+body .cmp-normal em { font-style: normal; flex-basis: 100%; }
+body .cmp-head { margin: 4px 0 0; font-size: 13.5px; line-height: 1.75; color: var(--pro-muted); }
+body .cmp-cap { margin: 0; font-size: 13px; color: var(--pro-muted); }
+body .cmp-note { margin: 2px 0 0; font-size: 12.5px; }
+body .cmp-facts { font-variant-numeric: tabular-nums; }
+body .cmp-table td, body .cmp-table th { font-variant-numeric: tabular-nums; }
+body .cmp-details, body .mc-details { background: var(--pro-surface) !important; border-color: var(--pro-line) !important; }
+html.sg-dark body #compareCharts .cmp-blk, html body.sg-dark #compareCharts .cmp-blk { background: #0e2418 !important; border-color: #1e422e !important; }
+html body.sg-dark #compareCharts .cmp-blk.cmp-up { border-left-color: #d9a21c !important; background: #2a2916 !important; }
+html body.sg-dark #compareCharts .cmp-blk.cmp-down { border-left-color: #4d9be0 !important; background: #10283a !important; }
+html body.sg-dark #compareCharts .cmp-blk.cmp-in { border-left-color: #3fbf78 !important; background: #11301f !important; }
+html body.sg-dark #compareCharts .cmp-state { background: rgba(255, 255, 255, .08) !important; border-color: #2a5a3e !important; color: #dcebe1 !important; }
+html body.sg-dark .cmp-delta { background: rgba(255, 255, 255, .08); border-color: #2a5a3e; color: #dcebe1; }
+html body.sg-dark .cmp-delta.up { background: #3a3414; border-color: #7a5b00; color: #f6d36b; }
+html body.sg-dark .cmp-delta.down { background: #12324d; border-color: #2c5f8f; color: #a9d2f5; }
+html body.sg-dark .cmp-delta.in { background: #14301f; border-color: #2a6b45; color: #86efac; }
+html body.sg-dark .cmp-dot { border-color: #0e2418; background: #4ade80; }
+html body.sg-dark .cmp-band { background: #4ade80; opacity: .35; }
+html body.sg-dark .cmp-val small, html body.sg-dark .cmp-normal, html body.sg-dark .cmp-head, html body.sg-dark .cmp-cap { color: #b9cbbf !important; }
+html body.sg-dark .cmp-normal strong { color: #e6f4ea !important; }
+html body.sg-dark .cmp-how { background: #112b1d !important; border-color: #1e422e !important; }
+html body.sg-dark .cmp-details, html body.sg-dark .mc-details { background: #0e2418 !important; border-color: #1e422e !important; }
+
+/* ---------- v9.15: less white. Cards are a soft green-grey, boxes inside cards are one step darker, nothing is pure white ---------- */
+body .metric.glass, body .metric.metric-primary, body .metric[data-tone], body .metric[class*="uv-"] { background: var(--pro-surface) !important; }
+body .tabbar { background: var(--pro-surface) !important; }
+body .hour, body .hd-card, body .hd-stat, body .pulse-clear, body .smart-widget, body .prep-item, body .health-tip, body .mwr-message, body .mwr-outlook,
+body .mc-tabs, body .font-controls, body .scale-list li, body .cmp-table thead th, body .guide-grid article, body .source-status, body .dmh-alert {
+  background: var(--pro-sunken) !important; border-color: var(--pro-line) !important;
+}
+body .hour[aria-pressed="true"], body .hour.active, body .hour.selected { background: var(--pro-brand-soft) !important; }
+html body nav.tabbar.tabbar { background: var(--pro-surface) !important; }
+body .em-list li, body .mc-ytd { background: var(--pro-sunken) !important; }
+body .current-card .badge { font-size: 13px !important; padding: 4px 12px !important; min-height: 0 !important; }
+body .fa-tag { background: var(--pro-sunken) !important; color: var(--pro-ink) !important; border-color: var(--pro-line) !important; }
+html body.sg-dark .world-chips .chip.active { background: #14532d !important; color: #fff !important; }   /* was white text on light green in dark mode */
+
+/* v9.15: the Compare tab's place selector was the last pure-white block in light mode */
+body select.hist-select { background-color: var(--pro-surface) !important; color: var(--pro-ink) !important; border-color: var(--pro-line) !important; }
+
+/* ---------- v9.16: the sky moves. Layers sit under the text (z-index -1 inside the card). Only transform and opacity animate,
+   so the phone's graphics chip does the work. Off when the phone asks for reduced motion or data saving (`html.no-fx`), and
+   paused while the band is scrolled out of view (`.sky-paused`, set in app_boot.js). Static look is the gradient above. ---------- */
+body .current-card {
+  --rain-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M14 6l-3 13M52 30l-3 13M88 14l-3 13M30 70l-3 13M70 88l-3 13M104 62l-3 13M8 104l-3 13M58 112l-3 13' stroke='%23d4f0ff' stroke-width='1.3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"); --rain-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cpath d='M20 10l-2 9M64 32l-2 9M40 60l-2 9M78 74l-2 9M8 48l-2 9' stroke='%23d4f0ff' stroke-width='1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  --stars-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cg fill='white'%3E%3Ccircle cx='14' cy='22' r='1.2'/%3E%3Ccircle cx='62' cy='88' r='1'/%3E%3Ccircle cx='108' cy='30' r='1.4'/%3E%3Ccircle cx='150' cy='120' r='1'/%3E%3Ccircle cx='36' cy='140' r='1.2'/%3E%3Ccircle cx='128' cy='72' r='.9'/%3E%3C/g%3E%3C/svg%3E"); --stars-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130'%3E%3Cg fill='%23fff6cc'%3E%3Ccircle cx='24' cy='48' r='1.1'/%3E%3Ccircle cx='80' cy='14' r='1.3'/%3E%3Ccircle cx='102' cy='96' r='.9'/%3E%3Ccircle cx='48' cy='112' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .sky-fx { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; border-radius: inherit; }
+body .sky-fx i { position: absolute; display: block; opacity: 0; }
+/* 1 - drifting cloud shadows and highlights (clear, hot, rain, storm) */
+body .sky-fx i:nth-child(1) { left: 0; top: 0; width: 200%; height: 100%; opacity: 1; will-change: transform; animation: sg-drift 90s linear infinite;
+  background: radial-gradient(ellipse 80px 22px at 16% 26%, rgba(0,0,0,.08), transparent), radial-gradient(ellipse 120px 28px at 64% 64%, rgba(0,0,0,.06), transparent), radial-gradient(ellipse 100px 24px at 38% 88%, rgba(0,0,0,.12), transparent), radial-gradient(ellipse 90px 20px at 86% 14%, rgba(0,0,0,.10), transparent);
+  background-size: 50% 100%; background-repeat: no-repeat; background-position: 0 0; }
+body.weather-rain .sky-fx i:nth-child(1), body.weather-storm .sky-fx i:nth-child(1) { animation-duration: 60s; }
+/* 2 - the sun's glow breathes (clear and hot days) */
+body .sky-fx i:nth-child(2) { right: -44px; top: -64px; width: 210px; height: 210px; border-radius: 50%; opacity: .9; will-change: transform, opacity;
+  background: radial-gradient(circle, var(--sky-glow) 0, transparent 68%); animation: sg-pulse 7s ease-in-out infinite alternate; }
+body.weather-hot .sky-fx i:nth-child(2) { animation-duration: 4.5s; }
+/* rain and storm: two layers of falling streaks, the near one faster */
+body.weather-rain .sky-fx i:nth-child(2), body.weather-storm .sky-fx i:nth-child(2) { left: 0; right: 0; top: -120px; width: auto; height: calc(100% + 120px); border-radius: 0; opacity: .3;
+  background: var(--rain-a); background-size: 120px 120px; animation: sg-fall .85s linear infinite; }
+body.weather-rain .sky-fx i:nth-child(3), body.weather-storm .sky-fx i:nth-child(3) { left: 0; right: 0; top: -90px; height: calc(100% + 90px); opacity: .2; will-change: transform;
+  background: var(--rain-b); background-size: 90px 90px; animation: sg-fall-b 1.3s linear infinite; }
+body.weather-storm .sky-fx i:nth-child(2) { animation-duration: .65s; opacity: .38; }
+/* storm: two soft flashes every 8 seconds (never more than three a second) */
+body.weather-storm .sky-fx i:nth-child(4) { left: 0; right: 0; top: 0; height: 100%; will-change: opacity;
+  background: radial-gradient(ellipse 80% 70% at 28% 0, rgba(225,220,255,.5), transparent 72%); animation: sg-flash 8s linear infinite; }
+/* fog: slow banks of mist */
+body.weather-fog .sky-fx i:nth-child(1) { animation-duration: 120s;
+  background: radial-gradient(ellipse 140px 18px at 20% 24%, rgba(255,255,255,.12), transparent), radial-gradient(ellipse 160px 20px at 70% 52%, rgba(255,255,255,.10), transparent), radial-gradient(ellipse 130px 16px at 45% 82%, rgba(255,255,255,.12), transparent);
+  background-size: 50% 100%; background-repeat: no-repeat; }
+body.weather-fog .sky-fx i:nth-child(2) { left: 0; right: auto; top: 0; width: 200%; height: 100%; border-radius: 0; opacity: 1; animation: sg-drift-back 160s linear infinite;
+  background: radial-gradient(ellipse 150px 16px at 30% 38%, rgba(255,255,255,.09), transparent), radial-gradient(ellipse 120px 14px at 80% 70%, rgba(255,255,255,.09), transparent);
+  background-size: 50% 100%; background-repeat: no-repeat; }
+/* clear night: two layers of stars that twinkle out of step */
+body.weather-night:not(.weather-rain):not(.weather-storm):not(.weather-fog) .sky-fx i:nth-child(1) { opacity: 0; animation: none; }
+body.weather-night:not(.weather-rain):not(.weather-storm):not(.weather-fog) .sky-fx i:nth-child(2) { left: 0; right: 0; top: 0; bottom: 0; width: auto; height: auto; border-radius: 0; opacity: 1;
+  background: var(--stars-a); background-size: 170px 170px; animation: sg-twinkle 4s ease-in-out infinite alternate; }
+body.weather-night:not(.weather-rain):not(.weather-storm):not(.weather-fog) .sky-fx i:nth-child(3) { left: 0; right: 0; top: 0; bottom: 0; opacity: 1; will-change: opacity;
+  background: var(--stars-b); background-size: 130px 130px; animation: sg-twinkle 5.6s ease-in-out -2s infinite alternate; }
+@keyframes sg-drift { to { transform: translate3d(-50%, 0, 0); } }
+@keyframes sg-drift-back { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes sg-fall { to { transform: translate3d(0, 120px, 0); } }
+@keyframes sg-fall-b { to { transform: translate3d(0, 90px, 0); } }
+@keyframes sg-twinkle { from { opacity: .3; } to { opacity: 1; } }
+@keyframes sg-pulse { from { opacity: .15; transform: scale(1); } to { opacity: .5; transform: scale(1.14); } }
+@keyframes sg-flash { 0%, 90%, 100% { opacity: 0; } 91% { opacity: .55; } 92.5% { opacity: 0; } 94% { opacity: .35; } 96% { opacity: 0; } }
+body .current-card.sky-paused .sky-fx i { animation-play-state: paused; }
+html.no-fx .sky-fx { display: none; }
+@media (prefers-reduced-motion: reduce) { body .sky-fx { display: none; } }
+
+/* ---------- v9.16: own weather icons (wxicon.js) are 1em squares; the size comes from the place they sit in ---------- */
+svg.wxi { display: block; width: 1em; height: 1em; }
+body .hour .emoji { font-size: 34px; line-height: 1; height: 34px; display: block; }
+body .hd-emoji { font-size: 48px; line-height: 1; display: block; }
+body .fc-cond { display: flex; align-items: center; gap: 8px; min-width: 0; }
+body .fc-ic { font-size: 30px; line-height: 1; flex: none; }
+@media (max-width: 520px) {   /* narrow column: the icon goes above the words so a Burmese condition keeps its width */
+  body .fc-cond { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+
+/* ---------- v9.16: swiping between tabs slides the new panel in (swipe_tabs.js) ---------- */
+@keyframes sg-in-next { from { opacity: 0; transform: translate3d(26px, 0, 0); } to { opacity: 1; transform: none; } }
+@keyframes sg-in-prev { from { opacity: 0; transform: translate3d(-26px, 0, 0); } to { opacity: 1; transform: none; } }
+body .swipe-in-next { animation: sg-in-next .22s ease-out; }
+body .swipe-in-prev { animation: sg-in-prev .22s ease-out; }
+body:has(.swipe-in-next, .swipe-in-prev) { overflow-x: clip; }
+@media (prefers-reduced-motion: reduce) { body .swipe-in-next, body .swipe-in-prev { animation: none; } }
+
+/* ---------- v9.17: Compare tab = one question at a time. Three views (Now / This year / Long term), month rows instead of charts ---------- */
+body [data-panel="compare"][data-view="now"] [data-seg="year"], body [data-panel="compare"][data-view="now"] [data-seg="hist"],
+body [data-panel="compare"][data-view="year"] [data-seg="now"], body [data-panel="compare"][data-view="year"] [data-seg="hist"],
+body [data-panel="compare"][data-view="hist"] [data-seg="now"], body [data-panel="compare"][data-view="hist"] [data-seg="year"] { display: none !important; }
+body .cmp-views { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; margin: 0 0 12px; max-width: 560px; background: var(--pro-sunken); border: 1px solid var(--pro-line); border-radius: 14px; }
+body .cmp-views button { min-height: 44px; padding: 6px 8px; border: 0; border-radius: 10px; background: transparent; color: var(--pro-muted); font: inherit; font-size: 15px; font-weight: 600; line-height: 1.5; cursor: pointer; }
+body .cmp-views button[aria-selected="true"] { background: var(--pro-surface); color: var(--pro-ink); font-weight: 700; box-shadow: 0 1px 2px rgba(10, 30, 18, .14); }
+html.sg-dark body .cmp-views button[aria-selected="true"] { background: #1f5a3a; color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
+body .cmp-views button:focus-visible { outline: 3px solid var(--pro-brand); outline-offset: 1px; }
+body .cmp-short { margin: 2px 0 10px; font-size: 13px; line-height: 1.7; }
+
+body .mc-chart { max-width: none; margin: 4px 0 0; }
+body .mc-rows { list-style: none; margin: 8px 0 4px; padding: 0; max-width: 720px; }
+body .mc-row { display: grid; grid-template-columns: minmax(5.6em, 7.4em) 1fr auto; align-items: center; gap: 2px 10px; min-height: 46px; padding: 4px 8px; border-bottom: 1px solid var(--pro-line); line-height: 1.6; }
+body .mc-row:last-child { border-bottom: 0; }
+body .mc-row.now { background: var(--pro-brand-soft); border-radius: 10px; border-bottom-color: transparent; }
+body .mc-m { display: flex; flex-direction: column; font-size: 14px; font-weight: 600; }
+body .mc-m small { font-size: 12px; font-weight: 400; color: var(--pro-muted); }
+body .mc-bar { position: relative; height: 14px; border-radius: 7px; background: var(--pro-sunken); }
+body .mc-zero { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--pro-muted); opacity: .55; border-radius: 1px; }
+body .mc-fill { position: absolute; top: 0; bottom: 0; min-width: 3px; border-radius: 7px; background: var(--c, #2563eb); }
+body .mc-fill.hatch { background: repeating-linear-gradient(45deg, var(--c) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1.5px var(--c); }
+body .mc-fill.rain { background: #0f766e; }
+body .mc-v { justify-self: end; min-width: 4.4em; text-align: right; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+body .mc-v small, body .mc-v .mc-t { font-size: 12px; font-weight: 500; color: var(--pro-muted); }
+body .mc-pending { margin: 4px 8px 0; }
+body #historyBody svg { display: block; max-width: 560px; }
+@media (max-width: 360px) {   /* very narrow phones: name and number share the first line, the bar goes under them */
+  body .mc-row { grid-template-columns: 1fr auto; }
+  body .mc-row .mc-bar { grid-column: 1 / -1; order: 3; height: 10px; }
+}
+body .hist-months .mc-v { min-width: 0; }
+@media (min-width: 768px) {   /* tablets and up: the months read in two columns (Jan-Jun, Jul-Dec) instead of one long, thin list */
+  body .mc-rows { max-width: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); grid-auto-flow: column; column-gap: 36px; }
+  body .mc-rows > .mc-row:nth-child(6) { border-bottom-color: transparent; }
+}
+@media (max-width: 440px) {
+  body .hist-months .mc-row { grid-template-columns: 1fr auto; }
+  body .hist-months .mc-row .mc-bar { grid-column: 1 / -1; order: 3; height: 10px; }
+}
+
+/* The wide layout's content column is "1fr", which will not shrink below the widest unbreakable thing inside it (a long Burmese or Japanese line
+   at ~1024 px), so the column pushed past the screen. minmax(0,1fr) lets it shrink and the text wrap instead. */
+@media (min-width: 1024px) {
+  body #dashboard:not([hidden]) { grid-template-columns: 235px minmax(0, 1fr) !important; }
+  body #dashboard > .tab-panel { min-width: 0 !important; }
+}
+
+/* ---------- Lab tab: leaf check (v9.18.0) ----------
+   Three steps, then three separate looks (signs, photo model, AI). Each look keeps its own heading and stamp; nothing is merged into
+   one verdict. Colour is always paired with words, never the only signal. */
+body .lf-steps { list-style: none; counter-reset: lf; margin: 12px 0 0; padding: 0; display: grid; gap: 14px; }
+body .lf-step { counter-increment: lf; padding: 12px 14px; border: 1px solid var(--pro-line); border-radius: var(--pro-r-card); background: var(--pro-surface); }
+body .lf-h { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+body .lf-h::before { content: counter(lf); display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pro-brand); color: #fff; font-size: 14px; font-weight: 700; flex: none; }
+html.sg-dark body .lf-h::before { background: var(--pro-brand); color: #04210f; }
+body .lf-select { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--pro-line); border-radius: var(--pro-r-ctl); background: var(--pro-sunken); color: var(--pro-ink); font: inherit; font-size: 16px; }
+body .lf-select:focus-visible, body .lf-chip:focus-visible, body .lf-table-wrap:focus-visible { outline: 3px solid var(--pro-brand); outline-offset: 1px; }
+body .lf-input { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--pro-line); border-radius: var(--pro-r-ctl); background: var(--pro-sunken); color: var(--pro-ink); font: inherit; font-size: 16px; }
+body .lf-input:focus-visible, body .lf-check input:focus-visible { outline: 3px solid var(--pro-brand); outline-offset: 1px; }
+body .lf-keybox { display: grid; gap: 8px; margin: 10px 0 0; }
+body .lf-check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 6px 0; line-height: 1.4; cursor: pointer; }
+body .lf-check input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--pro-brand); }
+body .lf-key > p { margin: 8px 0 0; }
+body .lf-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+body .lf-actions .ghost-btn, body .lf-run { min-height: 44px; }
+html body .ghost-btn.lf-primary { background: var(--pro-brand) !important; color: #fff !important; border-color: var(--pro-brand) !important; font-weight: 700; }
+html body.sg-dark .ghost-btn.lf-primary { background: var(--pro-brand) !important; color: #04210f !important; border-color: var(--pro-brand) !important; }
+html body .ghost-btn.lf-primary[disabled] { opacity: .45; cursor: not-allowed; }
+html body .ghost-btn.lf-danger { border-color: #b42318 !important; color: #b42318 !important; font-weight: 700; }
+html body.sg-dark .ghost-btn.lf-danger { border-color: #ff8a7a !important; color: #ff8a7a !important; }
+body .lf-thumb { display: block; width: 100%; max-width: 320px; max-height: 240px; object-fit: contain; margin: 8px 0 0; border: 1px solid var(--pro-line); border-radius: var(--pro-r-ctl); background: var(--pro-sunken); }
+body .lf-group { margin: 8px 0 0; padding: 0; border: 0; min-width: 0; }
+body .lf-group legend { padding: 0; margin: 0 0 6px; font-size: 13px; font-weight: 700; color: var(--pro-muted); }
+body .lf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+body .lf-chip { min-height: 44px; padding: 6px 12px; border: 1px solid var(--pro-line); border-radius: 22px; background: var(--pro-sunken); color: var(--pro-ink); font: inherit; font-size: 14px; line-height: 1.3; text-align: left; cursor: pointer; }
+body .lf-chip.on { background: var(--pro-brand-soft); border-color: var(--pro-brand); color: var(--pro-ink); font-weight: 700; }
+body .lf-chip.on::before { content: "✓ "; color: var(--pro-brand); font-weight: 700; }
+body .lf-results { display: grid; gap: 12px; margin: 14px 0 0; }
+body .lf-res { padding: 12px 14px; border: 1px solid var(--pro-line); border-radius: var(--pro-r-card); background: var(--pro-surface); }
+body .lf-res h4, body .lf-log h4 { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+body .lf-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+body .lf-list > li { padding: 8px 10px; border: 1px solid var(--pro-line); border-radius: var(--pro-r-ctl); background: var(--pro-sunken); }
+body .lf-list p { margin: 4px 0 0; }
+body .lf-status { margin: 6px 0 0; padding: 8px 10px; border-left: 4px solid var(--pro-muted); border-radius: 6px; background: var(--pro-sunken); }
+body .lf-status.s-sure { border-left-color: var(--pro-brand); }
+body .lf-status.s-unsure, body .lf-status.s-hint { border-left-color: var(--pro-gold); }
+body .lf-bar { height: 6px; margin: 6px 0 0; border-radius: 3px; background: var(--pro-line); overflow: hidden; }
+body .lf-bar i { display: block; height: 100%; background: var(--pro-brand); border-radius: 3px; }
+body .lf-list .row-sb { gap: 10px; align-items: flex-start; }
+body .lf-list .row-sb > :first-child { min-width: 0; overflow-wrap: anywhere; }
+body .lf-lv, body .lf-conf { flex: none; white-space: nowrap; line-height: 1.7; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: var(--pro-sunken); border: 1px solid var(--pro-line); color: var(--pro-ink); }
+body .lf-lv.lv-strong, body .lf-conf.c-high { background: var(--pro-brand-soft); border-color: var(--pro-brand); }
+body .lf-lv.lv-possible, body .lf-conf.c-medium { border-color: var(--pro-gold); }
+body .lf-guide, body .lf-facts { margin: 8px 0 0; }
+body .lf-guide summary, body .lf-facts summary { cursor: pointer; min-height: 32px; font-size: 14px; font-weight: 600; color: var(--pro-brand-deep); }
+body .lf-guide h5 { margin: 8px 0 2px; font-size: 13px; color: var(--pro-muted); }
+body .lf-guide ul { margin: 2px 0 0; padding-left: 20px; }
+body .lf-guide ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 6px; }
+body .lf-similar li { margin: 0 0 4px; }
+body .lf-q { margin: 8px 0 0; padding: 8px 10px; border-left: 4px solid var(--pro-gold); border-radius: 6px; background: var(--pro-sunken); }
+body .lf-q p { margin: 0 0 4px; }
+body .lf-q ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+body .lf-health { margin-top: 18px; }
+body .lf-health .lf-guide ul { display: grid; gap: 6px; }
+body .lf-list p.tiny { margin-top: 4px; }
+body .lf-log { margin: 18px 0 0; padding-top: 12px; border-top: 1px solid var(--pro-line); }
+body .lf-table-wrap { overflow-x: auto; border: 1px solid var(--pro-line); border-radius: var(--pro-r-ctl); -webkit-overflow-scrolling: touch; }
+body .lf-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+body .lf-table th, body .lf-table td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--pro-line); }
+body .lf-table th { position: sticky; top: 0; background: var(--pro-sunken); font-weight: 700; color: var(--pro-muted); }
+body .lf-table tbody tr:last-child td { border-bottom: 0; }
+body .lf-foot { margin-top: 14px; }
+@media (min-width: 720px) {
+  body .lf-steps { grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr); align-items: start; }
+  body .lf-step:nth-child(1), body .lf-step:nth-child(2) { grid-column: 1; }
+  body .lf-step:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* ==========================================================================
+   DEVICE LAYER (v9.19.0)
+   Written from a measured sweep of 13 screen sizes x 3 languages (phones from
+   320 px, foldables, tablets, laptops, 1920 px, phones on their side). It sits
+   last on purpose and only corrects what the sweep found: touch targets,
+   text floor, clipped hero card, cramped tiles, uneven tab rows, tall headers
+   on landscape phones. tests/e2e/ux.spec.js repeats the sweep as a test.
+   ========================================================================== */
+:root { --tap: 44px; --fs-floor: max(12px, .75rem); }
+
+/* 1. Touch targets: every control is at least 44 x 44 on touch and small screens */
+@media (max-width: 1024px), (pointer: coarse) {
+  html body :is(.top-btn, .ghost-btn, .quiet-btn-link, .chip, .mode-btn, .search-btn, .em-num, .hospital-go, .safety-action),
+  html body .top-actions .top-btn, html body .enso-link .em-num { min-height: var(--tap) !important; }
+  html body :is(.top-btn, .hospital-go, .ghost-btn, .moon-nav button) { min-width: var(--tap) !important; }
+  html body .moon-nav button { min-height: var(--tap) !important; }
+  body .hospital-go { height: var(--tap) !important; }
+  body input#topSearchInput, body select, body input[type="search"] { min-height: var(--tap) !important; }
+  body #leafCard summary, body .lf-guide summary, body .lf-facts summary { min-height: var(--tap) !important; box-sizing: border-box; padding-block: 11px; }
+}
+/* the small "Scale" link keeps its look; only its hit area grows (also 24 px minimum for a mouse) */
+body .lvl-more { position: relative; }
+body .lvl-more::after { content: ""; position: absolute; inset: -12px -8px; }
+
+/* 2. Text floor: nothing under 12 px (it still grows with the A+ control) */
+body :is(.lvl-pill, .lvl-tip, .lvl-more, .forecast-head, .forecast-head *, .forecast-temp span, .rain-cell span, .rain-cell strong,
+         .temperature-chart-note, .mm-day, .fa-tag, .fa-src, .pulse-link, .safety-label, .safety-muted, .safety-badge, .hospital-body small, .metric small),
+body small, body .forecast-row strong, body .forecast-row span:not(.fc-ic), body .rain-day strong, body .rain-day span:not(.fc-ic), body :is(.tabbar, .farm-tabbar-top) :is(.tab, .navx, .ftab, .fnavx) > span { font-size: var(--fs-floor) !important; }
+@media (max-width: 360px) { body :is(.tabbar, .farm-tabbar-top) :is(.tab, .navx, .ftab, .fnavx) > span { font-size: 11px !important; } }   /* five tabs in 320 px: the one place 11 px stays */
+
+/* 3. Narrow phones: the hero card must not cut the condition off */
+@media (max-width: 400px) {
+  body .current-card .current-main { flex-wrap: wrap !important; gap: 10px 12px !important; min-width: 0; }
+  body .current-card .current-main > div:last-child { grid-template-columns: minmax(0, 1fr) !important; row-gap: 4px; min-width: 0; flex: 1 1 130px; }
+  body .current-card .condition, body .current-card .condition-text { overflow-wrap: anywhere; }
+}
+
+/* 4. Tablet (651-1023 px): eight tabs sit in two even rows of four */
+@media (min-width: 651px) and (max-width: 1023px) {
+  body .tabbar:not(.farm-tabbar-top) { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+}
+
+/* 5. Laptop and desktop: tiles never get narrower than 172 px, at most five across
+      (1024 px with the side rail used to squeeze five tiles into 130 px each) */
+@media (min-width: 1024px) {
+  body #dashboard > .metric-grid { grid-template-columns: repeat(auto-fit, minmax(max(172px, calc((100% - 40px) / 5)), 1fr)) !important; }
+}
+
+/* 6. Phones on their side and other short screens: spend the height on the weather, not the header */
+@media (max-height: 520px) and (orientation: landscape) {
+  body .location-row .eyebrow, body #locationMeta { display: none !important; }
+  body .location-row { padding-block: 4px !important; row-gap: 6px; }
+  body .location-row h2 { font-size: 22px !important; line-height: 1.2; margin: 0; }
+  body .mode-switch { margin-bottom: 6px !important; }
+  body .topbar { padding-block: 4px !important; }
+  body .current-card { padding: 12px 16px !important; }
+  body .app-shell { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+}
+
+/* ======================================================================================================================
+   CALM LAYER (v9.20.0) — less on screen at once, for every age and every device. Adds nothing new to the page.
+   1. Secondary cards are folds: the title and one quiet line show, the rest opens on tap (a fold opens by itself when it matters)
+   2. A card is ONE surface: boxes nested inside a card lose their frame and are split by a hairline instead
+   3. One type scale, 14 / 16 / 18 / 22 / 28: small print is 14 px (12 px only inside pills and tab labels)
+   ---------------------------------------------------------------------------------------------------------------------- */
+
+/* 1. folds ---------------------------------------------------------------------------------------------------------- */
+body :is(.fold-card, .lf-fold) > summary {
+  list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; column-gap: 10px; row-gap: 0;
+  min-height: var(--tap, 44px); padding: 2px 0; cursor: pointer; color: var(--pro-ink);
+}
+body :is(.fold-card, .lf-fold) > summary::-webkit-details-marker { display: none; }
+body :is(.fold-card, .lf-fold) > summary::after {
+  content: ""; grid-column: 3; grid-row: 1 / span 2; width: 9px; height: 9px; margin: 0 6px 4px 2px;
+  border-right: 2px solid var(--pro-muted); border-bottom: 2px solid var(--pro-muted); transform: rotate(45deg);
+}
+body :is(.fold-card, .lf-fold)[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+body :is(.fold-card, .lf-fold)[open] > summary { margin-bottom: 8px; }
+body .fold-t, body .lf-fold > summary > :first-child { grid-column: 1; font-size: 18px; font-weight: 700; line-height: 1.5; color: var(--pro-ink); }
+body .fold-s { grid-column: 1; font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--pro-muted); }
+body .fold-s b { color: var(--pro-ink); }
+body .fold-n, body .lf-count {
+  grid-column: 2; grid-row: 1 / span 2; min-width: 28px; padding: 1px 10px; border-radius: 14px; text-align: center;
+  font-size: 14px; font-weight: 700; line-height: 1.7; background: var(--pro-brand-soft); color: var(--pro-brand-deep); font-variant-numeric: tabular-nums;
+}
+body .lf-fold > summary .lf-h { margin: 0; font-size: 18px; }
+body .lf-fold > summary .lf-count { margin-left: 8px; grid-column: 2; }
+body .fold-card > summary:focus-visible, body .lf-fold > summary:focus-visible { outline: 3px solid var(--pro-brand); outline-offset: 3px; border-radius: 6px; }
+
+/* 2. one surface per card ------------------------------------------------------------------------------------------- */
+/* lists inside a card: no frame, no fill, a hairline between rows */
+body .card .em-list { gap: 0; }
+body .card .em-list li, body #wxEnso .em-list li {
+  background: none !important; border: 0 !important; border-radius: 0 !important; padding: 10px 0 !important; border-top: 1px solid var(--pro-line) !important;
+}
+body .card .em-list li:first-child, body #wxEnso .em-list li:first-child { border-top: 0 !important; }
+/* the hour you tapped: plain figures under the strip, no frames within a frame */
+body .hd-card { background: none !important; border: 0 !important; border-top: 1px solid var(--pro-line) !important; border-radius: 0 !important; padding: 14px 0 0 !important; }
+body .hd-stat { background: none !important; border: 0 !important; border-radius: 0 !important; padding: 4px 0 !important; }
+body .hd-stat span { font-size: 14px; opacity: 1; color: var(--pro-muted); }
+body .hd-stat b { font-size: 18px; }
+body .hd-grid { gap: 6px 16px; }
+/* the 24-hour strip: one soft chip per hour, the chosen hour in green */
+body .hour { border-color: transparent !important; background: var(--pro-sunken) !important; }
+body .hour[aria-pressed="true"], body .hour.active, body .hour.selected { border-color: var(--pro-brand) !important; box-shadow: none !important; background: var(--pro-brand-soft) !important; }
+/* checklist items, health tips: filled, not framed */
+body .prep-item, body .health-tip { border: 0 !important; }
+body .hyd-box { border-top: 1px solid var(--pro-line); }
+/* the Lab: steps and results are sections of one card, not cards in a card */
+body .lf-step { padding: 14px 0 0; border: 0; border-top: 1px solid var(--pro-line); border-radius: 0; background: none; }
+body .lf-step:first-child { padding-top: 4px; border-top: 0; }
+body .lf-steps { gap: 0; }
+body .lf-res { padding: 12px 0 0; border: 0; border-top: 1px solid var(--pro-line); border-radius: 0; background: none; }
+body .lf-results { gap: 0; }
+body .lf-res h4, body .lf-log h4 { font-size: 16px; }
+body .lf-list { gap: 0; }
+body .lf-list > li { padding: 10px 0; border: 0; border-top: 1px solid var(--pro-line); border-radius: 0; background: none; }
+body .lf-list > li:first-child { border-top: 0; }
+body .lf-fold.lf-res { padding-top: 8px; }
+body .lf-health { margin-top: 0; }
+body .lf-guide ul, body .lf-guide ol { font-size: 15px; }
+
+/* 3. one type scale ------------------------------------------------------------------------------------------------- */
+body .card .tiny, body .card small:not(.lf-count), body .card .muted.tiny { font-size: 14px !important; line-height: 1.6; }
+body .card p, body .card li { font-size: 16px; }
+body .card p.tiny, body .card li.tiny, body .card .tiny li { font-size: 14px !important; }
+
+/* 1b. fold details */
+body :is(.fold-card, .lf-fold) > summary::before { content: none !important; display: none !important; }   /* ux.css adds its own ▸ to every summary */
+body .fold-in { margin-top: 10px; }
+body .fold-in > summary .fold-t { font-size: 16px; }
+body .fold-in .guide-list { margin: 4px 0 0; }
+
+/* 2b. emergency numbers and the SOS list: quieter, still easy to hit */
+body .sos-item { border: 0 !important; border-top: 1px solid var(--pro-line) !important; border-radius: 0 !important; background: none !important; margin: 0 !important; padding: 0 !important; }
+body .sos-item:first-of-type { border-top: 0 !important; }
+body .sos-item summary { min-height: 52px; font-size: 16px; }
+body .sos-item[open] { padding-bottom: 8px !important; }
+html body .em-num, html body a.em-num {
+  background: var(--pro-brand-soft) !important; color: var(--pro-brand-deep) !important; border: 1px solid var(--pro-brand) !important;
+  font-size: 18px !important; font-weight: 700 !important; box-shadow: none !important;
+}
+
+/* 3b. snap the odd sizes onto the scale: 12 / 14 / 16 / 18 / 22 / 28 (the 54 px temperature stays: it is the one bold figure) */
+body :is(.card h3, .section-heading h3, .card-kicker span, .today-brief > .card-kicker > span:not(.auto-badge), .health-card > summary.card-kicker > span:not(.auto-badge)) { font-size: 18px !important; }
+body :is(#riskScore, #officialPulse strong, #wxEnso li b, #wxEnso li span, #wxEnso .agri-note, #moonCard .muted, .temperature-chart-unit, .tl-high, .tl-low,
+         #compareCharts :is(.cmp-state, th, td, .cmp-lg, strong:not(.cmp-title)), .metric small, .metric em) { font-size: 14px !important; }
+body :is(#healthTipsIntro, #healthTipsList strong, #healthTipsList p, .mwr-sum-none, #moonCard :is(button, strong), #hourlyForecast strong, #hourlyDetail :is(.hd-sky, .muted),
+         #todayBrief strong, #hazards summary, #heatCard h4, #rainLogCard :is(h4, span, strong, summary), #compareCharts :is(.cmp-title, summary, .cmp-delta), #cmpSeg button, a.em-num) { font-size: 16px !important; }
+body :is(.brief-ico, .metric strong, #hourlyDetail strong, #hourlyDetail .hd-emoji + *) { font-size: 22px; }
+body #hourlyDetail b.hd-temp, body #compareCharts .cmp-val, body .moon-icon { font-size: 28px !important; }
+body .current-card .condition { font-size: 22px !important; }
+body #todayBrief span:not(.brief-ico):not(.sr-only) { font-size: 16px; }
+body .hyd-box { border-radius: 0; }
+
+/* 4. Compare tab (v9.21.0): say it in words first, then show it. Number, one plain sentence, a low-normal-high meter, the usual range. */
+html body #compareCharts .cmp-blk .cmp-title { font-size: 18px !important; }
+html body #compareCharts .cmp-blk .cmp-val { font-size: 32px !important; }
+html body #compareCharts .cmp-say { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.6; color: var(--pro-ink); }
+html body #compareCharts .cmp-say.up { color: #7a4d00; }
+html body #compareCharts .cmp-say.down { color: #174f82; }
+html body #compareCharts .cmp-say.in { color: #135c36; }
+html body.sg-dark #compareCharts .cmp-say.up, html.sg-dark body #compareCharts .cmp-say.up { color: #f6d36b; }
+html body.sg-dark #compareCharts .cmp-say.down, html.sg-dark body #compareCharts .cmp-say.down { color: #a9d2f5; }
+html body.sg-dark #compareCharts .cmp-say.in, html.sg-dark body #compareCharts .cmp-say.in { color: #86efac; }
+body #compareCharts .cmp-meter { max-width: none; margin: 8px 0 2px; }
+body #compareCharts .cmp-meter-bar { gap: 4px; }
+body #compareCharts .cmp-seg { height: 12px; border-radius: 6px; }
+html body #compareCharts .cmp-meter-lbl { font-size: 14px; margin-top: 6px; color: var(--pro-muted); }
+html body #compareCharts .cmp-normal { font-size: 14px; }
+html body #compareCharts .cmp-sum { font-size: 16px; }
+
+/* 4b. the older "details" folds of the Compare tab look like the new ones: flat, hairline above, bold title, one chevron */
+body .card .fold-card:not(:first-child), body :is(.cmp-details, .mc-details) { border: 0; border-top: 1px solid var(--pro-line); }
+body .card .fold-card:not(:first-child) { margin-top: 10px; padding-top: 4px; }
+body :is(.cmp-details, .mc-details) { background: none !important; border-radius: 0 !important; border-color: var(--pro-line) !important; border-width: 1px 0 0 !important; padding: 4px 0 0 !important; margin: 10px 0 0 !important; }
+body :is(.cmp-details, .mc-details) > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: var(--tap, 44px); font-size: 18px !important; font-weight: 700; line-height: 1.5; cursor: pointer; }
+body :is(.cmp-details, .mc-details) > summary::-webkit-details-marker { display: none; }
+body :is(.cmp-details, .mc-details) > summary::before { content: none !important; display: none !important; }
+body :is(.cmp-details, .mc-details) > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin: 0 8px 4px 2px; border-right: 2px solid var(--pro-muted); border-bottom: 2px solid var(--pro-muted); transform: rotate(45deg); }
+body :is(.cmp-details, .mc-details)[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+html body.sg-dark :is(.cmp-details, .mc-details), html.sg-dark body :is(.cmp-details, .mc-details) { background: none !important; }
+
+/* 5. First-screen tiles (v9.22.0): on a phone the icon sits on top, so the value gets the whole tile width.
+      In Burmese "1.2 မီလီမီတာ" used to wrap onto three lines next to the icon. */
+@media (max-width: 650px) {
+  body .metric-grid > .metric { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; }
+  body .metric-grid > .metric > div { width: 100%; min-width: 0; }
+  body .metric-grid > .metric > span:first-child { width: 34px !important; height: 34px !important; border-radius: 10px !important; }
+  body .metric-grid > .metric strong { display: block; overflow-wrap: anywhere; }
+}
+
+/* 6. One tab, one subject (v9.23.0): the Today summary (warnings, current weather, tiles) belongs to the Today tab.
+      The other tabs keep the place row and start right under it, so Compare, 7-Day, Alerts… no longer open ~1400 px below the fold.
+      weather_script.js sets body[data-wtab]; without it (before the first tab is chosen) nothing is hidden. */
+body[data-wtab]:not([data-wtab="today"]) #dashboard > :is(.decision-grid, .current-card, .hourly-card, .metric-grid, #metricFold, .scale-panel) { display: none !important; }
+
+/* 7. Today, in the order weather apps use (v9.24.0): the temperature, the warnings, then the next hours, then the details.
+      weather.html moved the hourly card out of the Today panel to sit under the warnings card. It was ~1900 px down on a phone;
+      now it follows the temperature and the (short) warnings card. Warnings stay above it: an active warning must not be pushed down. */
+body #dashboard > .hourly-card { order: 3; margin: 0; }
+@media (max-width: 650px) { body #dashboard > .hourly-card { order: 2; } }   /* ties with .decision-grid, which comes first in the markup */
+@media (min-width: 1024px) {
+  body #dashboard:not([hidden]) { grid-template-areas: "nav loc" "nav current" "nav decision" "nav hourly" "nav metrics" "nav scale" "nav panel"; }
+  body #dashboard > .hourly-card { grid-area: hourly; }
+  /* the other tabs have no summary: two rows only, so the hidden rows leave no gaps */
+  body[data-wtab]:not([data-wtab="today"]) #dashboard:not([hidden]) { grid-template-areas: "nav loc" "nav panel"; }
+}
+
+/* 8. "No notices" state of the Today warnings card (v9.24.0): one statement, not three.
+      The grey strip already says "no official warning"; the pill above it and the footer rows said the same again. */
+body .today-brief:has(.mwr-sum-none) .brief-main { display: none; }
+body .today-brief:has(.mwr-sum-none) .mwr-sum-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; }
+body .today-brief:has(.mwr-sum-none) .mwr-sum-foot > p { margin: 0; }

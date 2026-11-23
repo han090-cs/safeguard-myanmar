@@ -1,6 +1,6 @@
 import { navigation, updateNavigation, rememberPanelPosition, revealPanel, wireTabs, preserveView, fetchJSON, placeKey } from "./interaction.js";
 import { L, t as i18nText } from "./i18n.js";
-import { mountAgriView } from "./views.js";
+import { mountAgriView } from "./lazy_views.js";
 const tMonth=(lang)=>i18nText(lang,"agri_months");
 /* Farming tab: the person picks a FARMING REGION (no town search). Everything shown is data that exists on file:
    - data/agri_research.json (built from the research CSV bundle): regions, crops, soil records, sources. Unknown stays unknown.
@@ -14,7 +14,7 @@ const tMonth=(lang)=>i18nText(lang,"agri_months");
   let LOC=null,SCOPE=null,scopeController=null;const scopeCache=new Map();
   const isMy=()=>(window.__mwLang?window.__mwLang():"my")==="my";
   const regionOf=()=>RES&&REGION?RES.regions.find(r=>r.id===REGION)||null:null;
-  // The six farming cards are drawn by the React view (frontend/src/agri_view.jsx -> agri_view.js); this file keeps data, navigation and tab logic.
+  // The six farming cards are drawn by the Preact view (frontend/src/agri_view.jsx -> agri_view.js); this file keeps data, navigation and tab logic.
   let view=null;
   function render(){preserveView(renderData);syncScope();}
   function renderData(){

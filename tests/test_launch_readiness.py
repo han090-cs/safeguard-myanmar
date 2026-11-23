@@ -18,7 +18,8 @@ def _req(peer, headers=None, base="http://127.0.0.1:8000/", scheme="http"):
 def test_visitors_behind_local_proxy_get_their_own_rate_bucket(monkeypatch):
     monkeypatch.delenv("TRUST_PROXY_HEADERS", raising=False)
     assert state._client_ip(_req("127.0.0.1", {"x-forwarded-for": "203.0.113.7"})) == "203.0.113.7"
-    assert state._client_ip(_req("::1", {"x-forwarded-for": "203.0.113.8, 10.0.0.1"})) == "203.0.113.8"
+    # a local proxy appends the real peer on the right; anything the client wrote on the left is forgeable
+    assert state._client_ip(_req("::1", {"x-forwarded-for": "6.6.6.6, 203.0.113.8"})) == "203.0.113.8"
 
 
 def test_remote_peers_cannot_spoof_forwarded_for(monkeypatch):

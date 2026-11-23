@@ -3,6 +3,7 @@
 Routing, middleware, provider adapters, caching and static-file handling live in ``app/``.
 This module intentionally re-exports the public app/version and the provider symbols used by tests.
 """
+import _preflight  # noqa: F401  (clear message instead of a traceback when packages are missing)
 from app.app import app
 from app import state
 from app import providers

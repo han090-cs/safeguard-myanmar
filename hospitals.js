@@ -4,9 +4,9 @@ import { L } from "./i18n.js";
 import { apiJSON, isAbort } from "./net.js";
 import { placeKey } from "./interaction.js";
 import { safetyBadge } from "./safety.js";
-import { mountHospitalsView } from "./views.js";
+import { mountHospitalsView } from "./lazy_views.js";
 let current=null,pending=null,generation=0;
-// The list itself is drawn by React (frontend/src/hospitals_view.jsx -> views.js); this file keeps the requests and state.
+// The list itself is drawn by Preact (frontend/src/hospitals_view.jsx -> views.js); this file keeps the requests and state.
 let draw=null;
 const show=s=>{draw=draw||mountHospitalsView();draw(s&&{...s,L,my:state.lang==="my"});};
 const cache=new Map();

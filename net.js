@@ -9,7 +9,15 @@ const WEATHER_CACHE_MS = 10 * 60 * 1000; // 10 min: cuts repeat API/network call
 
 let slowHintTimer=null;
 
+const EMPTY_SLOTS=["todayBrief"];
+function markBusy(v){
+  // skeleton shimmer for still-empty cards while loading (CSS); a plain "no data yet" line if they stay empty afterwards
+  document.body.classList.toggle("is-loading",!!v);
+  els.dashboard?.setAttribute("aria-busy",v?"true":"false");
+  if(!v) for(const id of EMPTY_SLOTS){const el=document.getElementById(id); if(el) el.dataset.empty=L("ux_no_data");}
+}
 export function loading(v,message){
+  markBusy(v);
   els.loading.hidden=!v;
   clearTimeout(slowHintTimer);
   if(v){
@@ -109,9 +117,6 @@ export function readWeatherCacheAny(lat,lon){
   return null;
 }
 
-// ~5 km grid (finer than the 9 km forecast model): nearby visitors share one CDN-cached URL.
-const snap5=v=>(Math.round(Number(v)*20)/20).toFixed(2);
-
 export async function getWeather(lat,lon,signal){
   const cached=readWeatherCache(lat,lon); if(cached)return cached;
   // Weather data is intentionally backend-controlled (provider fallback, cache/stale handling, rate limits live there).
@@ -120,7 +125,7 @@ export async function getWeather(lat,lon,signal){
   let lastErr; const deadline=Date.now()+45000;
   for(let n=0;n<tries.length;n++){
     try{
-      const data=await apiJSON("/api/weather",{lat:snap5(lat),lon:snap5(lon)},{timeout:Math.min(tries[n],Math.max(1,deadline-Date.now())),exactTimeout:true,signal,retry:false});
+      const data=await apiJSON("/api/weather",{lat,lon},{timeout:Math.min(tries[n],Math.max(1,deadline-Date.now())),exactTimeout:true,signal,retry:false});
       const checked=weatherFreshness(data); writeWeatherCache(lat,lon,checked); state.slowSeen=false; return checked;
     }catch(e){
       if(isAbort(e)) throw e;

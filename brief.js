@@ -5,7 +5,6 @@ import { mountBriefView, clearSlot } from "./views.js";
 /* Smart Decision Engine: Today Brief + Solar Advisor + 24h Spray Window + Hydration + SMS Copy + Checklist */
 (function(){
   "use strict";
-  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const my=()=>(window.__mwLang?window.__mwLang():"my")==="my";
   const num=(n,d=0)=>{const s=Number(n).toFixed(d);return my()?s.replace(/\d/g,x=>"၀၁၂၃၄၅၆၇၈၉"[x]):s;};
   const hh=h=>num(h,0).padStart(my()?1:2,my()?"၀":"0")+":"+(my()?"၀၀":"00");
@@ -119,7 +118,7 @@ import { mountBriefView, clearSlot } from "./views.js";
     ];
     const doneCount=items.filter(([k])=>saved[k]).length;
     const pct=Math.round((doneCount/items.length)*100);
-    V.checklist({head:my()?"သဘာဝဘေးအန္တရာယ် ကြိုတင်ပြင်ဆင်ရေး စစ်ဆေးရန်စာရင်း":"Emergency Go-Bag & Preparedness Checklist",
+    V.checklist({tag:my()?"ပြင်ဆင်ရန်":"Ready",head:my()?"သဘာဝဘေးအန္တရာယ် ကြိုတင်ပြင်ဆင်ရေး စစ်ဆေးရန်စာရင်း":"Emergency Go-Bag & Preparedness Checklist",
       sub:my()?`အသင့်ပြင်ဆင်ပြီး (${num(doneCount)} / ${num(items.length)} ·${num(pct)}%) — ပြီးတဲ့အချက်တွေကို အမှန်ခြစ်မှတ်ထားနိုင်ပါတယ်`:`Prepared (${doneCount} / ${items.length} ·${pct}%) — tap items to save your readiness`,
       pct,items:items.map(([k,m,e])=>({k,on:!!saved[k],text:my()?m:e})),
       on:{toggle:(k,v)=>{saved[k]=v;try{localStorage.setItem(KEY,JSON.stringify(saved));}catch{}preserveView(renderChecklist);}}});
@@ -146,15 +145,15 @@ import { mountBriefView, clearSlot } from "./views.js";
     try{const img=new Image();img.src="logo.png";await img.decode();g.save();roundRect(g,56,60,140,140,28);g.clip();g.drawImage(img,56,60,140,140);g.restore();}catch{}
     g.textBaseline="alphabetic";g.fillStyle="#fff";g.font=`700 68px ${FONT}`;g.fillText("မှီခိုရာ",224,128);
     g.fillStyle="#f6c453";g.font=`700 38px ${FONT}`;g.fillText("SafeGuard Myanmar",224,184);
-    g.fillStyle="#fff";roundRect(g,40,220,W-80,340,32);g.fill();
+    g.fillStyle="#fff";roundRect(g,40,220,W-80,384,32);g.fill();
     g.fillStyle="#0f2b1d";g.font=`700 54px ${FONT}`;const pl=wrapText(g,place,W-160).slice(0,2);pl.forEach((l,i)=>g.fillText(l,80,296+i*66));
     g.fillStyle="#48605f";g.font=`400 32px ${FONT}`;g.fillText(when,80,296+pl.length*66);
     g.fillStyle="#0b4f2a";g.font=`700 112px ${FONT}`;g.fillText(tempText,80,530);
     g.fillStyle="#137a36";g.font=`700 40px ${FONT}`;const rw=g.measureText(rainText).width;g.fillText(rainText,Math.max(540,W-80-rw),505);
-    let y=596;
+    let y=636;
     for(const x of lines){
       g.font=`400 38px ${FONT}`;const tl=wrapText(g,x.x,W-240).slice(0,4),h=tl.length*54+44;
-      if(y+h>H-190)break;
+      if(y+h>H-150)break;
       g.fillStyle="#fff";roundRect(g,40,y,W-80,h,24);g.fill();g.fillStyle=col(x.p);g.fillRect(40,y+14,10,h-28);
       g.font=`400 44px ${FONT}`;g.fillStyle="#0f2b1d";g.fillText(x.i,72,y+62);
       g.font=`400 38px ${FONT}`;tl.forEach((l,i)=>g.fillText(l,140,y+58+i*54));
@@ -164,6 +163,24 @@ import { mountBriefView, clearSlot } from "./views.js";
     g.fillStyle="#0b4f2a";g.font=`700 32px ${FONT}`;const site=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)?"":location.host;if(site)g.fillText(site,40,H-30);
     return await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("toBlob")),"image/png"));
   }
+
+  // One place that builds and sends the picture, used by the card's "image" button AND the top Share button.
+  const imgCol=p=>p>=7?"#dc2626":p>=4?"#d97706":"#137a36";
+  async function sendTodayImage(){
+    const c=LAST.d?.weather?.current||{},dy=LAST.d?.weather?.daily||{},unit=window.MWR_STATE?.unit||"C",raw=Number(c.temperature_2m);
+    const loc=LAST.loc||{},place=my()?loc.name:(loc.name_en||loc.name||"");
+    const tempText=Number.isFinite(raw)?num(Math.round(unit==="F"?raw*9/5+32:raw))+"°"+unit:"—", chance=dy.precipitation_probability_max?.[0];
+    const rainText=chance==null?"":(my()?"မိုးရွာနိုင်ခြေ ":"Rain chance ")+num(Math.round(chance))+"%";
+    const blob=await makeShareImage(lines(LAST.d).filter(x=>!x.btn),place,fmtWallDateTime(c.time),tempText,rainText,imgCol);
+    const file=new File([blob],"safeguard-weather.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:"SafeGuard Myanmar"});return "shared";}catch(e){if(e?.name==="AbortError")return "cancel";throw e;}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="safeguard-weather.png";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    return "saved";
+  }
+  // the top "Share" button calls this; null = no data yet, so it falls back to sharing text
+  window.mwShareImage=async()=>LAST?sendTodayImage():null;
 
   function render(){
     STATUS="";BUSY=false;
@@ -190,15 +207,8 @@ import { mountBriefView, clearSlot } from "./views.js";
       share:async()=>{try{if(navigator.share){await navigator.share({text:shareText()});return;}await navigator.clipboard.writeText(shareText());feedback(T.copied[my()?0:1]);}catch(e){if(e?.name!=="AbortError")feedback(T.fail[my()?0:1]);}},
       image:async()=>{
         BUSY=true;paint();
-        try{
-          const c=LAST.d?.weather?.current||{},dy=LAST.d?.weather?.daily||{},unit=window.MWR_STATE?.unit||"C",raw=Number(c.temperature_2m);
-          const tempText=Number.isFinite(raw)?num(Math.round(unit==="F"?raw*9/5+32:raw))+"°"+unit:"—", chance=dy.precipitation_probability_max?.[0];
-          const rainText=chance==null?"":(my()?"မိုးရွာနိုင်ခြေ ":"Rain chance ")+num(Math.round(chance))+"%";
-          const blob=await makeShareImage(L.filter(x=>!x.btn),place(),fmtWallDateTime(c.time),tempText,rainText,col);
-          const file=new File([blob],"safeguard-weather.png",{type:"image/png"});
-          if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});}
-          else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="safeguard-weather.png";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);feedback(T.imgSaved[my()?0:1]);}
-        }catch(e){if(e?.name!=="AbortError")feedback(T.fail[my()?0:1]);}
+        try{ if(await sendTodayImage()==="saved") feedback(T.imgSaved[my()?0:1]); }
+        catch(e){ if(e?.name!=="AbortError")feedback(T.fail[my()?0:1]); }
         finally{BUSY=false;paint();}
       },
       sms:async()=>{
@@ -210,7 +220,7 @@ import { mountBriefView, clearSlot } from "./views.js";
         try{await navigator.clipboard.writeText(text);feedback(T.copied[my()?0:1]);}catch{feedback(T.fail[my()?0:1]);}
       },
     };
-    V.brief({head:T.head[my()?0:1],offBtn:T.offBtn[my()?0:1],share:T.share[my()?0:1],img:T.img[my()?0:1],sms:T.sms[my()?0:1],
+    V.brief({tag:my()?"အကြံပေး":"Smart Guide",head:T.head[my()?0:1],offBtn:T.offBtn[my()?0:1],share:T.share[my()?0:1],img:T.img[my()?0:1],sms:T.sms[my()?0:1],
       rows:(L.length?L:[{p:0,i:"✅",x:t("clear")}]).map(x=>({i:x.i,x:x.x,btn:!!x.btn,c:col(x.p)})),widgets,status:STATUS,imgBusy:BUSY,on});
   }
   window.renderTodayBrief=function(d,loc){LAST=d?{d,loc}:null;if(!d){clearSlot("todayBrief");return;}render();};

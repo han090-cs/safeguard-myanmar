@@ -40,6 +40,27 @@ coordinates before using these for navigation.
 from an official bulletin. As checked on 2026-10-01 there was no active heavy-rain, river-flood, cyclone or low-water
 warning; the latest heavy-rainfall warning was No. 82/2026 (25 Sep 2026). Do not add expired warnings.
 
+### How long each item stays (v9.25)
+
+| Item | Source | Shown until |
+| --- | --- | --- |
+| Official warning | DMH warning page | its `valid_to` (the DMH end time); the app hides it at that moment, the file keeps it 30 days only for history |
+| Storm news ("Watch" card, Hazards tab) | DMH "Top Announcement" page | 36 hours after the date and time DMH printed on it (day and month are read even when DMH prints the year with a digit missing, e.g. "21-11-206"; if no date can be read, 36 hours after it was first seen) |
+| Other DMH news such as a low-pressure area | DMH warning pages that are not warnings | 3 days |
+| Tropical storm / flood in the World and Regional feeds | GDACS | only while GDACS marks the event as current |
+| Earthquake in the feeds | USGS | 3 days (`QUAKE_MAX_AGE_DAYS`) |
+
+The announcement is shown with DMH's own sentence (first storm sentence, cut at about 200 characters) and a link to the
+DMH page. It is a "watch" item, never an official warning. If the page cannot be read or has no storm wording, nothing is shown.
+
+### Where the DMH data comes from on each host
+
+On a host that can keep a process running (Render, a laptop, a VPS) `risk_engine/dmh_importer.py` runs in the app and
+writes `risk_engine/data/official_alerts*.json`. On Vercel the scheduled workflow `.github/workflows/dmh-import.yml` runs
+the same importer on GitHub and publishes the files as assets of the release `dmh-data`; `risk_engine/remote_official.py`
+downloads them. Manual entries in the repository's `official_alerts.json` are kept; the snapshot replaces only the entries
+whose source is `dmh`, and only when it is newer than the file. See DEPLOY_FREE.md for the setup.
+
 ## Emergency numbers (Alerts tab)
 
 Hard-coded in `emergency_card.js` (`EMERGENCY_*`). Nationwide: police 199, ambulance 192, fire 191. Local numbers for
@@ -189,6 +210,7 @@ RIMES has also worked directly with Myanmar's Department of Meteorology and Hydr
 
 ## Climate history (v6.10.0)
 - `data/history.json` is built by `python tools/build_history.py <climate.csv> <disasters.csv>` from the supplied 1985-2026 CSVs. It is **modelled** (World Bank CKP / Meteoblue simulation), not station data; future and partial months are dropped.
+- **Rebuild from ERA5 (v9.26):** `python tools/build_history_era5.py` replaces the numbers in `data/history.json` with ERA5 (the dataset the Compare tab's "Now" and "This year" views already use), so all three views compare like with like. It downloads daily max/min temperature and rain for the 15 region centres, 1985 to about a week ago, in chunks that are kept on disk (`tools/.era5_history_cache/`), so a run that hits Open-Meteo's limits continues where it stopped (`--loop` waits by itself). One region costs about 1,100 request units of the free 10,000 per day, so all 15 take about two days. It also stores each region's 1991-2020 daily data where the app's own normals cache reads it (`risk_engine/data/cache/baseline/`). Monthly temperature is (max + min) / 2, as in the live views; a month counts only when every day is present; El Nino / La Nina years come from NOAA's ONI (June-September majority) or, when that cannot be fetched, from the classes already in the file. It refuses to write a file with missing years or impossible values. It is still modelled data, not a station record. Run it with `--dry-run` first to see the old and new trends side by side.
 - Disaster list: the supplied CSV plus one verified addition, the 28 Mar 2025 Mw 7.7 Sagaing Fault earthquake (ReliefWeb/ECHO, ACAPS) that the CSV omitted.
 - `data/enso_status.json -> sascof`: SASCOF-34 JJAS 2026 outlook, marked expired. The supplied healthcare CSV (114 rows, mostly generic clinics) was not merged; `hospitals.db` (1,136 facilities) stays the source.
 

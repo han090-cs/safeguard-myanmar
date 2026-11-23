@@ -1,7 +1,7 @@
 /* About dialog: purpose, what is inside, limits, how figures are worked out, glossary, privacy and credits.
    All long explanations live here so the data tabs stay clean. */
 import { helpGroups } from "./help.js";
-import { mountAboutView } from "./views.js";
+import { mountAboutView } from "./lazy_views.js";
 {
   const my=()=>(window.__mwLang?window.__mwLang():"my")==="my";
   const C={
@@ -56,10 +56,12 @@ import { mountAboutView } from "./views.js";
     s_priv:["ကိုယ်ရေးကိုယ်တာ","Privacy"],
     priv:[
       "ခန့်မှန်းချက်ပြဖို့ ရွေးထားတဲ့ နေရာရဲ့ လတ္တီကျု၊ လောင်ဂျီကျုကို ဒီ website ရဲ့ server နဲ့ Open-Meteo ကို ပို့ပါတယ်။ အကောင့်၊ စကားဝှက် မလိုပါဘူး။",
-      "မိုးရွာလား မှတ်တမ်း၊ ဘာသာစကား၊ စာလုံးအရွယ်လို ရွေးချယ်မှုတွေကို ဒီစက်ရဲ့ browser ထဲမှာပဲ သိမ်းပြီး ဘယ်ကိုမှ မပို့ပါဘူး။ ဒီ version မှာ ကြော်ငြာနဲ့ အသုံးပြုမှုခြေရာခံ (analytics) script မပါပါဘူး။"],
+      "မိုးရွာလား မှတ်တမ်း၊ ဘာသာစကား၊ စာလုံးအရွယ်လို ရွေးချယ်မှုတွေကို ဒီစက်ရဲ့ browser ထဲမှာပဲ သိမ်းပြီး ဘယ်ကိုမှ မပို့ပါဘူး။ ဒီ version မှာ ကြော်ငြာနဲ့ အသုံးပြုမှုခြေရာခံ (analytics) script မပါပါဘူး။",
+      "app မှာ အမှားတက်ရင် ပြင်နိုင်ဖို့ အမည်မဖော်တဲ့ မှတ်စုတိုတစ်ခု (အမှားစာသား၊ ဖိုင်၊ ဘာသာစကား၊ ဘရောက်ဇာအမျိုးအစား) ကို ဆာဗာ မှတ်တမ်းထဲ ပို့နိုင်ပါတယ်။ နေရာ၊ သိမ်းထားတဲ့ဒေတာ၊ IP လိပ်စာ မပါပါဘူး။ Do Not Track ဖွင့်ထားရင် မပို့ပါ။"],
     priv_en:[
       "The latitude and longitude of the place you pick are sent to this site's server and to Open-Meteo to fetch the forecast. No account or password is needed.",
-      "Your rain log, language and text size are kept only in this device's browser and never sent anywhere. This version has no ads and no analytics scripts."],
+      "Your rain log, language and text size are kept only in this device's browser and never sent anywhere. This version has no ads and no analytics scripts.",
+      "If the app hits an error it may send one short anonymous note (error text, file, language, browser type) to the server log so it can be fixed. It has no place, no saved data and no IP address, and nothing is sent when Do Not Track is on."],
     s_cred:["ကျေးဇူးတင်စကား၊ ဒေတာအရင်းအမြစ်များ","Credits and data sources"],
     credtxt:["ဒီ website ကို ဖြစ်လာစေတဲ့ အဖွဲ့အစည်းတွေ၊ ဒေတာပေးသူတွေကို အလေးအနက် ကျေးဇူးတင်ပါတယ်။","With sincere thanks to the organisations and data providers who made this possible."],
     credgroups:[

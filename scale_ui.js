@@ -21,7 +21,7 @@ export function setMetricLevel(key,valueEl,v){
   if(!lv){ card.removeAttribute("data-tone"); box?.remove(); return; }
   if(!box){ box=document.createElement("div"); box.className="lvl"; (card.querySelector(":scope > div")||card).appendChild(box); }
   const st=lv.step; card.dataset.tone=st.tone;
-  box.innerHTML=`<span class="lvl-pill t${st.tone}">${esc(my?st.my:st.en)}</span><span class="lvl-tip">${esc(my?st.tipMy:st.tipEn)}</span><button type="button" class="lvl-more" data-scale="${key}" aria-label="${L("wx_show_full_scale")}">ⓘ ${L("wx_scale")}</button>`;
+  box.innerHTML=`<span class="lvl-pill t${st.tone}">${esc(my?st.my:st.en)}</span><span class="lvl-tip">${esc(my?st.tipMy:st.tipEn)}</span><button type="button" class="lvl-more" data-scale="${key}" aria-label="ⓘ ${L("wx_scale")} – ${L("wx_show_full_scale")}">ⓘ ${L("wx_scale")}</button>`;
 }
 
 export function showScale(key,toggle=true){

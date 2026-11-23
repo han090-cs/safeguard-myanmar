@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
+import re
 import time
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 import httpx
 
 from app import state, providers
@@ -66,6 +68,29 @@ async def hazard_feed(lat: float = Query(..., ge=-90, le=90), lon: float = Query
             river = hit[1] if hit else None
     return {"alerts": near, "elsewhere_count": elsewhere, "river": river, "errors": {**data["errors"], **({"glofas": river_error} if river_error else {})},
             "fetched_at": data["fetched_at"], "stale": stale}
+
+
+_world_cache: dict[str, Any] = {"at": 0.0, "data": None}
+
+
+@router.get("/api/world-hazards")
+async def world_hazards():
+    """Worldwide natural-hazard events (USGS M5+, GDACS red/orange, NASA EONET) for the World tab, cached 10 min.
+    Automatic international products, never official warnings for any country."""
+    import time as _t
+    from risk_engine import feeds
+    now = _t.time()
+    stale = False
+    if _world_cache["data"] is None or now - _world_cache["at"] > FEED_TTL:
+        fresh = await feeds.pull_world()
+        if fresh["alerts"] or not fresh["errors"]:        # a total failure is never cached
+            _world_cache.update(at=now, data=fresh)
+        else:
+            stale = True
+    data = _world_cache["data"]
+    if data is None:
+        raise HTTPException(status_code=503, detail="World hazard sources are unreachable right now.")
+    return {**data, "stale": stale}
 
 
 _extras_cache: dict[str, tuple[float, Any]] = {}
@@ -159,6 +184,54 @@ async def app_status() -> dict[str, Any]:
         "fallback_providers": ["Open-Meteo"] + (["WeatherAPI"] if state.WEATHERAPI_API_KEY else []) + (["OpenWeatherMap"] if state.OPENWEATHER_API_KEY else []),
         "offline_cache": True,
     }
+
+
+# ---- anonymous crash notes (error_report.js) -------------------------------------------------------------------------------
+# A GET on purpose: the app stays read-only (every other method is refused in app/app.py) and nothing is stored, the note only goes to the
+# server log. It carries no place and no saved data, and the log line has no IP address; the User-Agent is reduced to browser + system.
+client_log = logging.getLogger("myanmar_weather.client")
+_CLIENT_NOTES_PER_WINDOW = int(os.getenv("CLIENT_ERROR_MAX", "60"))     # whole server, per 10 minutes: a flood cannot fill the log
+_client_notes: dict[str, float] = {"start": 0.0, "n": 0.0}
+_UA_BROWSERS = (("Edg/", "Edge"), ("SamsungBrowser", "Samsung"), ("OPR/", "Opera"), ("Firefox/", "Firefox"), ("FxiOS", "Firefox"),
+                ("CriOS", "Chrome"), ("Chrome/", "Chrome"), ("Safari/", "Safari"))
+_UA_SYSTEMS = (("Android", "Android"), ("iPhone", "iOS"), ("iPad", "iOS"), ("Windows", "Windows"), ("Mac OS X", "macOS"), ("Linux", "Linux"))
+
+
+def _scrub(text: str, limit: int) -> str:
+    """Make a client-supplied string safe for one log line: no URLs with queries, no coordinate-like numbers, no control characters."""
+    text = re.sub(r"https?://[^\s)'\"]+", lambda m: re.sub(r"^https?://[^/]+", "", re.split(r"[?#]", m.group(0))[0]), text)
+    text = re.sub(r"-?\d{1,3}\.\d{3,}", "#", text)
+    return re.sub(r"\s+", " ", re.sub(r"[\x00-\x1f\x7f]+", " ", text)).strip()[:limit]
+
+
+def _browser_and_system(user_agent: str) -> str:
+    browser = next((name for key, name in _UA_BROWSERS if key in user_agent), "other")
+    system = next((name for key, name in _UA_SYSTEMS if key in user_agent), "other")
+    return f"{browser}/{system}"
+
+
+@router.get("/api/client-error", status_code=204)
+async def client_error(
+    request: Request,
+    kind: str = Query("error", alias="t", pattern="^(error|promise|section)$"),
+    msg: str = Query("", alias="m", max_length=240),
+    file: str = Query("", alias="f", max_length=80),
+    line: int = Query(0, alias="l", ge=0, le=999_999),
+    col: int = Query(0, alias="c", ge=0, le=9_999),
+    lang: str = Query("", pattern="^(my|en|ja|ja_easy)?$"),
+    tab: str = Query("", pattern="^[a-z]{0,16}$"),
+) -> Response:
+    now = time.monotonic()
+    if now - _client_notes["start"] > 600:
+        _client_notes["start"], _client_notes["n"] = now, 0.0
+    _client_notes["n"] += 1
+    if _client_notes["n"] <= _CLIENT_NOTES_PER_WINDOW:
+        client_log.warning(
+            "client-error kind=%s msg=%r file=%s:%s:%s lang=%s tab=%s browser=%s server=%s",
+            kind, _scrub(msg, 200), _scrub(file, 60) or "-", line, col, lang or "-", tab or "-",
+            _browser_and_system(request.headers.get("user-agent", "")), state.APP_VERSION,
+        )
+    return Response(status_code=204)
 
 
 @router.get("/health")
@@ -292,6 +365,29 @@ async def dmh_alerts(
     return {"alerts": payload, "region": canon, "source_status": status, "source": "DMH", "updated_at": now.isoformat()}
 
 
+@router.get("/api/forecast-alerts")
+async def forecast_alerts(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180)) -> dict[str, Any]:
+    """Alerts computed from the forecast (rain, gusts, waves) plus any current DMH warning for the place, in one list.
+    Forecast alerts are never official; DMH entries are copied as DMH published them."""
+    from risk_engine import forecast_alerts as fa
+    daily, sea, errors = None, None, []
+    try:
+        daily = (await weather(lat, lon)).get("weather", {}).get("daily")
+    except Exception as exc:  # noqa: BLE001 - one failing source must not hide the other
+        errors.append(f"weather:{type(exc).__name__}")
+    try:
+        sea = (await local_extras(lat, lon)).get("sea")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"marine:{type(exc).__name__}")
+    official = []
+    try:
+        official = [a for a in (await dmh_alerts(lat=lat, lon=lon, region=None))["alerts"] if a.get("active")]
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"dmh:{type(exc).__name__}")
+    return {"forecast": fa.compute(daily, sea), "official": official, "errors": errors, "days": fa.DAYS,
+            "note": "Forecast alerts are computed from model forecasts and are not official warnings."}
+
+
 @router.get("/api/dmh")
 async def dmh_summary() -> dict[str, Any]:
     """Read the public DMH homepage and expose only navigational/source metadata.
@@ -365,6 +461,45 @@ async def dmh_summary() -> dict[str, Any]:
     return result
 
 
+def _fold(text: str) -> str:
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(text or "")).casefold()
+    return "".join(ch for ch in t if not unicodedata.combining(ch) or "\u1000" <= ch <= "\u109f").strip()
+
+
+def _within_one_edit(a: str, b: str) -> bool:
+    if abs(len(a) - len(b)) > 1:
+        return False
+    if len(a) > len(b):
+        a, b = b, a
+    i = j = edits = 0
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            i += 1; j += 1
+            continue
+        edits += 1
+        if edits > 1:
+            return False
+        if len(a) == len(b):
+            i += 1
+        j += 1
+    return edits + (len(b) - j) + (len(a) - i) <= 1
+
+
+def _name_matches(query: str, place: dict) -> bool:
+    """Open-Meteo geocoding is fuzzy and can return unrelated places for names that do not exist. Keep a result only if
+    the typed name appears in the place's own name (or is one typo away from it, for names of 5+ letters)."""
+    q = _fold(query)
+    if not q:
+        return False
+    names = [_fold(place.get(k)) for k in ("name", "name_en") if place.get(k)]
+    if any(q in n for n in names):
+        return True
+    if len(q) >= 5:
+        return any(_within_one_edit(q, n) or any(_within_one_edit(q, w) for w in n.split()) for n in names)
+    return False
+
+
 @router.get("/api/geocode")
 async def geocode(
     name: str = Query(..., min_length=2, max_length=80),
@@ -390,7 +525,7 @@ async def geocode(
         )
     except (asyncio.TimeoutError, HTTPException):
         return {"results": [], "degraded": True}
-    results = data.get("results") or []
+    results = [x for x in (data.get("results") or []) if _name_matches(name, x)]
     # The UI is Myanmar-first, while still allowing a fallback result.
     myanmar = [x for x in results if x.get("country_code") == "MM"]
     ordered = myanmar + [x for x in results if x not in myanmar]
@@ -498,7 +633,7 @@ async def climate(lat: float = Query(..., ge=-90, le=90), lon: float = Query(...
 
 @router.get("/api/history")
 def history(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180), region: str | None = Query(None, pattern=r"^MM-\d{2}$")) -> dict[str, Any]:
-    """Modelled 1985-present climate history for the nearest state/region (data/history.json, built by tools/build_history.py)."""
+    """Modelled 1985-present climate history for the nearest state/region (data/history.json, built by tools/build_history_era5.py; earlier versions: tools/build_history.py)."""
     import json as _json
     cache = state.__dict__.setdefault("_history_doc", {})
     if "doc" not in cache:

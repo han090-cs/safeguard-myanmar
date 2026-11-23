@@ -13,4 +13,5 @@ Before sharing the link:
 6. **After launch**: update `data/enso_status.json` after each NOAA ENSO discussion (next: 2026-11-12); the card warns
    visitors when it is more than 45 days old or the next update is more than 7 days overdue.
 7. **Load**: one worker (`WEB_CONCURRENCY=1`) keeps the in-memory rate limiter and caches consistent. Default limit is
-   120 API calls per visitor per minute (`RATE_LIMIT_MAX`).
+   600 API calls per visitor per minute (`RATE_LIMIT_MAX`).
+8. **Crash notes**: after launch, look for lines starting `client-error` in the host's runtime log (Vercel: Project → Logs). Each is one real error from a visitor's device; fix the repeated ones first.

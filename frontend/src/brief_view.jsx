@@ -23,7 +23,7 @@ export function mountBriefView() {
 function Brief({ s }) {
   return (
     <>
-      <div className="section-heading"><div><h3>📋 {s.head}</h3></div><span className="source-tag">SafeGuard Smart Guide</span></div>
+      <div className="section-heading"><div><h3>📋 {s.head}</h3></div><span className="source-tag">{s.tag}</span></div>
       {s.rows.map((x, i) => (
         <div className="brief-row" key={i} data-bc={x.c} style={{ borderLeftColor: x.c }}><span aria-hidden="true" className="brief-ico">{x.i}</span>
           <div><strong>{x.x}</strong>{x.btn ? <div><button type="button" className="ghost-btn" data-brief-go="hazards" onClick={s.on.go}>{s.offBtn}</button></div> : null}</div></div>
@@ -43,15 +43,15 @@ function Brief({ s }) {
 
 function Checklist({ s }) {
   return (
-    <>
-      <div className="section-heading"><div><h3>🎒 {s.head}</h3><p className="muted">{s.sub}</p></div><span className="source-tag">SafeGuard Ready</span></div>
+    <details className="fold-card" data-detail-key="prep-list">
+      <summary><span className="fold-t">🎒 {s.head}</span><span className="fold-s">{s.sub}</span><span className="fold-n">{s.pct}%</span></summary>
       <div className="wbar"><i data-w={s.pct} style={{ width: s.pct + "%" }}></i></div>
       <div className="prep-grid">
         {s.items.map(x => (
           <label className={"prep-item " + (x.on ? "checked" : "")} key={x.k}><input type="checkbox" data-prep={x.k} checked={x.on} onChange={e => s.on.toggle(x.k, e.target.checked)} /><span>{x.text}</span></label>
         ))}
       </div>
-    </>
+    </details>
   );
 }
 
@@ -59,9 +59,9 @@ function Crops({ my }) {
   const m = (a, b) => (my ? a : b);
   return (
     <>
-      <div className="section-heading"><div><h3>📊 {m("မြန်မာ့အဓိက သီးနှံ (၈) မျိုးရဲ့ ရာသီဥတုနဲ့ စိုက်ပျိုးရေး လမ်းညွှန်ဇယား", "Myanmar Key Crops Climate & Management Matrix")}</h3><p className="muted">{m("သီးနှံအလိုက် စိုက်ချိန်၊ ရိတ်ချိန်၊ အပူချိန်နဲ့ အဓိက သတိထားရမယ့် အချက်များ", "Sowing/harvest windows, optimal temperature range, and key weather sensitivities")}</p></div><span className="source-tag">Agronomy Reference</span></div>
-      <div className="cmp-scroll" tabIndex="0" role="region" aria-label="Table"><table className="cmp-table"><thead><tr><th>{m("သီးနှံအမည်", "Crop")}</th><th>{m("စိုက်ချိန်", "Sowing")}</th><th>{m("ရိတ်ချိန်", "Harvest")}</th><th>{m("အပူချိန်", "Temp")}</th><th>{m("အဓိက သတိထားရန်", "Key Advisory")}</th></tr></thead><tbody>
-        {CROPS.map((r, i) => <tr key={i}><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td></tr>)}
+      <div className="section-heading"><div><h3>📊 {m("မြန်မာ့အဓိက သီးနှံ (၈) မျိုးရဲ့ ရာသီဥတုနဲ့ စိုက်ပျိုးရေး လမ်းညွှန်ဇယား", "Myanmar Key Crops Climate & Management Matrix")}</h3><p className="muted">{m("သီးနှံအလိုက် စိုက်ချိန်၊ ရိတ်ချိန်၊ အပူချိန်နဲ့ အဓိက သတိထားရမယ့် အချက်များ", "Sowing/harvest windows, optimal temperature range, and key weather sensitivities")}</p></div><span className="source-tag">{m("စိုက်ပျိုးရေး ကိုးကား", "Agronomy Reference")}</span></div>
+      <div className="cmp-scroll" tabIndex="0" role="region" aria-label="Table"><table className="cmp-table crop-matrix"><thead><tr><th>{m("သီးနှံအမည်", "Crop")}</th><th>{m("စိုက်ချိန်", "Sowing")}</th><th>{m("ရိတ်ချိန်", "Harvest")}</th><th>{m("အပူချိန်", "Temp")}</th><th>{m("အဓိက သတိထားရန်", "Key Advisory")}</th></tr></thead><tbody>
+        {CROPS.map((r, i) => <tr key={i}><th scope="row">{r[0]}</th><td data-label={m("စိုက်ချိန်", "Sowing")}>{r[1]}</td><td data-label={m("ရိတ်ချိန်", "Harvest")}>{r[2]}</td><td data-label={m("အပူချိန်", "Temp")}>{r[3]}</td><td data-label={m("အဓိက သတိထားရန်", "Key Advisory")}>{r[4]}</td></tr>)}
       </tbody></table></div>
     </>
   );

@@ -4,64 +4,35 @@ import { put, clearSlot } from "./slots.js";
 const MINUS = "−";
 const COLORS = { temp: { pos: "#dc2626", neg: "#2563eb" }, rain: { pos: "#2563eb", neg: "#d97706" } };
 
-/** Rounded axis ticks symmetric around zero: [-2, -1, 0, 1, 2] x step. */
-export function niceTicks(maxAbs, want = 2) {
-  const raw = Math.max(maxAbs, 1e-6) / want, pow = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / pow;
-  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * pow;
-  const n = Math.max(1, Math.ceil(maxAbs / step - 1e-9));
-  return { step, n, ticks: Array.from({ length: 2 * n + 1 }, (_, i) => (i - n) * step) };
-}
-
-function Chart({ months, mode, x }) {
-  const { my, L, digits, MON_SHORT, MON_LONG, fmt } = x;
-  const W = 340, H = 230, ml = 40, mr = 8, mt = 12, mb = 26, col = (W - ml - mr) / 12, LABEL = 15;
-  const key = mode === "temp" ? "temp_diff" : "rain_diff", C = COLORS[mode];
-  const vals = months.map(m => (m.status === "ok" ? m[key] : null));
-  const maxAbs = Math.max(0, ...vals.filter(v => v != null).map(Math.abs));
-  const plotH = H - mt - mb;
-  let { n, step, ticks } = niceTicks(maxAbs);
-  for (let i = 0; i < 4; i++) {
-    const unit = plotH / (2 * n * step);
-    if (maxAbs * unit + LABEL <= plotH / 2) break;
-    n += 1; ticks = Array.from({ length: 2 * n + 1 }, (_, k) => (k - n) * step);
-  }
-  const top = n * step, Y = v => mt + (1 - (v + top) / (2 * top)) * plotH, y0 = Y(0);
-  const unit = Math.abs(Y(top) - Y(0)) / top;
-  const MN = MON_SHORT, ML = MON_LONG;
-  const hatch = (id, c) => (
-    <pattern id={id} width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill={c} opacity=".28" /><line x1="0" y1="0" x2="0" y2="5" stroke={c} strokeWidth="2.4" /></pattern>
-  );
+/**
+ * One row per month: the name, a bar that goes right when the month is above normal and left when below, and the number as plain text.
+ * No axis and no numbers inside a drawing, so nothing can overlap on a narrow screen, and long Burmese month names have their own column.
+ */
+function Rows({ months, mode, x }) {
+  const { L, digits, MON_LONG, fmt } = x;
+  const key = mode === "temp" ? "temp_diff" : "rain_diff", C = COLORS[mode], u = mode === "temp" ? " °C" : " mm";
+  const list = months.filter(m => m.status === "ok");
+  const vals = list.map(m => m[key]);
+  const pos = Math.max(0, ...vals), neg = Math.max(0, ...vals.map(v => -v)), span = (pos + neg) || 1;
+  const zero = neg / span * 100;   // where the zero line sits, in % of the bar area: all-positive years start at the left edge
+  const pending = months.length > list.length;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={L(mode === "temp" ? "mc_aria_temp" : "mc_aria_rain")}>
-      <defs>{hatch("mcHatchP" + mode, C.pos)}{hatch("mcHatchN" + mode, C.neg)}</defs>
-      {ticks.map((t, i) => [
-        <line key={"l" + i} x1={ml} x2={W - mr} y1={Y(t).toFixed(1)} y2={Y(t).toFixed(1)} stroke="currentColor" opacity={t === 0 ? 0.55 : 0.14} strokeWidth={t === 0 ? 1.4 : 1} />,
-        <text key={"t" + i} x={ml - 5} y={(Y(t) + 3.5).toFixed(1)} textAnchor="end" fontSize="10" fill="currentColor" opacity=".85">{fmt(t, mode).replace(/^\+/, "").replace(MINUS + digits("0"), digits("0"))}</text>,
-      ])}
-      {months.map((m, i) => {
-        const cx = ml + i * col + col / 2, v = vals[i];
-        if (v == null) return null;
-        const c = v >= 0 ? C.pos : C.neg, h = Math.max(1.5, Math.abs(v) * unit), y = v >= 0 ? y0 - h : y0;
-        const fill = m.partial ? `url(#mcHatch${v >= 0 ? "P" : "N"}${mode})` : c;
-        return (
-          <rect key={"b" + i} x={(cx - col * 0.36).toFixed(1)} y={y.toFixed(1)} width={(col * 0.72).toFixed(1)} height={h.toFixed(1)} rx="2" fill={fill} {...(m.partial ? { stroke: c, strokeWidth: 1 } : {})}>
-            <title>{ML[i]}: {fmt(v, mode)}{mode === "temp" ? " °C" : " mm"}</title></rect>
-        );
-      })}
-      {months.map((m, i) => {
-        const cx = ml + i * col + col / 2, v = vals[i];
-        if (v == null) return null;
-        const h = Math.max(1.5, Math.abs(v) * unit), y = v >= 0 ? y0 - h : y0, ly = v >= 0 ? y - 4 : y + h + 11;
-        return <text key={"v" + i} x={cx.toFixed(1)} y={ly.toFixed(1)} textAnchor="middle" fontSize={my ? 9.5 : 10} fontWeight="700" fill="currentColor">{fmt(v, mode)}</text>;
-      })}
-      {months.map((m, i) => {
-        const cx = ml + i * col + col / 2;
-        return [
-          <text key={"m" + i} x={cx.toFixed(1)} y={H - 8} textAnchor="middle" fontSize={my ? 9 : 10} fill="currentColor" opacity={m.status === "ok" ? 1 : 0.45}>{MN[i]}</text>,
-          m.partial ? <circle key={"p" + i} cx={cx.toFixed(1)} cy={H - 2} r="1.6" fill="currentColor" opacity=".8" /> : null,
-        ];
-      })}
-    </svg>
+    <>
+      <ol className="mc-rows" aria-label={L(mode === "temp" ? "mc_aria_temp" : "mc_aria_rain")}>
+        {list.map((m, i) => {
+          const v = vals[i], w = Math.max(v === 0 ? 0 : 2, Math.abs(v) / span * 100), c = v >= 0 ? C.pos : C.neg;
+          const bar = { width: w.toFixed(1) + "%", [v >= 0 ? "left" : "right"]: (v >= 0 ? zero : 100 - zero).toFixed(1) + "%", "--c": c };
+          return (
+            <li key={m.month} className={`mc-row${m.partial ? " partial" : ""}`}>
+              <span className="mc-m">{MON_LONG[m.month - 1]}{m.partial ? <small>{L("mc_days", { n: digits(m.days) })}</small> : null}</span>
+              <span className="mc-bar" aria-hidden="true"><i className="mc-zero" style={{ left: zero.toFixed(1) + "%" }}></i><i className={`mc-fill${m.partial ? " hatch" : ""}`} style={bar}></i></span>
+              <strong className={`mc-v ${v > 0 ? "pos" : v < 0 ? "neg" : ""}`}>{fmt(v, mode)}<small>{u}</small></strong>
+            </li>
+          );
+        })}
+      </ol>
+      {pending ? <p className="muted fs85 mc-pending">{L("mc_pending")}</p> : null}
+    </>
   );
 }
 
@@ -72,7 +43,7 @@ function Picker({ s, x }) {
   const { L, my } = x;
   return (
     <div className="hist-pick"><label htmlFor="mcRegion"><strong>{L("mc_region_pick")}</strong></label>
-      <select key={s.REGION} id="mcRegion" className="hist-select" defaultValue={s.REGION}>
+      <select key={s.REGION} id="mcRegion" className="hist-select" value={s.REGION}>
         <option value="">{L("mc_region_here")}</option>
         {s.REGIONS.map(r => <option key={r.id} value={r.id}>{my ? r.my : r.en}</option>)}
       </select></div>
@@ -118,22 +89,25 @@ function MonthlyView({ s }) {
     {head}<Picker s={s} x={x} />
     <p className="muted mc-place"><strong>{place(s, x)}</strong></p>
     {ytd}
-    <p className="muted">{L("mc_intro", { y: digits(DATA.year), a: digits(1991), b: digits(2020) })}</p>
     <div className="mc-tabs" role="tablist" aria-label={L("mc_title")}>{tab("temp", "mc_tab_temp")}{tab("rain", "mc_tab_rain")}</div>
-    <div className="mc-chart"><Chart months={months} mode={MODE} x={x} /></div>
+    <div className="mc-chart"><Rows months={months} mode={MODE} x={x} /></div>
     <div className="hist-legend">
       {MODE === "temp" ? <><span><Sw c={C.pos} />{L("mc_leg_warm")}</span><span><Sw c={C.neg} />{L("mc_leg_cool")}</span></> : <><span><Sw c={C.pos} />{L("mc_leg_wet")}</span><span><Sw c={C.neg} />{L("mc_leg_dry")}</span></>}
       {partial ? <span><Sw c="currentColor" h />{L("mc_leg_partial")}</span> : null}
     </div>
-    {DATA.data_through ? <p className="muted fs85">{L("mc_through", { d: s.fmtDay(DATA.data_through) })}</p> : null}
-    {partial ? <p className="muted fs85">{L("mc_partial", { m: MON_LONG[partial.month - 1], n: digits(partial.days) })}</p> : null}
     <details className="mc-details" data-key="mc-table"><summary>{L("mc_table")}</summary><div className="cmp-scroll"><table className="cmp-table">
       <thead><tr><th scope="col">{L("mc_th_month")}</th><th scope="col">{L("mc_th_now")}</th><th scope="col">{L("mc_th_norm")}</th><th scope="col">{L("mc_th_diff")}</th></tr></thead>
       <tbody>{months.filter(m => m.status === "ok").map(m => {
         const now = MODE === "temp" ? m.temp : m.rain, nm = MODE === "temp" ? m.temp_normal : m.rain_normal, df = MODE === "temp" ? m.temp_diff : m.rain_diff;
         return <tr key={m.month}><th scope="row">{MON_LONG[m.month - 1]}{m.partial ? " *" : ""}</th><td>{f(now)}{u}</td><td>{f(nm)}{u}</td><td>{fmt(df, MODE)}{u}</td></tr>;
       })}</tbody></table></div></details>
-    <p className="tiny muted">{L("mc_source", { a: digits(1991), b: digits(2020) })}</p>
+    <details className="fold-card" data-detail-key="mc-about">
+      <summary><span className="fold-t">{L("cmp_about_charts")}</span></summary>
+    <p className="tiny muted">{L("mc_intro", { y: digits(DATA.year), a: digits(1991), b: digits(2020) })}</p>
+    {DATA.data_through ? <p className="tiny muted">{L("mc_through", { d: s.fmtDay(DATA.data_through) })}</p> : null}
+    {partial ? <p className="tiny muted">{L("mc_partial", { m: MON_LONG[partial.month - 1], n: digits(partial.days) })}</p> : null}
+      <p className="tiny muted">{L("mc_source", { a: digits(1991), b: digits(2020) })}</p>
+    </details>
   </>);
 }
 

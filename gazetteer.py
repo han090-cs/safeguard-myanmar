@@ -42,15 +42,10 @@ _hospital_points: list[tuple[float, float, dict[str, Any]]] | None = None
 _hospital_lock = threading.Lock()
 
 
-def _ro_uri(path: Path) -> str:
-    """Read-only + immutable: works on read-only hosts (Vercel) where SQLite cannot create -wal/-shm files."""
-    return Path(path).resolve().as_uri() + "?mode=ro&immutable=1"
-
-
 def _connect() -> sqlite3.Connection:
     conn = getattr(_local, "conn", None)
     if conn is None:
-        conn = sqlite3.connect(_ro_uri(DB_PATH), uri=True, check_same_thread=False)
+        conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA query_only=ON")
         conn.execute("PRAGMA busy_timeout=5000")
@@ -234,8 +229,20 @@ def search_places(query: str, limit: int = 8, types: tuple[str, ...] = ("Town", 
     def rank(i):
         r=records[i]; n=r["name"]
         return (0 if n==q else 1 if n.startswith(q) else 2, 0 if r["type"]=="Town" else 1, len(n), n)
-    matched=[i for i in candidates if q in records[i]["name"] and records[i]["type"] in types]
+    # Towns match anywhere in the name. Villages are a much noisier list (MIMU's ~56,000 village records include
+    # look-alike, duplicated and variant spellings), so a village is only offered when its name STARTS with what was typed.
+    # Zero-width characters are ignored and one entry is kept per (name, region).
+    clean=lambda t:t.replace("\u200b","").replace("\u200c","").replace("\u200d","").replace("\ufeff","")
+    qc=clean(q)
+    matched=[i for i in candidates if records[i]["type"] in types and (
+        qc in clean(records[i]["name"]) if records[i]["type"]=="Town" else clean(records[i]["name"]).startswith(qc))]
     matched.sort(key=rank)
+    seen_nr=set(); uniq=[]
+    for i in matched:
+        k=(clean(records[i]["name"]),records[i]["region"])
+        if k in seen_nr: continue
+        seen_nr.add(k); uniq.append(i)
+    matched=uniq
     out=[]
     for i in matched[:limit]:
         rec=dict(records[i])
@@ -255,13 +262,13 @@ def _township_fallback(q: str, limit: int, seen: set) -> list[dict[str, Any]]:
     Uses the township names + coordinates in data/hospitals.db (one point per township = mean of its facilities)."""
     try:
         conn = _hospitals_connect()
-        like = f"%{q}%"
+        like = "%" + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
         rows = conn.execute(
             """
             SELECT township_my, township_en, region_my, region_en, AVG(lat) AS lat, AVG(lon) AS lon
             FROM hospitals
             WHERE lat IS NOT NULL AND lon IS NOT NULL
-              AND (township_my LIKE ? OR township_en LIKE ?)
+              AND (township_my LIKE ? ESCAPE '\\' OR township_en LIKE ? ESCAPE '\\')
             GROUP BY township_pcode, township_en
             ORDER BY length(COALESCE(township_en, township_my)) ASC
             LIMIT ?
@@ -318,7 +325,7 @@ def place_count() -> int:
 def _hospitals_connect() -> sqlite3.Connection:
     conn = getattr(_local, "hosp_conn", None)
     if conn is None:
-        conn = sqlite3.connect(_ro_uri(HOSPITALS_DB_PATH), uri=True, check_same_thread=False)
+        conn = sqlite3.connect(str(HOSPITALS_DB_PATH), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         _local.hosp_conn = conn
     return conn

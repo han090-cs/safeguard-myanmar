@@ -1,22 +1,31 @@
 // Moon-day card, SOS quick guide, emergency numbers and crop-disease watch in React. Calendar maths, i18n and place lookup stay in
 // field_guides.js and emergency_card.js, which pass ready-made text.
-import { Fragment } from "react";
+import { Fragment } from "preact";
 import { put } from "./slots.js";
 
 const Tel = ({ n }) => <a className="em-num" href={n.href}>{n.n}</a>;
 const Nums = ({ nums }) => nums.map((n, i) => <Fragment key={i}>{i ? " · " : null}<Tel n={n} /></Fragment>);
 const NatRows = ({ nat }) => nat.map((x, i) => <li key={i}><span>{x.label}</span><Tel n={x} /></li>);
 
+const WIDE = typeof matchMedia === "function" && matchMedia("(min-width:651px)").matches;
 function Moon({ s }) {
+  // phone: one line (today's Myanmar date + next full moon), tap to open the day picker and details; wider screens start open
+  const nx = s.rows[0];
   return (
-    <>
-      <div className="section-heading"><div><h3>{s.title}</h3></div></div>
-      <div className="moon-row"><span className="moon-icon" aria-hidden="true">{s.icon}</span>
-        <div><strong>{s.line}</strong><br /><span className="muted">{s.year}{s.watat ? " · " + s.watat : ""}</span></div></div>
+    <details className={"moon-fold" + (s.special ? " moon-special" : "")} open={WIDE || s.off}>
+      <summary><span className="moon-icon" aria-hidden="true">{s.icon}</span>
+        <span className="moon-sum"><strong>{s.line}</strong><span className="muted">{nx ? nx.label + ": " + nx.day : s.year}</span></span></summary>
+      <div className="moon-nav">
+        <button type="button" onClick={() => s.nav(-1)} aria-label={s.t.prev}>◀</button>
+        <input type="date" value={s.iso} min={s.min} max={s.max} aria-label={s.t.pick} onChange={e => e.target.value && s.pick(e.target.value)} />
+        <button type="button" onClick={() => s.nav(1)} aria-label={s.t.next}>▶</button>
+        {s.off ? <button type="button" className="moon-today" onClick={s.today}>{s.t.today}</button> : null}
+      </div>
+      <div className="moon-row"><div><strong>{s.line}</strong><br /><span className="muted">{s.year}{s.watat ? " · " + s.watat : ""}</span></div></div>
       <ul className="kv-list">{s.rows.map((r, i) => <li key={i}><span>{r.label}<br /><small className="muted">{r.sub}</small></span><b>{r.day}</b></li>)}</ul>
       {s.tide ? <p className={"agri-note tier-" + s.tide.tone}>{s.tide.text}</p> : null}
       <p className="tiny muted">{s.approx}</p>
-    </>
+    </details>
   );
 }
 export function mountMoonView() { return s => put("moonCard", s ? <Moon s={s} /> : null); }
@@ -54,6 +63,30 @@ export function mountDiseaseView() {
     <>
       <div className="section-heading"><div><h3>{s.title}</h3><p className="muted">{s.sub}</p></div></div>
       {s.hits.length ? <><ul className="guide-list">{s.hits.map((h, i) => <li key={i}>{h}</li>)}</ul><p className="tiny muted">{s.act}</p></> : <p className="agri-note tier-wet">{s.none}</p>}
+    </>
+  ) : null);
+}
+
+// Pest and disease guide: crop chips + one folding card per problem. `s` = {title, sub, chips[{id,label,on}], onPick, items[], note}.
+export function mountPestView() {
+  return s => put("pestCard", s ? (
+    <>
+      <div className="section-heading"><div><h3>{s.title}</h3><p className="muted">{s.sub}</p></div></div>
+      <div className="pest-chips" role="group" aria-label={s.title}>
+        {s.chips.map(c => <button key={c.id} type="button" className={"pest-chip" + (c.on ? " on" : "")} aria-pressed={c.on} onClick={() => s.onPick(c.id)}>{c.label}</button>)}
+      </div>
+      <div className="pest-list">
+        {s.items.map(it => (
+          <details key={it.id} className={"pest-item" + (it.active ? " hot" : "")}>
+            <summary><span className="pest-kind" aria-hidden="true">{it.kind}</span><b>{it.name}</b>{it.active ? <em className="pest-hot">{it.badge}</em> : null}<span className="tiny muted pest-sci">{it.sci}</span></summary>
+            {it.img ? <figure className="pest-fig"><img src={it.img.src} alt={it.name} loading="lazy" decoding="async" width="320" height="240" /><figcaption className="tiny muted">{it.img.credit}</figcaption></figure> : null}
+            <h4>{s.h.signs}</h4><p>{it.signs}</p>
+            <h4>{s.h.weather}</h4><p>{it.weather}</p>
+            <h4>{s.h.prevent}</h4><ul>{it.prevent.map((x, i) => <li key={i}>{x}</li>)}</ul>
+          </details>
+        ))}
+      </div>
+      <p className="tiny muted">{s.note}</p>
     </>
   ) : null);
 }

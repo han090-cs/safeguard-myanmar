@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
 import os
@@ -37,6 +38,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from .config import DATA_DIR, MYANMAR_TZ
+from . import remote_official
 from .official import NATIONAL
 
 log = logging.getLogger("risk_engine.dmh")
@@ -97,6 +99,8 @@ TYPE_RULES = (   # checked against the English title, in order
     ("cyclone_generic", re.compile(r"\bcyclone\b|\bstorm\b", re.I)),       # e.g. "Cyclone Warning" / "Cyclone Warming"
 )
 NOT_A_WARNING = re.compile(r"low\s+pressure\s+area|bay\s+of\s+bengal\s+condition|well\s+marked", re.I)
+WATCH_TITLE = re.compile(r"low\s+pressure|depression|well\s+marked", re.I)
+WATCH_MAX_AGE = timedelta(days=3)
 STATUS_BODY = re.compile(r"no\w*thing\s+special|\bno\s+warning\b|\bno\s+(?:\w+\s+){1,3}warnings?\s+(?:is\s+|has\s+been\s+)?issued"
                          r"|\bthere\s+is\s+no\s+[\w\s]{1,40}?\s+issued|မရှိပါ|ထုတ်ပြန်ထားမှု\s*မရှိ", re.I)
 HEAVY_CLAUSE = re.compile(r"heavy\s?falls?|heavy\s+rain(?:fall)?s?", re.I)
@@ -494,7 +498,7 @@ def supersede(decisions: Iterable[Decision]) -> dict[str, str]:
     out = {}
     for items in groups.values():
         items.sort(key=lambda d: d.valid_from)
-        for older, newer in zip(items, items[1:], strict=True):
+        for older, newer in zip(items, items[1:], strict=False):
             out[older.nid] = min(older.valid_to, newer.valid_from)
 
     floods = sorted((d for d in decisions if d.status == "published" and d.type == "flood"), key=lambda d: d.valid_from)
@@ -522,6 +526,140 @@ def to_alert(d: Decision, valid_to: str, retrieved_at: str) -> dict:
         "retrieved_at": retrieved_at, "region_basis": d.region_basis, "parser_version": PARSER_VERSION,
         **({"stations": d.stations, "points": d.points} if d.points else {}),
     }
+
+
+# ------------------------------------------------------------------------------------------------ top announcement
+# DMH also posts a "Top Announcement" (the Bay of Bengal / Andaman Sea situation, e.g. "last news for Severe Cyclonic
+# Storm ...") that is not a warning node. It is shown as a "watch" item (news published by DMH, not a warning), with
+# DMH's own words, and only for ANNOUNCE_MAX_AGE after it was issued.
+ANNOUNCE_MAX_AGE = timedelta(hours=36)
+ANNOUNCE_ID = re.compile(r"/top-announcement/(\d+)")
+STORM_EN = re.compile(r"cyclon|depression|low[\s-]*pressure|\bstorm|typhoon", re.I)
+STORM_MY = re.compile(r"ဆိုင်ကလုန်း|ဆိုင်ကလုံး|မုန်တိုင်း|နိမ့်ဖိအား|လေဖိအား|ဒီပရက်ရှင်း")
+MM_DIGITS = str.maketrans("၀၁၂၃၄၅၆၇၈၉", "0123456789")
+DATE_ANY = re.compile(r"(?<![\d.:])(\d{1,2})\s*[-./]\s*(\d{1,2})\s*[-./]\s*(\d{2,4})(?!\d)")
+LEADING_DATE = re.compile(r"^\s*\d{1,2}\s*[-./]\s*\d{1,2}\s*[-./]\s*\d{2,4}\s*")
+TIME_ANY = re.compile(r"(?<!\d)(\d{1,2})\s*[:.]\s*(\d{2})(?!\d)")
+EXCERPT_CHARS = 200
+
+
+def announcement_ids(html: str) -> list[str]:
+    """Node ids of /top-announcement/<id> links on a DMH page (newest id first)."""
+    return sorted(set(ANNOUNCE_ID.findall(html or "")), key=int, reverse=True)
+
+
+def parse_announcement(html: str) -> list[str]:
+    """Text lines of a Top Announcement page (the article, else <main>, else the body, without menus and footers)."""
+    s = BeautifulSoup(html or "", "html.parser")
+    for t in s(["script", "style", "nav", "header", "footer", "noscript", "form"]):
+        t.decompose()
+    root = s.find("article") or s.find("main") or s.body or s
+    lines = [_clean(x) for x in root.get_text("\n", strip=True).split("\n")]
+    return [x for x in lines if x]
+
+
+def announcement_issued(lines: list[str], now: datetime) -> tuple[Optional[datetime], Optional[str]]:
+    """Issue time from the date DMH prints at the top of the text (dd-mm-yyyy, then "06:30 hrs MST"; Burmese digits are
+    read too). DMH sometimes prints the year with a digit missing ("21-11-206"): then day and month are read and the
+    most recent such date that is not in the future is used. A date that is old is returned as it is (the caller then
+    treats the announcement as too old; an old item must never look new); only a date more than 18 h in the FUTURE, or no
+    readable date at all, gives None. -> (time, "page" | "page_day_month") or (None, None)."""
+    for i, line in enumerate(lines[:12]):
+        text = line.translate(MM_DIGITS)
+        m = DATE_ANY.search(text)
+        if not m:
+            continue
+        day, month, ytxt = m.group(1), m.group(2), m.group(3)
+        t = TIME_ANY.search(DATE_ANY.sub(" ", text)) or TIME_ANY.search(
+            DATE_ANY.sub(" ", (lines[i + 1] if i + 1 < len(lines) else "").translate(MM_DIGITS)))
+        hh, mm = (int(t.group(1)), int(t.group(2))) if t else (0, 0)
+        years = [int(ytxt)] if len(ytxt) == 4 else [now.year, now.year - 1]
+        for year in years:
+            try:
+                issued = datetime(year, int(month), int(day), hh, mm, tzinfo=MYANMAR_TZ).astimezone(timezone.utc)
+            except ValueError:
+                continue
+            if now - issued >= -MAX_FUTURE:
+                return issued, "page" if len(ytxt) == 4 else "page_day_month"
+    return None, None
+
+
+def _excerpt(lines: list[str], pattern: re.Pattern, min_chars: int) -> str:
+    """First sentence-sized line that talks about a storm, copied as DMH wrote it (cut at a word edge when long)."""
+    for line in lines:
+        line = LEADING_DATE.sub("", line)
+        if len(line) >= min_chars and pattern.search(line):
+            if len(line) <= EXCERPT_CHARS:
+                return line
+            cut = line[:EXCERPT_CHARS]
+            return (cut.rsplit(" ", 1)[0] if " " in cut[-40:] else cut).rstrip(" ,;:") + "…"
+    return ""
+
+
+def classify_announcement(en_lines: Optional[list[str]], my_lines: Optional[list[str]], now: datetime,
+                          first_seen: datetime, nid: str) -> dict:
+    """-> decision dict. status: published | not_storm | no_text | too_old."""
+    base = {"nid": nid, "url_en": f"{BASE}/en/top-announcement/{nid}", "url_my": f"{BASE}/my/top-announcement/{nid}",
+            "title_en": "", "title_my": "", "issued": None, "date_basis": None}
+    ex_en = _excerpt(en_lines or [], STORM_EN, 30)
+    ex_my = _excerpt(my_lines or [], STORM_MY, 40)
+    if not en_lines and not my_lines:
+        return {**base, "status": "no_text"}
+    if not ex_en and not ex_my:
+        return {**base, "status": "not_storm"}
+    issued, basis = announcement_issued(my_lines or [], now)
+    if issued is None:
+        issued, basis = announcement_issued(en_lines or [], now)
+    if issued is None:
+        issued, basis = first_seen, "first_seen"
+    d = {**base, "title_en": "DMH Top Announcement: " + (ex_en or ex_my), "title_my": "DMH Top Announcement: " + (ex_my or ex_en),
+         "issued": issued.isoformat(), "date_basis": basis}
+    return {**d, "status": "published" if now - issued <= ANNOUNCE_MAX_AGE else "too_old"}
+
+
+def active_announcements(state: dict, now: datetime) -> list[dict]:
+    out = []
+    for n, v in (state.get("announcements") or {}).items():
+        dc = v.get("decision", {})
+        if dc.get("status") != "published" or not dc.get("issued"):
+            continue
+        try:
+            age = now - datetime.fromisoformat(dc["issued"])
+        except ValueError:
+            continue
+        if -MAX_FUTURE <= age <= ANNOUNCE_MAX_AGE:
+            out.append(dict(nid="ta-" + n, title=dc["title_my"], title_en=dc["title_en"], issued=dc["issued"],
+                            url_my=dc["url_my"], url_en=dc["url_en"], kind="announcement"))
+    return out
+
+
+async def import_announcements(client: httpx.AsyncClient, state: dict, now: datetime) -> list[str]:
+    """Discover (DMH home page) and read the Top Announcement into state["announcements"]. Returns error strings."""
+    errors: list[str] = []
+    ann = state.setdefault("announcements", {})
+    try:
+        ids = announcement_ids(await _get(client, f"{BASE}/en") or "")[:3]
+    except httpx.HTTPError as exc:
+        return [f"announcement discovery: {type(exc).__name__}"]
+    for nid in ids:
+        prev = ann.get(nid)
+        if prev and now - datetime.fromisoformat(prev["fetched_at"]) < REFETCH_AFTER:
+            continue
+        try:
+            en_html = await _get(client, f"{BASE}/en/top-announcement/{nid}")
+            my_html = await _get(client, f"{BASE}/my/top-announcement/{nid}")
+        except httpx.HTTPError as exc:
+            errors.append(f"announcement {nid}: {type(exc).__name__}")
+            continue
+        en_lines = parse_announcement(en_html) if en_html else None
+        my_lines = parse_announcement(my_html) if my_html else None
+        digest = hashlib.sha1(" ".join((en_lines or []) + (my_lines or [])).encode("utf-8")).hexdigest()[:16]
+        first_seen = now if not prev or prev.get("text_hash") != digest else datetime.fromisoformat(prev["first_seen_at"])
+        ann[nid] = {"fetched_at": now.isoformat(), "first_seen_at": first_seen.isoformat(), "text_hash": digest,
+                    "decision": classify_announcement(en_lines, my_lines, now, first_seen, nid)}
+    for nid in [n for n, v in ann.items() if now - datetime.fromisoformat(v["fetched_at"]) > KEEP_AFTER_EXPIRY]:
+        del ann[nid]
+    return errors
 
 
 # ------------------------------------------------------------------------------------------------ files
@@ -622,9 +760,13 @@ async def run_once(client: Optional[httpx.AsyncClient] = None, data_dir: Path = 
         for nid in [n for n, v in state["nodes"].items()
                     if n not in candidates and now - datetime.fromisoformat(v["fetched_at"]) > KEEP_AFTER_EXPIRY]:
             del state["nodes"][nid]
+        try:
+            ann_errors = await import_announcements(client, state, now)
+        except Exception as exc:      # noqa: BLE001 - the announcement is an extra; warnings must still be written
+            ann_errors = [f"announcement: {type(exc).__name__}"]
         if discovered_ok:
             src["last_success_at"] = now.isoformat()
-        src["last_error"] = "; ".join(errors) or None
+        src["last_error"] = "; ".join(errors + ann_errors) or None
     finally:
         if own:
             await client.aclose()
@@ -634,20 +776,63 @@ async def run_once(client: Optional[httpx.AsyncClient] = None, data_dir: Path = 
     for v in state["nodes"].values():
         s = v["decision"]["status"]
         counts[s] = counts.get(s, 0) + 1
-    return {"checked_at": now.isoformat(), "candidates": len(candidates), "errors": errors, "nodes_by_status": counts}
+    ann_counts: dict[str, int] = {}
+    for v in state.get("announcements", {}).values():
+        ann_counts[v["decision"]["status"]] = ann_counts.get(v["decision"]["status"], 0) + 1
+    return {"checked_at": now.isoformat(), "candidates": len(candidates), "errors": errors, "nodes_by_status": counts,
+            "announcements_by_status": ann_counts}
 
 
-def source_status(data_dir: Path = DATA_DIR, now: Optional[datetime] = None, stale_after: timedelta = timedelta(hours=2)) -> dict:
+def _stale_after() -> timedelta:
+    """How old the last good DMH check may be before the dashboard says "not refreshed recently". The scheduled GitHub
+    run can be late by tens of minutes, so the published snapshot gets more room than the in-process importer."""
+    default = 180 if remote_official.active() else 120
+    try:
+        return timedelta(minutes=max(10.0, float(os.getenv("DMH_STALE_AFTER_MIN", default))))
+    except ValueError:
+        return timedelta(minutes=default)
+
+
+def _newest_state(data_dir: Path) -> dict:
+    """The state file here, or the published snapshot's state when that one saw DMH more recently."""
+    local = _read(data_dir / "official_alerts_state.json", {})
+    remote = remote_official.state_doc() if data_dir == DATA_DIR and remote_official.active() else None
+    if not remote:
+        return local
+
+    def seen(st: dict) -> str:
+        return str(st.get("source", {}).get("last_success_at") or "")
+    return remote if seen(remote) > seen(local) else local
+
+
+def source_status(data_dir: Path = DATA_DIR, now: Optional[datetime] = None, stale_after: Optional[timedelta] = None) -> dict:
     """What the dashboard shows about the official-warnings source."""
     now = now or datetime.now(timezone.utc)
-    state = _read(data_dir / "official_alerts_state.json", {})
+    stale_after = stale_after or _stale_after()
+    state = _newest_state(data_dir)
     src = state.get("source", {})
     last = src.get("last_success_at")
     review = [dict(nid=n, title=v["decision"].get("title_en") or v["decision"].get("title_my"),
                    reasons=v["decision"].get("reasons", []))
               for n, v in state.get("nodes", {}).items() if v.get("decision", {}).get("status") == "needs_review"]
+    watch = []
+    for n, v in state.get("nodes", {}).items():
+        dc = v.get("decision", {})
+        t = dc.get("title_en") or ""
+        if dc.get("status") != "not_a_warning" or not WATCH_TITLE.search(t) or not dc.get("issued"):
+            continue
+        try:
+            age = now - datetime.fromisoformat(dc["issued"])
+        except ValueError:
+            continue
+        if timedelta(0) <= age <= WATCH_MAX_AGE or age < timedelta(0) and -age <= MAX_FUTURE:
+            watch.append(dict(nid=n, title=dc.get("title_my") or t, title_en=t, issued=dc["issued"],
+                              url_my=dc.get("url_my"), url_en=dc.get("url_en")))
+    watch.extend(active_announcements(state, now))
+    watch.sort(key=lambda w: w["issued"], reverse=True)
     return {
-        "name": ISSUER, "url": BASE, "importer_enabled": importer_enabled(),
+        "watch": watch[:3],
+        "name": ISSUER, "url": BASE, "importer_enabled": updates_enabled(), "update_mode": update_mode(),
         "last_success_at": last, "last_attempt_at": src.get("last_attempt_at"), "last_error": src.get("last_error"),
         "stale": last is None or now - datetime.fromisoformat(last) > stale_after,
         "review_queue": review,
@@ -655,7 +840,18 @@ def source_status(data_dir: Path = DATA_DIR, now: Optional[datetime] = None, sta
 
 
 def importer_enabled() -> bool:
-    return os.getenv("DMH_IMPORT", "on").lower() not in ("0", "off", "false", "no")
+    """The in-process importer loop. Off by default on Vercel (serverless: nothing can run between requests)."""
+    default = "off" if os.getenv("VERCEL") else "on"
+    return os.getenv("DMH_IMPORT", default).lower() not in ("0", "off", "false", "no")
+
+
+def updates_enabled() -> bool:
+    """Is anything refreshing the official warnings? The in-process importer or the published GitHub snapshot."""
+    return importer_enabled() or remote_official.active()
+
+
+def update_mode() -> str:
+    return "remote" if remote_official.active() else "local" if importer_enabled() else "off"
 
 
 async def run_forever(interval_minutes: Optional[float] = None, data_dir: Path = DATA_DIR) -> None:

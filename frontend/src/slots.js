@@ -1,14 +1,17 @@
-// One React root per page element, shared by every screen. Anything that needs to empty such an element (a new place was chosen,
-// a request was cancelled) must go through clearSlot(): emptying it with replaceChildren() behind React's back would break the next render.
-import { createRoot } from "react-dom/client";
-import { flushSync } from "react-dom";
+// One Preact tree per page element, shared by every screen. Anything that needs to empty such an element (a new place was chosen,
+// a request was cancelled) must go through clearSlot(): emptying it with replaceChildren() behind Preact's back would break the next render.
+// Preact's render() is synchronous, so callers can read the DOM straight after put().
+import { render } from "preact";
 
 const roots = new Map();
 export function put(id, node) {
   const el = document.getElementById(id); if (!el) return;
   let r = roots.get(id);
-  if (!r || r.el !== el) { r = { el, root: createRoot(el) }; roots.set(id, r); }   // element replaced in the page: start a new root
-  flushSync(() => r.root.render(node));
+  // Element replaced in the page, or its children were changed from outside: start from an empty element.
+  if (r && (r.el !== el || el.firstChild !== r.first)) { try { render(null, r.el); } catch { /* old tree is gone already */ } r = null; }
+  if (!r) { el.replaceChildren(); r = { el, first: null }; roots.set(id, r); }
+  render(node, el);
+  r.first = el.firstChild;
 }
 export function clearSlot(id) {
   if (roots.has(id)) put(id, null);

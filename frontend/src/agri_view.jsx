@@ -1,6 +1,6 @@
 // Farming tab VIEW in React. It only draws; data loading, navigation, tabs and region logic stay in agri.js.
 // Markup (tags, classes, ids, data-attributes) is kept identical to the former string templates so styles and tests still apply.
-import { Fragment } from "react";
+import { Fragment } from "preact";
 import { put } from "./slots.js";
 
 const EN_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -90,7 +90,7 @@ function FarmHead({ ctx, rg, failed, loading, onRetry }) {
     <div><h3>🌾 {rg ? tx(rg, "name") : L("agrx_pick_title")}</h3>
       <p className="muted">{rg ? <>{L("farm_month")}: <b>{mn(ctx.month)}</b></> : L("agrx_pick_hint")}</p></div>
     <label className="region-pick"><span className="sr-only">{L("agrx_change")}</span>
-      <select key={rg ? rg.id : ""} id="agriRegionSel" className="location-select" defaultValue={rg ? rg.id : ""}>
+      <select key={rg ? rg.id : ""} id="agriRegionSel" className="location-select" value={rg ? rg.id : ""}>
         <option value="">{L("agrx_select_ph")}</option>
         {ctx.RES.regions.map(r => <option key={r.id} value={r.id}>{tx(r, "name")}</option>)}
       </select></label>
@@ -100,7 +100,7 @@ function FarmHead({ ctx, rg, failed, loading, onRetry }) {
 function Now({ ctx, rg }) {
   const h = useHelpers(ctx), { L, my, tx, mn, fmt, nextPlant, RES } = h, { DATA, month: m } = ctx;
   if (!rg) return (<>
-    <h3>{L("agrx_pick_title")}</h3><p className="muted">{L("agrx_pick_hint")}</p>
+    {/* the card above already says "pick a zone" and has the dropdown: no second heading here */}
     <ul className="region-list">{RES.regions.map(r => (
       <li key={r.id}><button type="button" className="region-btn" data-region={r.id}><b>{tx(r, "name")}</b><span className="tiny muted">{tx(r, "scope")}</span></button></li>
     ))}</ul>
@@ -112,16 +112,7 @@ function Now({ ctx, rg }) {
   const nx = z && !active.length ? mine.map(c => ({ c, n: nextPlant(c, m) })).filter(x => x.n).sort((a, b) => ((a.n - m + 12) % 12) - ((b.n - m + 12) % 12))[0] : null;
   const g = z ? DATA.monthly_general[String(m)] : null;
   return (<>
-    <h3>📍 {tx(rg, "name")}</h3>
-    <p><span className="zone-chip">{L(typeKey)}</span></p>
-    <dl className="kvl">
-      {[["scope","agrx_scope"],["climate","agrx_climate"],["main_crops","agrx_main_crops"],["constraints","agrx_constraints"]].map(([k, lk]) => (
-        <Fragment key={k}><dt>{L(lk)}</dt><dd>{tx(rg, k)}</dd></Fragment>
-      ))}
-    </dl>
-    <p className="agri-note tier-mid"><b>{L("agrx_evidence")}:</b> {tx(rg, "evidence")}</p>
-    <p className="tiny muted">{L("agrx_not_town")}</p>
-    <p className="tiny muted"><SrcLinks ids={rg.source_ids} RES={RES} /></p>
+    {/* what to do this month comes first; the zone background is one folded card (the name is already in the card above) */}
     <h4>🌱 {L("farm_do_now")}</h4>
     {!z ? <p className="agri-note tier-mid">{L("agrx_cal_none")}</p> : (<>
       <p className="tiny muted">{L("agrx_cal_from", { zone: my ? z.my : z.en })}{rg.calendar_broad ? " " + L("agrx_cal_broad") : ""}</p>
@@ -142,6 +133,18 @@ function Now({ ctx, rg }) {
         <p className="tiny muted">{L("farm_owner_s_general_table_not")}</p>
       </>) : null}
     </>)}
+    <details className="fold-card" data-detail-key="farm-about">
+      <summary><span className="fold-t">{L("agrx_about")}</span><span className="fold-s">{tx(rg, "scope")}</span></summary>
+      <p><span className="zone-chip">{L(typeKey)}</span></p>
+      <dl className="kvl">
+        {[["scope","agrx_scope"],["climate","agrx_climate"],["main_crops","agrx_main_crops"],["constraints","agrx_constraints"]].map(([k, lk]) => (
+          <Fragment key={k}><dt>{L(lk)}</dt><dd>{tx(rg, k)}</dd></Fragment>
+        ))}
+      </dl>
+      <p className="agri-note tier-mid"><b>{L("agrx_evidence")}:</b> {tx(rg, "evidence")}</p>
+      <p className="tiny muted">{L("agrx_not_town")}</p>
+      <p className="tiny muted"><SrcLinks ids={rg.source_ids} RES={RES} /></p>
+    </details>
   </>);
 }
 

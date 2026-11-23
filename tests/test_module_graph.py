@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 IMPORT = re.compile(r'^import\s*\{([^}]*)\}\s*from\s*"\./([\w.-]+\.js)";', re.M)
 EXPORT = re.compile(r"^export\s+(?:async\s+)?(?:function|const|let|var|class)\s+([\w$]+)", re.M)  # `$` is a valid name
 MODULES = [p.name for p in source_js() if not p.name.endswith(".config.js") and re.search(r"^(import|export)\s", p.read_text(encoding="utf-8"), re.M)]
-GENERATED = [p.name for p in generated_js()]  # React bundles: only their export list is checked
+GENERATED = [p.name for p in generated_js()]  # Preact bundles: only their export list is checked
 
 
 def _imports(name):

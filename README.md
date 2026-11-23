@@ -21,6 +21,7 @@ A bilingual, mobile-first Myanmar weather and early-warning platform focused on 
 - 🌏 El Niño / La Niña and climate context
 - 📡 DMH radar and Himawari source center
 - 🌾 Agriculture conditions without unsupported crop-specific advice
+- 🍃 Lab tab: leaf check. Pick a crop, tick the signs you see, optionally add a photo: the app ranks its own pest and disease guide, reads rice, potato and cucurbit photos on the phone (no upload), and can ask an AI for a second look when the server has a key (`DEPLOY_FREE.md`) Since v9.20.0: a quick photo check (dark, washed out, no leaf, blurry), photo tips, look-alike problems, a "not every sign is a disease" card and a sourced field health and safety section (sources in `docs/ARCHITECTURE.md`).
 - 🏥 Hospital lookup API (`/api/hospitals/*`) from the MIMU/CDE-Myanmar dataset — local lookup with distance and map links
 - 📡 Offline/stale-cache behavior with visible freshness information
 - 📱 Responsive PWA for phones, tablets and desktop browsers
@@ -142,6 +143,8 @@ docker run --rm -p 8000:8000 myanmar-weather
 - `GET /api/v1/climate` — climate context
 - `GET /api/v1/agriculture-risk` — agriculture conditions only
 - `GET /api/v1/status` — provider and engine status
+- `GET /api/v1/leaf/status` — whether the optional AI second look exists and whether the owner shares a key
+- `POST /api/v1/leaf` — the one write: a leaf photo for the optional AI second look, paid with the visitor's own key in the `X-User-Api-Key` header (see `SECURITY.md`)
 
 ## Production requirements
 
@@ -152,7 +155,7 @@ For a single small deployment, the built-in bounded cache is sufficient. For a m
 - Persist DMH importer state on durable storage.
 - Use a durable database for notification subscriptions if background Web Push is enabled.
 - Set explicit CORS origins.
-- The built-in per-IP rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW`, default 120 req/60s) is in-process only; behind multiple instances, move it to a shared store (Redis) or a reverse-proxy-level limiter.
+- The built-in per-IP rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW`, default 600 req/60s) is in-process only; behind multiple instances, move it to a shared store (Redis) or a reverse-proxy-level limiter.
 - Run the risk engine in production mode so only approved rules execute.
 - Monitor `/health` and `/api/status`.
 
@@ -191,6 +194,8 @@ CI also checks Python syntax and frontend JavaScript syntax across supported Pyt
 ├── weather_script.js        (entry: search, location loading, tabs)
 ├── core.js, net.js, render_cards.js, ...   (ES modules, see docs/ARCHITECTURE.md)
 ├── styles.css
+├── leaf.js, leaf_data.js, leaf_models.js, leaf_prep.js, leaf_engine.js   (Lab tab leaf check)
+├── vendor/ort/, models/leaf/   (ONNX Runtime Web and the two small photo models; see models/leaf/MODELS.md)
 ├── notifications.js
 ├── risk_panel.js
 ├── sw-version.js

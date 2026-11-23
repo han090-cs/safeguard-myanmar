@@ -13,11 +13,21 @@ const SHELL = [
   "./i18n/en.json",
   "./i18n/weather_codes.json",
   "./i18n/scales.json",
+  "./i18n/ja.json",
+  "./i18n/scales_ja.json",
+  "./i18n/weather_codes_ja.json",
+  "./i18n/ja_easy.json",
+  "./i18n/scales_ja_easy.json",
+  "./i18n/weather_codes_ja_easy.json",
   "./sw-version.js",
   "./theme_init.js",
+  "./error_report.js",
   "./styles.css",
   "./ux.css",
+  "./pro.css",
   "./about.js",
+  "./legal.html",
+  "./pests.js",
   "./weather_script.js",
   "./core.js",
   "./net.js",
@@ -25,6 +35,8 @@ const SHELL = [
   "./emergency_card.js",
   "./nature.js",
   "./mm_calendar.js",
+  "./wxicon.js",
+  "./swipe_tabs.js",
   "./field_guides.js",
   "./scale_ui.js",
   "./render_cards.js",
@@ -35,7 +47,16 @@ const SHELL = [
   "./risk_panel.js",
   "./agri.js",
   "./views.js",
+  "./views_compare.js",
+  "./views_farm.js",
+  "./views_more.js",
+  "./views_lab.js",
+  "./vchunk-preact.js",
+  "./vchunk-slots.js",
+  "./vchunk-guides_view.js",
+  "./lazy_views.js",
   "./feeds.js",
+  "./world.js",
   "./history.js",
   "./monthly_compare.js",
   "./interaction.js",
@@ -43,13 +64,17 @@ const SHELL = [
   "./help.js",
   "./brief.js",
   "./rainlog.js",
+  "./leaf.js",
+  "./leaf_data.js",
+  "./leaf_models.js",
+  "./leaf_prep.js",
+  "./leaf_engine.js",
   "./app_boot.js",
   "./fonts/noto-myanmar-400.woff2",
   "./fonts/noto-myanmar-700.woff2",
   "./notifications.js",
   "./manifest.json",
   "./logo.png",
-  "./safeguard.png",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png"
@@ -122,6 +147,9 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  // Crash notes (error_report.js) are fire-and-forget: never cached, never answered from the cache.
+  if (url.pathname === "/api/client-error") { return; }
+
   // API calls: network-first. A stale API response is useful during
   // temporary outages, but we never put an API failure into the shell cache.
   // Hazard feed: never answer from a cache, an old quake/cyclone alert must not look current.
@@ -153,6 +181,19 @@ self.addEventListener("fetch", event => {
         if(isWarning){data.source_status={...data.source_status,stale:true}; if(data.status==="available")data.status="stale";}
         return new Response(JSON.stringify(data),{headers:{"Content-Type":"application/json","X-MW-Offline":"1"}});
       } catch { return hit; }
+    }));
+    return;
+  }
+
+  // On-device leaf check: the ONNX runtime parts and the two models never change under the same file name (a new model gets a new name),
+  // so they are answered cache-first from their own cache and downloaded once (about 14 MB). They are not part of the precached shell on purpose.
+  if (url.pathname.startsWith("/vendor/ort/") || url.pathname.startsWith("/models/leaf/")) {
+    event.respondWith(caches.open("sg-leaf-v1").then(async cache => {
+      const hit = await cache.match(request);
+      if (hit) return hit;
+      const response = await fetch(request);
+      if (response.ok && response.type === "basic") event.waitUntil(cache.put(request, response.clone()));
+      return response;
     }));
     return;
   }

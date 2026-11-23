@@ -3,3 +3,6 @@
 *.png binary
 *.db binary
 *.geojson text
+*.onnx binary
+*.wasm binary
+vendor/ort/*.wasm.* binary

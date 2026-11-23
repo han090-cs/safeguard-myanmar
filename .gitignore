@@ -29,3 +29,14 @@ node_modules/
 .ruff_cache/
 
 frontend/node_modules/
+
+# SQLite temporary files created while the app/tests run
+*.db-shm
+*.db-wal
+*.db-journal
+
+# ERA5 history download chunks (tools/build_history_era5.py)
+tools/.era5_history_cache/
+
+# Trained model weights are not stored in git (served from the deployment)
+models/leaf/*.onnx

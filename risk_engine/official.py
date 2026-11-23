@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+from . import remote_official
 from .config import DATA_DIR
 from .schemas import Localized, OfficialWarning
 
@@ -27,16 +28,37 @@ def _km(a: tuple[float, float], b: tuple[float, float]) -> float:
     return 2 * 6371.0 * math.asin(math.sqrt(h))
 
 
+def _stamp(doc: Optional[dict]) -> Optional[datetime]:
+    try:
+        t = datetime.fromisoformat(str((doc or {}).get("updated_at")))
+    except ValueError:
+        return None
+    return t if t.tzinfo else None
+
+
 class OfficialAlertStore:
     def __init__(self, path: Path = DATA_DIR / "official_alerts.json"):
         self.path = Path(path)
+        self.default_file = self.path == DATA_DIR / "official_alerts.json"
 
-    def all(self) -> list[OfficialWarning]:
+    def _raw(self) -> list[dict]:
+        """Alerts as written in the file. On a host that cannot run the importer (Vercel) the file in the deployment is
+        only a starting point: when the published snapshot (remote_official) is newer, its DMH entries replace the
+        file's DMH entries; manual entries always come from the file."""
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8")).get("alerts", [])
+            doc = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             log.exception("official alerts file unreadable: %s", self.path)
-            return []
+            doc = {}
+        raw = doc.get("alerts", [])
+        remote = remote_official.alerts_doc() if self.default_file and remote_official.active() else None
+        r_at, l_at = _stamp(remote), _stamp(doc)
+        if remote and r_at and (l_at is None or r_at > l_at):
+            raw = [a for a in raw if a.get("source") != "dmh"] + [a for a in remote.get("alerts", []) if a.get("source") == "dmh"]
+        return raw
+
+    def all(self) -> list[OfficialWarning]:
+        raw = self._raw()
         out = []
         for a in raw:
             try:

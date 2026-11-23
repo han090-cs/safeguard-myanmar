@@ -1,5 +1,5 @@
 import { t } from "./i18n.js";
-import { mountRiskView, clearSlot } from "./views.js";
+import { mountRiskView } from "./views.js";
 /*
  * risk_panel.js — "What matters today" panel for the Myanmar Weather dashboard.
  *
@@ -24,7 +24,7 @@ import { mountRiskView, clearSlot } from "./views.js";
  * Safety rules kept here on purpose:
  *   - Official warnings are drawn in their own block and never mixed with model signals.
  *   - Every model signal shows that it is a model estimate, its confidence (not a probability) and review status.
- *   - API text is drawn as React text nodes only (no innerHTML), and only http(s) links are rendered.
+ *   - API text is drawn as text nodes only (no innerHTML), and only http(s) links are rendered.
  *   - Colour is never the only cue: every class has a shape glyph and a text label; icons are decorative.
  *   - This file never decides a level itself: classes, severities and categories all come from the engine.
  */
@@ -63,10 +63,14 @@ import { mountRiskView, clearSlot } from "./views.js";
       time: function (p) { return tr("time", {time:p.hh + ":" + p.mi}); }
     };
   }
-  var T = { my: riskT("my"), en: riskT("en") };
+  // The English slot is rebuilt on every read so the Japanese text layer (i18n.js) shows up without a reload.
+  var T = { my: riskT("my"), get en() { return riskT("en"); } };
 
 
-  var VARS = t("my", "risk_vars");
+  var VARS_MY = t("my", "risk_vars"), VARS = {};
+  Object.keys(VARS_MY).forEach(function (k) {
+    Object.defineProperty(VARS, k, { enumerable: true, get: function () { var e = t("en", "risk_vars")[k]; return [VARS_MY[k][0], e ? e[1] : VARS_MY[k][1]]; } });
+  });
   var STRENGTH_MY = t("my", "risk_strength_my");
   var ISSUER_MY = t("my", "risk_issuer_my");
   var CLASS_FALLBACK = t("my", "risk_class_fallback");
@@ -244,7 +248,7 @@ import { mountRiskView, clearSlot } from "./views.js";
     if(window.MWUX)window.MWUX.preserveView(function(){(st.redraw || draw)(container, st);});else (st.redraw || draw)(container, st);
   }
 
-  // ------------------------------------------------------------------ drawing (React: frontend/src/risk_view.jsx)
+  // ------------------------------------------------------------------ drawing (Preact: frontend/src/risk_view.jsx)
   // These functions only build plain text models; risk_view.jsx lays them out.
   var V = null;
   function view() { return V || (V = mountRiskView()); }

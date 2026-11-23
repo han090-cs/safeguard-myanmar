@@ -1,3 +1,4 @@
+import { wxIcon } from "./wxicon.js";
 import { $, els, esc, fmtClock12, fmtPlaceDateTime, fmtTime, placeTz, tzLabel, fmtWallDateTime, setStatus, speed, state, tLocal, temp, weatherInfo } from "./core.js";
 import { renderEmergency } from "./emergency_card.js";
 import { renderMoon, renderSos, wireSosDialog } from "./field_guides.js";
@@ -10,7 +11,7 @@ let drawPulse=null, drawRecent=null, drawSuggest=null;
 import { applyWeatherTheme, omTs, renderCharts, renderForecast, renderHourly, renderLocal } from "./render_cards.js";
 import { mergedOfficial, safetyBadge } from "./safety.js";
 import { dir, levelOf, refreshScale, setMetricLevel, showScale } from "./scale_ui.js";
-import { L } from "./i18n.js";
+import { L, isJapanese, japaneseMode, setJapanese } from "./i18n.js";
 import { navigation, persistPlace, placeKey, preserveView, rememberPanelPosition, revealPanel, updateNavigation, wireTabs } from "./interaction.js";
 
 const recentKey = "weather-recent-v3";
@@ -21,7 +22,7 @@ const geocodeMemCache = new Map(); // in-session cache so retyping never re-hits
 // with data/mimu_locations.db. API fields are normalized to city_name/lat/lon.
 
 let regionRows=null,townRows=new Map(),townController=null,townTurn=0;
-function pickerError(retry){setStatus(L("ux_failed"));const b=document.createElement("button");b.type="button";b.className="ghost-btn";b.textContent=L("ux_retry");b.onclick=retry;els.status.append(" ",b);}
+function pickerError(retry){if(state.data&&state.location)return; /* weather already on screen (e.g. saved copy): keep its status message */setStatus(L("ux_failed"));const b=document.createElement("button");b.type="button";b.className="ghost-btn";b.textContent=L("ux_retry");b.onclick=retry;els.status.append(" ",b);}
 async function loadRegionPicker(){
   if(!els.region||!els.town)return;
   const selected=els.region.value;
@@ -47,41 +48,56 @@ function fromMimu(r){
            township:r.township||"", township_en:r.township_en||"", township_source:r.township_source||"",
            type:r.type||"", country:r.country, country_code:r.country_code, latitude:r.latitude, longitude:r.longitude };
 }
+const sameName=(x,q)=>[x.name,x.name_en].some(n=>String(n||"").trim().toLocaleLowerCase()===q.trim().toLocaleLowerCase());
+// Open-Meteo geocoding is fuzzy; keep only results whose own name contains what was typed (or is one typo away, 5+ letters).
+const fold=t=>String(t||"").normalize("NFKD").toLocaleLowerCase().replace(/[\u0300-\u036f]/g,"").trim();
+function withinOneEdit(a,b){
+  if(Math.abs(a.length-b.length)>1) return false; if(a.length>b.length)[a,b]=[b,a];
+  let i=0,j=0,e=0;
+  while(i<a.length&&j<b.length){ if(a[i]===b[j]){i++;j++;continue;} if(++e>1) return false; if(a.length===b.length)i++; j++; }
+  return e+(b.length-j)+(a.length-i)<=1;
+}
+function nameMatches(q,p){
+  const f=fold(q); if(!f) return false;
+  const ns=[p.name,p.name_en].filter(Boolean).map(fold);
+  if(ns.some(n=>n.includes(f))) return true;
+  return f.length>=5&&ns.some(n=>withinOneEdit(f,n)||n.split(/\s+/).some(w=>withinOneEdit(f,w)));
+}
+async function remoteGeocode(q, signal){
+  // Our backend first (cached, one short attempt); if it is down or degraded, ask Open-Meteo directly from the browser.
+  try {
+    const r = await apiJSON("/api/geocode",{name:q,language:L("wx_en"),count:10},{timeout:6000,signal,retry:false});
+    if((r.results||[]).length || !r.degraded) return r.results||[];
+  } catch(e) { if(isAbort(e)) throw e; }
+  const ctl=new AbortController(); const onAbort=()=>ctl.abort();
+  if(signal) signal.addEventListener("abort",onAbort,{once:true});
+  const timer=setTimeout(()=>ctl.abort(),5000);
+  try{
+    const u=new URL("https://geocoding-api.open-meteo.com/v1/search");
+    u.search=new URLSearchParams({name:q,count:"10",language:L("wx_en"),format:"json"});
+    const r=await fetch(u,{signal:ctl.signal}); if(!r.ok) throw Error("Geocoding failed");
+    return ((await r.json()).results || []).filter(x=>nameMatches(q,x));
+  }finally{ clearTimeout(timer); if(signal) signal.removeEventListener("abort",onAbort); }
+}
 async function geocode(q, signal){
   // 1) In-session cache so retyping/backspacing never re-hits the network.
   const memKey = `${state.lang}:${q.trim().toLowerCase()}`;
   if(geocodeMemCache.has(memKey)) return geocodeMemCache.get(memKey);
 
-  // 2) Our own MIMU gazetteer (~56k places + English names of the main towns): fast, no external API.
-  //    If it finds anything we stop here — no waiting on a second provider.
-  try {
-    const mimu = (await apiJSON("/api/mimu-search",{q,limit:20},{timeout:4000,signal,retry:false})).results || [];
-    if (mimu.length) {
-      const mapped = mimu.map(fromMimu);
-      geocodeMemCache.set(memKey, mapped);
-      return mapped;
-    }
-  } catch(e) { if(isAbort(e)) throw e; /* backend slow/unreachable: try the fallbacks below */ }
+  // 2) Our own MIMU gazetteer (~56k Myanmar places): fast, no external API. An exact-name match there is final.
+  let mimu=[];
+  try { mimu = ((await apiJSON("/api/mimu-search",{q,limit:20},{timeout:4000,signal,retry:false})).results || []).map(fromMimu); }
+  catch(e) { if(isAbort(e)) throw e; /* backend slow/unreachable: carry on with the world search */ }
+  if (mimu.some(x=>sameName(x,q))) { geocodeMemCache.set(memKey, mimu); return mimu; }
 
-  // 3) Only for places the gazetteer does not know: short attempt via our backend, then Open-Meteo directly.
-  try {
-    const remote = (await apiJSON("/api/geocode",{name:q,language:L("wx_en"),count:8},{timeout:6000,signal,retry:false})).results || [];
-    if(remote.length){ geocodeMemCache.set(memKey, remote); return remote; }
-    return [];
-  } catch(e) {
-    if(isAbort(e)) throw e;
-    const ctl=new AbortController(); const onAbort=()=>ctl.abort();
-    if(signal) signal.addEventListener("abort",onAbort,{once:true});
-    const timer=setTimeout(()=>ctl.abort(),5000);
-    try{
-      const u=new URL("https://geocoding-api.open-meteo.com/v1/search");
-      u.search=new URLSearchParams({name:q,count:"8",language:L("wx_en"),format:"json"});
-      const r=await fetch(u,{signal:ctl.signal}); if(!r.ok) throw Error("Geocoding failed");
-      const remote=(await r.json()).results || [];
-      geocodeMemCache.set(memKey, remote);
-      return remote;
-    }finally{ clearTimeout(timer); if(signal) signal.removeEventListener("abort",onAbort); }
-  }
+  // 3) World search (Open-Meteo geocoding). Myanmar gazetteer hits stay first, then other countries, then any other Myanmar hits.
+  let remote=[];
+  try { remote = await remoteGeocode(q, signal); }
+  catch(e) { if(isAbort(e)) throw e; if(!mimu.length) throw e; }
+  const foreign=remote.filter(x=>x.country_code!=="MM"), mmRemote=mimu.length?[]:remote.filter(x=>x.country_code==="MM");
+  const seen=new Set(), merged=[...mimu,...foreign,...mmRemote].filter(x=>{const k=String(x.id);if(seen.has(k))return false;seen.add(k);return true;});
+  if(merged.length) geocodeMemCache.set(memKey, merged);
+  return merged;
 }
 function setSearchButtonState(searching){
   const btn=document.querySelector(".search-btn");
@@ -98,13 +114,27 @@ function setSearchButtonState(searching){
   }
 }
 
+// Global mode: places outside Myanmar get the basic cards only (CSS class body.outside-mm hides the Myanmar-only ones).
+function isMyanmar(loc){
+  if(loc&&loc.country_code) return loc.country_code==="MM";
+  const la=Number(loc&&loc.lat),lo=Number(loc&&loc.lon);
+  return !Number.isFinite(la)||!Number.isFinite(lo)||(la>=9.4&&la<=28.7&&lo>=92&&lo<=101.3);
+}
+function applyGlobalMode(loc){
+  const out=!isMyanmar(loc);
+  document.body.classList.toggle("outside-mm",out);
+  if(out){
+    if(document.querySelector('.tab.active')?.dataset.tab==="hospitals")switchTab("today",{record:false,reveal:false});
+    if(document.getElementById("modeFarm")?.getAttribute("aria-selected")==="true")document.getElementById("modeWeather")?.click();
+  }
+}
 function normalizePlace(loc){
   return {id:String(loc.id),name:loc.name,name_en:loc.name_en||"",admin1:loc.admin1||"",admin1_en:loc.admin1_en||"",
     township:loc.township||"",township_en:loc.township_en||"",township_source:loc.township_source||"",type:loc.type||"",
     country:loc.country||"",country_code:loc.country_code||"",lat:Number(loc.latitude),lon:Number(loc.longitude)};
 }
 const suggestionPlaces=new Map();
-function resultLabel(loc){ return [...new Set([state.lang==="en"?(loc.name_en||loc.name):loc.name,loc.township_en||loc.township,loc.admin1_en||loc.admin1].filter(Boolean))].join(" · "); }
+function resultLabel(loc){ return [...new Set([state.lang==="en"?(loc.name_en||loc.name):loc.name,loc.township_en||loc.township,loc.admin1_en||loc.admin1,loc.country_code&&loc.country_code!=="MM"?loc.country:"",loc.type==="Village"?(state.lang==="en"?"village":"ရွာ"):""].filter(Boolean))].join(" · "); }
 function showMatches(results){
   const box=$("#searchResults"); box.replaceChildren(); box.hidden=false; box.setAttribute("aria-label",L("ux_choose_match"));
   results.slice(0,20).forEach(loc=>{
@@ -123,7 +153,7 @@ async function search(q){
     const rs=selected?[selected]:await geocode(q,ctl.signal);
     if(ctl.signal.aborted)return;
     if(!rs.length)throw Error(L("wx_location_not_found_check_spelling"));
-    const mm=rs.filter(x=>x.country_code==="MM"),choices=mm.length?mm:rs;
+    const choices=rs;
     const exact=choices.filter(x=>[x.name,x.name_en].some(n=>String(n||"").trim().toLocaleLowerCase()===q.toLocaleLowerCase()));
     if(!selected&&exact.length!==1&&choices.length!==1){showMatches(choices);return;}
     state.searchCtl=null;setSearchButtonState(false);loading(false);
@@ -177,7 +207,7 @@ async function loadLocation(loc,{record=true}={}){
   if(!Number.isFinite(loc.lat)||!Number.isFinite(loc.lon)){setStatus(L("ux_failed"));return;}
   const previous=state.data&&state.location?{location:state.location,data:state.data,official:state.official}:state.previousView;
   cancelIntent(); const seq=state.loadSeq; const ctl=new AbortController();state.loadCtl=ctl;
-  state.previousView=previous;state.loadingPlace=true;state.location=loc;document.body.classList.remove("show-hero");
+  state.previousView=previous;state.loadingPlace=true;state.location=loc;applyGlobalMode(loc);document.body.classList.remove("show-hero");
   els.input.value=(state.lang==="en"&&loc.name_en)||loc.name;$("#searchResults").hidden=true;
   if(record){saveRecent(loc);persistPlace(loc);}
   try{
@@ -195,7 +225,8 @@ async function loadLocation(loc,{record=true}={}){
     loadSection(state.tab||navigation.tab);
   }catch(e){
     if(isAbort(e)||state.loadSeq!==seq)return;
-    setStatus(friendlyError(e));addWeatherRetry(loc);
+    // If the last saved copy is already on screen, say so (instead of a bare error) and keep the retry button.
+    setStatus(state.data?.meta?.stale?L("stale_saved"):friendlyError(e));addWeatherRetry(loc);
     // Official warnings remain visible even when weather fails.
   }finally{
     if(state.loadSeq===seq){clearTimeout(state.watchdog);loading(false);state.loadingPlace=false;state.loadCtl=null;}
@@ -211,7 +242,9 @@ function loadSection(name,force=false){
   if(name==="flood"){loadFloodStatus(state.loadSeq,state.loadCtl?.signal,{force});window.loadFeed?.(loc,true);window.loadFarmExtras?.(loc);}
   if(name==="hospitals")loadNearbyHospitals(loc,{signal:state.loadCtl?.signal,force});
   if(name==="hazards")window.loadFeed?.(loc,true);
+  if(name==="world")window.loadWorld?.(force);
   if(name==="compare"){window.loadMonthlyCompare?.(loc);window.loadHistory?.(loc);}
+  if(name==="lab")window.loadLab?.(loc);
 }
 
 function startAutoRefresh(){
@@ -258,7 +291,7 @@ function renderData(d,loc){
   els.temp.textContent=temp(c.temperature_2m).replace(/°[CF]$/,"");
   document.querySelectorAll(".temp-unit").forEach(e=>e.textContent=`°${state.unit}`);
   els.feels.textContent=temp(c.apparent_temperature);
-  els.condition.textContent=state.lang==="my"?wi[1]:wi[0]; els.icon.textContent=wi[2];
+  els.condition.textContent=state.lang==="my"?wi[1]:wi[0]; els.icon.innerHTML=wxIcon(c.weather_code,Number(c.is_day)!==0);
   // The daily health card is generated from the live weather + risk result.
   updateHeroBadge();
   const my=state.lang==="my", now=Date.now();
@@ -442,18 +475,46 @@ function updateRiskSummary(res){
   MWRisk.renderSummary(els.wmtList,res,{lang:state.lang,onSeeAll:()=>{switchTab("hazards",{focus:true});}});
 }
 
-function renderMetricsToggle(){
-  const grid=document.querySelector(".metric-grid"); if(!grid) return;
-  let b=document.getElementById("metricsMore");
-  if(!b){
-    grid.classList.add("collapsible");
-    grid.insertAdjacentHTML("afterend",'<button id="metricsMore" class="ghost-btn metrics-more" type="button" aria-expanded="false"></button>');
-    b=document.getElementById("metricsMore");
-    b.onclick=()=>{const open=grid.classList.toggle("expanded"); b.setAttribute("aria-expanded",open); renderMetricsToggle();};
-  }
-  const open=grid.classList.contains("expanded");
-  b.textContent=open?(L("wx_show_less")):(L("wx_show_more_details"));
+/* Phone only: long Today cards are cut to a short height with a "show more" button that sits OUTSIDE the Preact root,
+   so language changes and re-renders never remove it. Desktop/tablet are untouched (CSS applies the cut only <=650px). */
+function setupMobileFolds(){
+  [["todayBrief",300]].forEach(([id,h])=>{
+    const sec=document.getElementById(id); if(!sec) return;
+    let b=document.getElementById(id+"Fold");
+    if(!b){
+      sec.classList.add("m-fold"); sec.style.setProperty("--fold-h",h+"px");
+      sec.insertAdjacentHTML("afterend",`<button id="${id}Fold" class="ghost-btn m-fold-btn" type="button" aria-expanded="false"></button>`);
+      b=document.getElementById(id+"Fold");
+    }
+    b.textContent=sec.classList.contains("m-open")?L("wx_show_less"):L("wx_show_more_details");
+  });
 }
+// the ten key numbers: four on phones and tablets, the rest behind one button (CSS hides them below 1024px; desktop shows all ten)
+function setupMetricFold(){
+  const grid=document.querySelector(".metric-grid"); if(!grid) return;
+  let b=document.getElementById("metricFold");
+  if(!b){
+    grid.insertAdjacentHTML("afterend",'<button id="metricFold" class="ghost-btn m-fold-btn" type="button" aria-expanded="false" aria-controls="metricGridBox"></button>');
+    grid.id=grid.id||"metricGridBox"; b=document.getElementById("metricFold"); b.setAttribute("aria-controls",grid.id);
+  }
+  b.textContent=grid.classList.contains("m-open")?L("wx_show_less"):L("wx_show_more_details");
+}
+// One delegated listener for both "show more details" buttons. It looks the card up at click time, so it keeps working even if a
+// re-render replaces the card or the button, and there is never a second handler that could toggle it back.
+document.addEventListener("click",e=>{
+  const b=e.target&&e.target.closest?e.target.closest("#metricFold,#todayBriefFold"):null; if(!b) return;
+  const box=b.id==="metricFold"?document.querySelector(".metric-grid"):document.getElementById("todayBrief"); if(!box) return;
+  const open=box.classList.toggle("m-open");
+  b.setAttribute("aria-expanded",String(open));
+  b.textContent=open?L("wx_show_less"):L("wx_show_more_details");
+  // closing a long card while its top is above the screen would leave the reader somewhere below it: bring its top back into view
+  if(!open&&box.getBoundingClientRect().top<0) box.scrollIntoView({block:"start"});
+});
+window.addEventListener("mw-lang",()=>setTimeout(()=>{setupMobileFolds();setupMetricFold();},0));
+document.addEventListener("DOMContentLoaded",setupMetricFold);setupMetricFold();
+window.addEventListener("mw-lang",()=>setTimeout(setupMobileFolds,0));
+document.addEventListener("DOMContentLoaded",setupMobileFolds);
+setupMobileFolds();
 
 /* ---- Farming tab, heat card, cyclone note, El Niño (all per selected place) ---- */
 window.__mwLang=()=>state.lang;
@@ -504,19 +565,19 @@ function renderTranslations(){
   document.querySelectorAll("[data-i18n-aria]").forEach(e=>e.setAttribute("aria-label",tLocal(e.dataset.i18nAria)));
   if(els.region&&els.region.options[0]) els.region.options[0].textContent=L("wx_select_region_state");
   if(els.town&&els.town.options[0]) els.town.options[0].textContent=L("wx_select_town");
-  renderRecent(); renderEmergency(); renderSos(); wireSosDialog(); renderMetricsToggle(); renderLiteToggle();
+  renderRecent(); renderEmergency(); renderSos(); wireSosDialog(); setupMetricFold(); renderLiteToggle();
   if(regionRows)loadRegionPicker();
   window.dispatchEvent(new Event("mw-lang"));
   els.input.placeholder=L("wx_search_city_township");
-  document.documentElement.lang=state.lang;
+  document.documentElement.lang=isJapanese()?"ja":state.lang;
   $("#unitToggle").textContent=`°${state.unit}`;
-  const lt=$("#languageToggle"); if(lt) lt.textContent=state.lang==="my"?"EN":"မြန်မာ";
+  const lt=$("#languageToggle"); if(lt){ lt.textContent=state.lang==="my"?"မြန်မာ":(isJapanese()?(japaneseMode()===2?"やさしい":"日本語"):"English"); lt.setAttribute("aria-label","Language / ဘာသာစကား / 言語: "+lt.textContent); lt.setAttribute("aria-haspopup","dialog");document.querySelectorAll("#langSheet [data-lang]").forEach(b=>{const cur=(state.lang==="my"?"my":(isJapanese()?(japaneseMode()===2?"easy":"ja"):"en"))===b.dataset.lang;b.classList.toggle("on",cur);b.setAttribute("aria-checked",String(cur));}); }
 }
 
 function switchTab(name,{record=true,reveal=true,focus=false}={}){
   if(reveal)rememberPanelPosition();
-  if(!["today","forecast","flood","hospitals","hazards","compare"].includes(name))name="today";
-  state.tab=name;state.activeTab=name;
+  if(!["today","forecast","flood","hospitals","hazards","compare","world","lab"].includes(name))name="today";
+  state.tab=name;state.activeTab=name;document.body.dataset.wtab=name;   // pro.css shows the Today summary (warnings, current weather, tiles) on the Today tab only
   document.querySelectorAll(".tab").forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on));});
   document.querySelectorAll(".tab-panel").forEach(p=>p.hidden=p.dataset.panel!==name);
   if(record)updateNavigation({tab:name});loadSection(name);
@@ -530,6 +591,14 @@ function bind(){
   $("#floodRefresh")?.addEventListener("click",()=>loadSection("flood",true));
   $("#hospitalRefresh")?.addEventListener("click",()=>loadSection("hospitals",true));
   $("#searchForm").onsubmit=e=>{e.preventDefault();search(els.input.value);};
+  // Desktop: small always-visible search in the top bar once a place is shown. It feeds the main search, so suggestions,
+  // world search and "which one?" lists all behave exactly the same.
+  const top=document.getElementById("topSearch"), topIn=document.getElementById("topSearchInput");
+  if(top&&topIn){
+    topIn.addEventListener("input",()=>{els.input.value=topIn.value;els.input.dispatchEvent(new Event("input",{bubbles:true}));});
+    top.addEventListener("submit",e=>{e.preventDefault();const q=topIn.value.trim();if(q.length<2)return;document.body.classList.add("show-hero");window.scrollTo(0,0);els.input.value=q;search(q);topIn.blur();});
+    window.addEventListener("mw-place",()=>{top.hidden=false;topIn.value="";});
+  }
   if(els.region) els.region.onchange=()=>loadRegionTowns(els.region.value);
   if(els.town) els.town.onchange=()=>{const o=els.town.selectedOptions[0];if(o&&o.dataset.lat){loadLocation({id:o.value,name:o.dataset.name||o.textContent,name_en:o.dataset.nameEn||o.textContent,admin1:els.region.value,lat:Number(o.dataset.lat),lon:Number(o.dataset.lon),country:"Myanmar",country_code:"MM",type:"Town"});}};
   loadRegionPicker();
@@ -547,9 +616,22 @@ function bind(){
       {enableHighAccuracy:true,timeout:10000,maximumAge:300000});
   };
   $("#unitToggle").onclick=()=>{state.unit=state.unit==="C"?"F":"C";try{localStorage.setItem("unit",state.unit);}catch{}$("#unitToggle").textContent=`°${state.unit}`;if(state.data&&state.location)render(state.data,state.location);};
-  $("#languageToggle").onclick=()=>{state.lang=state.lang==="my"?"en":"my";try{localStorage.setItem("lang",state.lang);}catch{}renderTranslations();if(state.data&&state.location){render(state.data,state.location);renderHealthTips();}
-  // Flood / DMH / hospital panels build their own text, so refresh them in the new language.
-  try{renderHospitals();loadFloodStatus(state.loadSeq,undefined,{cachedOnly:true});}catch{}};
+  const langSheet=$("#langSheet"),langBack=$("#langBackdrop");
+  const closeLang=(back=true)=>{langSheet.hidden=true;langBack.hidden=true;if(back)$("#languageToggle")?.focus();};
+  const openLang=()=>{langSheet.hidden=false;langBack.hidden=false;(langSheet.querySelector("[data-lang].on")||langSheet.querySelector("[data-lang]")).focus();};
+  async function chooseLang(code){
+    if(code==="my"){state.lang="my";await setJapanese(false);}
+    else if(code==="en"){state.lang="en";await setJapanese(false);}
+    else{state.lang="en";await setJapanese(code==="easy"?"easy":true);}
+    try{localStorage.setItem("lang",state.lang);localStorage.setItem("lang_ja",String(japaneseMode()));}catch{}
+    renderTranslations();if(state.data&&state.location){render(state.data,state.location);renderHealthTips();}
+    // Flood / DMH / hospital panels build their own text, so refresh them in the new language.
+    try{renderHospitals();loadFloodStatus(state.loadSeq,undefined,{cachedOnly:true});}catch{}
+  }
+  $("#languageToggle").onclick=()=>openLang();
+  langBack.onclick=()=>closeLang();
+  langSheet.addEventListener("click",async e=>{const b=e.target.closest("[data-lang]");if(b){await chooseLang(b.dataset.lang);closeLang();}});
+  langSheet.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();closeLang();}if(e.key==="Tab"){const f=[...langSheet.querySelectorAll("[data-lang]")];const k=f.indexOf(document.activeElement);if(e.shiftKey&&k<=0){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&k===f.length-1){e.preventDefault();f[0].focus();}}});
   els.input.addEventListener("input",()=>{
     clearTimeout(state.searchTimer);state.sugCtl?.abort();suggestionPlaces.clear();clearSlot("locationSuggestions");$("#searchResults").hidden=true;
     const q=els.input.value.trim();const turn=(state.suggestionTurn||0)+1;state.suggestionTurn=turn;
@@ -558,7 +640,7 @@ function bind(){
       const ctl=new AbortController();state.sugCtl=ctl;
       try{
         const rs=await geocode(q,ctl.signal);if(ctl.signal.aborted||state.suggestionTurn!==turn)return;
-        const options=rs.filter(x=>x.country_code==="MM").slice(0,8).map(x=>{
+        const options=[...rs.filter(x=>x.country_code==="MM"),...rs.filter(x=>x.country_code!=="MM")].slice(0,8).map(x=>{
           const label=resultLabel(x);suggestionPlaces.set(label,x);return {value:label,text:x.country||""};
         });drawSuggest=drawSuggest||mountSuggestView();drawSuggest(options);
       }catch{}
@@ -580,6 +662,8 @@ bind();
 async function restoreLocation(nav){
   if(nav.place){if(placeKey(state.location)!==placeKey(nav.place))await loadLocation(nav.place,{record:false});return;}
   if(nav.placeId&&nav.query){
+    // A place the person already used is saved on this device: open it from there (works offline, no search needed).
+    try{const saved=JSON.parse(localStorage.getItem(recentKey)||"[]").find(x=>String(x.id)===String(nav.placeId));if(saved){await loadLocation(normalizePlace(saved),{record:false});return;}}catch{}
     try{const rs=await geocode(nav.query);const loc=rs.find(x=>String(x.id)===String(nav.placeId));if(loc){await loadLocation(normalizePlace(loc),{record:false});return;}}catch{}
     setStatus(L("ux_restore_failed"));return;
   }
@@ -587,6 +671,7 @@ async function restoreLocation(nav){
 }
 window.addEventListener("mw-navigation",async e=>{switchTab(e.detail.tab,{record:false,reveal:false});await restoreLocation(e.detail);if(e.detail.mode==="weather"&&state.location)switchTab(e.detail.tab,{record:false});});
 restoreLocation(navigation);
+window.addEventListener("mw-refresh",()=>{if(state.location&&!state.loadingPlace)loadLocation(state.location,{record:false});});
 
 // Optional browser notifications: explicitly enabled by the user, never automatic.
 window.addEventListener("load", () => {

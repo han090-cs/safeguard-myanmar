@@ -3,10 +3,10 @@
 import { fetchJSON, preserveView } from "./interaction.js";
 import { L } from "./i18n.js";
 import { state, digits, fmtDay } from "./core.js";
-import { mountMonthlyView } from "./views.js";
+import { mountMonthlyView } from "./lazy_views.js";
 
 const my = () => state.lang === "my";
-// Drawn by React (frontend/src/monthly_view.jsx -> views.js); this file keeps the data, the events and the language hook.
+// Drawn by Preact (frontend/src/monthly_view.jsx -> views.js); this file keeps the data, the events and the language hook.
 let VIEW = null;
 let LOC = null, DATA = null, FAIL = false, MODE = "temp", REGION = "", REGIONS = [], controller = null;
 try { const s = localStorage.getItem("mw_mc_mode"); if (s === "rain") MODE = "rain"; } catch { /* storage may be blocked */ }

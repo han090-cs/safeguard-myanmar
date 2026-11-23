@@ -7,7 +7,7 @@ function Spark({ series }) {
   if (!series || series.length < 2) return null;
   const w = 140, h = 36, min = Math.min(...series), max = Math.max(...series), span = (max - min) || 1;
   const pts = series.map((v, i) => `${(i * (w / (series.length - 1))).toFixed(1)},${(h - 3 - ((v - min) / span) * (h - 6)).toFixed(1)}`).join(" ");
-  return <svg className="spark" viewBox={`0 0 ${w} ${h}`} width={w} height={h} role="img" aria-label="river discharge trend"><polyline fill="none" stroke="currentColor" strokeWidth="2" points={pts} /></svg>;
+  return <svg className="spark" viewBox={`0 0 ${w} ${h}`} width={w} height={h} role="img" aria-label="river discharge trend"><polyline fill="none" stroke="currentColor" stroke-width="2" points={pts} /></svg>;
 }
 
 function FeedCard({ s }) {
@@ -38,11 +38,14 @@ function FeedCard({ s }) {
       {DATA.stale ? <p className="tiny muted">{L("feeds_showing_last_data_received")}</p> : null}
     </>);
   }
-  return (<>
-    <div className="section-heading"><div><h3>🌍 {L("feeds_international_sources")}</h3><p className="muted">{L("feeds_automatic_usgs_gdacs_not_official")}</p></div></div>
-    {body}
-    <p className="tiny muted">{DATA && DATA.fetched_at ? L("feeds_checked") + ": " + ago(DATA.fetched_at) : ""}</p>
-  </>);
+  const n = STATE === "ok" && DATA ? (DATA.alerts || []).length : 0;
+  return (
+    <details className="fold-card" data-detail-key="feeds" open={n > 0 || STATE === "error"}>
+      <summary><span className="fold-t">🌍 {L("feeds_international_sources")}</span><span className="fold-s">{L("feeds_automatic_usgs_gdacs_not_official")}</span>{n ? <span className="fold-n">{n}</span> : null}</summary>
+      {body}
+      <p className="tiny muted">{DATA && DATA.fetched_at ? L("feeds_checked") + ": " + ago(DATA.fetched_at) : ""}</p>
+    </details>
+  );
 }
 
 function River({ s }) {
@@ -52,7 +55,7 @@ function River({ s }) {
     <div className="section-heading"><div><h3>🌊 {L("feeds_nearby_river_discharge_outlook")}</h3><p className="muted">GloFAS · {r.days} {L("feeds_days")}</p></div></div>
     <div className="river-row"><div><div className="tiny muted">{L("feeds_today")}</div><b>{r.today}</b> <span className="tiny">{r.unit}</span></div><div><div className="tiny muted">{L("feeds_peak")} ({String(r.peak_date).slice(5)})</div><b>{r.peak}</b> <span className="tiny">{r.unit}</span></div><div className="river-trend">{tr[2]} {my ? tr[0] : tr[1]}</div></div>
     <Spark series={r.series} />
-    <p className="tiny muted">{L("feeds_model_estimate_largest_nearby_river")}</p>
+    <p className="tiny muted">{L("feeds_model_estimate_largest_nearby_river")}{DATA.fetched_at ? " · " + L("feeds_checked") + ": " + s.ago(DATA.fetched_at) : ""}</p>
   </>);
 }
 

@@ -32,6 +32,11 @@ export function renderHealthTips(){
   else if([65,82].includes(code) || (Number.isFinite(rain)&&rain>=70))
     tips.push(healthTip("🌧️",L("wx_heavy_rain_possible"),
       L("wx_watch_flooding_slippery_roads_reduced"),"warn"));
+  const wet=[51,53,55,61,63,65,80,81,82].includes(code) || (Number.isFinite(rain)&&rain>=50);
+  if(wet && Number.isFinite(tempC) && tempC>=24)   // standing water after rain breeds dengue mosquitoes (WHO)
+    tips.push(healthTip("🦟",L("wx_mosquito_title"),L("wx_mosquito_text"),"info"));
+  if([65,82].includes(code) || (Number.isFinite(rain)&&rain>=70))   // floodwater and safe drinking water (CDC, WHO)
+    tips.push(healthTip("🚰",L("wx_floodwater_title"),L("wx_floodwater_text"),"warn"));
   if(Number.isFinite(humidity) && humidity>=85 && Number.isFinite(tempC) && tempC>=30)
     tips.push(healthTip("💧",L("wx_hot_humid"),
       L("wx_take_breaks_keep_hydrated_hot"),"info"));

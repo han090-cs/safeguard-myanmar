@@ -1,0 +1,50 @@
+name: DMH import
+
+# Reads the official warnings (and the Top Announcement storm news) from DMH Myanmar (moezala.gov.mm) every ~20 minutes
+# and publishes two JSON files as assets of the release "dmh-data". The website (on Vercel) reads those files, so
+# warnings update without a new deployment. Nothing is committed, so Vercel is not redeployed.
+#
+# Needs: this repository public (the website downloads the release assets without a login) and
+# Settings > Actions > General > Workflow permissions to allow workflows to run (the workflow asks for contents: write itself).
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dmh-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: dmh-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Fetch the previous snapshot
+        run: |
+          mkdir -p work
+          cp risk_engine/data/dmh_river_stations.json work/
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" \
+            --title "DMH data (updated automatically)" \
+            --notes "Written by .github/workflows/dmh-import.yml. Do not edit. The website reads official_alerts.json and official_alerts_state.json from this release." \
+            --latest=false
+          gh release download "$TAG" --dir work --clobber --pattern 'official_alerts*.json' || echo "no previous snapshot (first run)"
+      - name: Import from DMH
+        run: python -m risk_engine.dmh_importer --data-dir work
+      - name: Publish the snapshot
+        run: gh release upload "$TAG" work/official_alerts.json work/official_alerts_state.json --clobber
+      - name: Fail loudly if DMH could not be read
+        run: python tools/dmh_check.py work --max-age-min 90

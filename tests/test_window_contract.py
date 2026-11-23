@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FILES = {p.name: p.read_text(encoding="utf-8") for p in source_js() if not p.name.endswith(".config.js") and p.name not in ("sw.js", "sw-version.js")}
 BUILTIN = {"location", "scrollTo", "scrollY", "innerWidth", "innerHeight", "addEventListener", "removeEventListener", "matchMedia", "open",
            "dispatchEvent", "getComputedStyle", "history", "navigator", "localStorage", "document", "setTimeout", "clearTimeout", "requestAnimationFrame",
-           "print", "alert", "confirm", "CustomEvent", "Notification", "isSecureContext", "performance", "devicePixelRatio", "screen", "visualViewport", "scrollX", "self", "top", "focus"}
+           "print", "alert", "confirm", "CustomEvent", "Notification", "isSecureContext", "performance", "devicePixelRatio", "screen", "visualViewport", "scrollX", "self", "top", "focus", "doNotTrack"}
 
 
 def _assigned():

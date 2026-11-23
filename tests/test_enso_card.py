@@ -13,7 +13,7 @@ def test_enso_json_has_warning_system_link():
 
 def test_enso_card_uses_data_and_renders_link():
     body = (ROOT / "enso_card.js").read_text(encoding="utf-8")
-    view = (ROOT / "frontend" / "src" / "small_views.jsx").read_text(encoding="utf-8")  # the card itself is drawn by React
+    view = (ROOT / "frontend" / "src" / "small_views.jsx").read_text(encoding="utf-8")  # the card itself is drawn by Preact
     assert "e.status" in view and "e.strong_chance" in view  # no hardcoded "> 90%"
     assert "&gt; 90%" not in view and "> 90%" not in view
     assert "warning_system_url" in body and 'rel="noopener noreferrer"' in view

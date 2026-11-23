@@ -4,8 +4,9 @@ import { put } from "./slots.js";
 function Enso({ s }) {
   const { e, L } = s;
   return (
-    <>
-      <div className="section-heading"><div><h3>🌐 El Niño {L("wx_status")}</h3><p className="muted">{L("wx_global_status_same_every_place")}</p></div></div>
+    <details className="fold-card" data-detail-key="enso">
+      <summary><span className="fold-t">🌐 El Niño {L("wx_status")}</span><span className="fold-s">{e.status || "El Niño Advisory"}</span></summary>
+      <p className="tiny muted">{L("wx_global_status_same_every_place")}</p>
       <ul className="em-list">
         <li><span>NOAA</span><b>{e.status || "El Niño Advisory"}</b></li>
         {e.strong_chance ? <li><span>{L("enso_strong_label")}</span><b>{String(e.strong_chance).replace(/greater than\s*/i, "> ")}</b></li> : null}
@@ -16,7 +17,7 @@ function Enso({ s }) {
       <p className="agri-note enso-place" ref={s.farm ? (el => { if (el) el.hidden = !s.compatible; }) : undefined}>{L("enso_for_place", { place: s.place })}</p>
       <p className="tiny muted">{L("wx_source")}: <a href={e.url} target="_blank" rel="noopener">NOAA CPC</a> · {L("common_updated")} {e.updated} · {L("wx_next")} {e.next_update} · <a href={e.dmh_url} target="_blank" rel="noopener">DMH ↗</a></p>
       {s.ws ? <p className="enso-link"><a className="em-num" href={s.ws} target="_blank" rel="noopener noreferrer">🔗 {e.warning_system_name || L("enso_warning_system")} ↗</a></p> : null}
-    </>
+    </details>
   );
 }
 export function mountEnsoView() { return (id, s) => put(id, s ? <Enso s={s} /> : null); }
