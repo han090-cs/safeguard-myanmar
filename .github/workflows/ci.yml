@@ -33,4 +33,15 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tests/nature.test.mjs
       - run: npm exec -- playwright test
+      # The Lab ONNX weights are deliberately not in git (licence + size; see
+      # models/leaf/MODELS.md), but the UX suite runs the real on-device photo
+      # check in a browser, so fetch the exact weights from the test
+      # deployment (which serves them) and verify them by hash first.
+      - name: Fetch Lab model weights for the UX suite
+        run: |
+          cd models/leaf
+          curl -fsSLO https://safeguard-v926-test.vercel.app/models/leaf/rice_student_mbv3s.onnx
+          curl -fsSLO https://safeguard-v926-test.vercel.app/models/leaf/pv_int8.onnx
+          echo "0af21e86c46537ed85eb053664556051449447a2147cb5d2f72364164acb8f7a  rice_student_mbv3s.onnx" | sha256sum -c -
+          echo "0db0651a4df688d752dd70366ea7ddaef8e75a4a5b19609b8eb3e1169e4fe765  pv_int8.onnx" | sha256sum -c -
       - run: npm exec -- playwright test -c playwright.ux.config.js
