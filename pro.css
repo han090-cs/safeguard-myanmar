@@ -204,6 +204,10 @@ body .search-hero {
 }
 body .search-hero h1 { color: var(--pro-ink) !important; }
 body .search-hero p, body .search-hero .eyebrow { color: var(--pro-muted) !important; }
+/* the region-picker toggle and the recent-place chips kept their dark-hero
+   styling (white on translucent white) and vanished on the light hero */
+body .search-hero .picker-more>summary { background: rgba(127,127,127,.14) !important; color: var(--pro-ink) !important; border-color: var(--pro-line) !important; }
+body .search-hero .chip { background: rgba(127,127,127,.12) !important; color: var(--pro-ink) !important; border-color: var(--pro-line) !important; }
 
 /* ---------- icons: the moon / gear emoji buttons become line icons that follow the text colour ---------- */
 body #themeToggle, body #topMoreBtn { font-size: 0 !important; }
