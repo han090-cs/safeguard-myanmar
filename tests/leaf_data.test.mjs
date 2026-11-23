@@ -212,5 +212,22 @@ assert.equal(D.isoLocal("nonsense"), "");
   assert.equal(D.KEY_STORE, "mw_leaf_key_v1");
   assert.notEqual(D.KEY_STORE, D.LOG_KEY);
 }
+// ---- the visitor's Gemini key: its own shape, mask and store, apart from the Anthropic one
+{
+  const g = "AIza" + "G".repeat(31) + "wxyz";
+  assert.equal(D.isGeminiKey(g), true);
+  assert.equal(D.isKey(g), false);
+  for (const bad of ["", "AIza", "AIza-short", "sk-ant-api03-" + "a".repeat(30), " " + g, g + " ", "AIza" + "a b".repeat(10), null, undefined, 42])
+    assert.equal(D.isGeminiKey(bad), false, String(bad).slice(0, 20));
+  assert.equal(D.maskGeminiKey(g), "AIza…wxyz");
+  assert.equal(D.maskGeminiKey("nope"), "");
+  assert.equal(D.isKeyFor("gemini", g), true);
+  assert.equal(D.isKeyFor("gemini", "sk-ant-api03-" + "A".repeat(30)), false);
+  assert.equal(D.isKeyFor("anthropic", "sk-ant-api03-" + "A".repeat(30)), true);
+  assert.equal(D.maskKeyFor("gemini", g), "AIza…wxyz");
+  assert.equal(D.keyStoreFor("gemini"), "mw_leaf_gkey_v1");
+  assert.equal(D.keyStoreFor("anthropic"), D.KEY_STORE);
+  assert.notEqual(D.keyStoreFor("gemini"), D.KEY_STORE);
+}
 
 console.log("leaf_data: rules, tables, texts, log and CSV ok");

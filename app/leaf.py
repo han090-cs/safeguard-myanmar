@@ -4,8 +4,9 @@ One downscaled leaf photo goes to a vision model, which says which of the app's 
 The Leaf check also has an on-device photo check (rice, potato, cucurbit; models in models/leaf/) and a sign checklist, and both work without this route.
 
 Whose key pays (v9.27):
-  * Default: the VISITOR's own Anthropic key. The Lab has a separate card where a visitor pastes their key; the browser sends it in the
-    X-User-Api-Key header with each check, this server forwards that one call to Anthropic and forgets it. It is never stored, logged,
+  * Default: the VISITOR's own key (Anthropic, or Google Gemini since v9.28 — the Lab's key card lets the visitor pick the provider;
+    a Gemini key is free to get, which is why it was added). The browser sends the key in the X-User-Api-Key header (and the provider
+    in X-Ai-Provider) with each check, this server forwards that one call to that provider and forgets it. It is never stored, logged,
     echoed or put in a URL, and the owner's key is never used for such a call.
   * Opt-in: the owner's ANTHROPIC_API_KEY serves visitors who bring no key ONLY when SG_LEAF_SHARE_SERVER_KEY=1 (a private demo, a
     school or a co-op that pays for its members). Without that flag the owner's key is not used for anyone.
@@ -51,6 +52,9 @@ CONF = ("low", "medium", "high")
 ISSUES = ("blurry", "too_far", "dark", "not_plant")
 KEY_HEADER = "x-user-api-key"
 USER_KEY = re.compile(r"^sk-ant-[A-Za-z0-9_\-]{16,256}$")      # the shape of an Anthropic API key; anything else is refused before any call
+PROVIDER_HEADER = "x-ai-provider"
+GEMINI_KEY = re.compile(r"^AIza[A-Za-z0-9_\-]{20,128}$")       # the shape of a Google API key; anything else is refused before any call
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 _YES = ("1", "true", "yes", "on")
 
 _ip_hits: OrderedDict[str, deque] = OrderedDict()               # owner's shared key, per visitor
@@ -96,6 +100,10 @@ def enabled() -> bool:
 
 def model_name() -> str:
     return os.getenv("SG_LEAF_MODEL", "").strip() or "claude-sonnet-5-5"
+
+
+def gemini_model_name() -> str:
+    return os.getenv("SG_LEAF_GEMINI_MODEL", "").strip() or "gemini-2.5-flash"
 
 
 # ------------------------------------------------------------------------------------------------ what the app knows (pests.js)
@@ -265,20 +273,59 @@ async def call_model(raw: bytes, media_type: str, crop: str, lang: str, key: str
         raise HTTPException(502, "unavailable") from None
 
 
+async def call_gemini(raw: bytes, media_type: str, crop: str, lang: str, key: str, own_key: bool = False) -> str:
+    """One Gemini generateContent call with the given key, same contract as call_model: the reply text, or a generic HTTPException.
+    The key travels in the x-goog-api-key header, never in the URL. Gemini answers a rejected key with 400/401/403, so for a
+    visitor's own key those all read as "bad_key" (the request itself is built here from validated parts, so it is not the cause)."""
+    if state.client is None or not key:
+        raise HTTPException(503, "off")
+    system, user = build_prompt(crop, lang)
+    body = {
+        "system_instruction": {"parts": [{"text": system}]},
+        "contents": [{"parts": [
+            {"text": user},
+            {"inline_data": {"mime_type": media_type, "data": base64.b64encode(raw).decode("ascii")}},
+        ]}],
+        "generationConfig": {"maxOutputTokens": 700, "responseMimeType": "application/json"},
+    }
+    try:
+        r = await state.client.post(GEMINI_URL.format(model=gemini_model_name()), json=body, timeout=40,
+                                    headers={"x-goog-api-key": key, "content-type": "application/json"})
+    except Exception as exc:                                   # network or timeout: say nothing about the request itself
+        log.warning("leaf: upstream unreachable (%s)", type(exc).__name__)
+        raise HTTPException(502, "unavailable") from None
+    if r.status_code in (400, 401, 403) and own_key:
+        raise HTTPException(401, "bad_key")
+    if r.status_code == 429:
+        raise HTTPException(503, "busy")
+    if r.status_code != 200:
+        log.warning("leaf: upstream status %s", r.status_code)     # status only: the body can echo request details
+        raise HTTPException(502, "unavailable")
+    try:
+        parts = r.json()["candidates"][0]["content"]["parts"]
+        return "".join(p.get("text", "") for p in parts if isinstance(p, dict))
+    except (ValueError, KeyError, IndexError, TypeError):
+        raise HTTPException(502, "unavailable") from None
+
+
 def _json(data: dict[str, Any], status: int = 200) -> JSONResponse:
     return JSONResponse(data, status_code=status, headers={"Cache-Control": "no-store"})
 
 
-def resolve_key(request: Request) -> tuple[str, bool]:
-    """(key, is_the_visitors_own). The visitor's key wins; the owner's key serves a visitor only when the owner shares it on purpose."""
+def resolve_key(request: Request) -> tuple[str, bool, str]:
+    """(key, is_the_visitors_own, provider). The visitor's key wins; the owner's key serves a visitor only when the owner shares
+    it on purpose (and it is an Anthropic key, so the shared path is always the Anthropic provider). A visitor's key is checked
+    against the shape of the provider they picked; a mismatch, or a provider this server does not know, is refused before any call."""
     given = request.headers.get(KEY_HEADER, "").strip()
     if given:
-        if not USER_KEY.match(given):
+        provider = request.headers.get(PROVIDER_HEADER, "anthropic").strip().lower()
+        shape = {"anthropic": USER_KEY, "gemini": GEMINI_KEY}.get(provider)
+        if shape is None or not shape.match(given):
             raise HTTPException(401, "bad_key")
-        return given, True
+        return given, True, provider
     shared = server_key()
     if shared:
-        return shared, False
+        return shared, False, "anthropic"
     raise HTTPException(401, "need_key")
 
 
@@ -296,11 +343,16 @@ async def leaf_look(body: LeafIn, request: Request):
     if body.crop not in catalog()["crops"] or not candidates(body.crop):
         raise HTTPException(422, "unknown crop")
     raw, media_type = decode_image(body.image)
-    key, own = resolve_key(request)
+    key, own, provider = resolve_key(request)
     spent = take_budget(_client_key(request), own_key=own)
     if spent:
         return _json({"detail": "limit", "scope": spent}, 429)
-    text = await call_model(raw, media_type, body.crop, body.lang, key, own)
+    if provider == "gemini":
+        text = await call_gemini(raw, media_type, body.crop, body.lang, key, own)
+        used = gemini_model_name()
+    else:
+        text = await call_model(raw, media_type, body.crop, body.lang, key, own)
+        used = model_name()
     out = parse_answer(text, body.crop)
-    out.update(ok=True, model=model_name(), generated=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    out.update(ok=True, model=used, generated=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
     return _json(out)

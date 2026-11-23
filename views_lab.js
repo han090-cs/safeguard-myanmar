@@ -107,12 +107,16 @@ function _({ m: i }) {
   };
   return /* @__PURE__ */ e("section", { className: "lf-res lf-key", "aria-labelledby": "leafKeyT", id: "leafKey", children: [
     /* @__PURE__ */ e("h4", { id: "leafKeyT", children: l("leaf_key_title") }),
-    /* @__PURE__ */ e("p", { children: l("leaf_key_intro") }),
-    /* @__PURE__ */ e("p", { className: "tiny muted", children: l("leaf_key_how") }),
+    /* @__PURE__ */ e("p", { children: l(t.introKey) }),
+    /* @__PURE__ */ e("p", { className: "tiny muted", children: l(t.howKey) }),
+    /* @__PURE__ */ e("div", { className: "lf-actions", role: "group", "aria-label": l("leaf_key_provider"), children: [
+      /* @__PURE__ */ e("button", { type: "button", className: "ghost-btn" + (t.provider === "anthropic" ? " lf-primary" : ""), "aria-pressed": t.provider === "anthropic", onClick: () => a.keyProvider("anthropic"), children: l("leaf_key_p_anthropic") }),
+      /* @__PURE__ */ e("button", { type: "button", className: "ghost-btn" + (t.provider === "gemini" ? " lf-primary" : ""), "aria-pressed": t.provider === "gemini", onClick: () => a.keyProvider("gemini"), children: l("leaf_key_p_gemini") })
+    ] }),
     t.has ? /* @__PURE__ */ e("p", { className: "lf-status s-sure", id: "leafKeyHas", children: l("leaf_key_has", { masked: t.masked }) }) : null,
-    t.bad ? /* @__PURE__ */ e("p", { className: "lf-status s-unsure", id: "leafKeyBad", role: "alert", children: l("leaf_key_bad") }) : null,
+    t.bad ? /* @__PURE__ */ e("p", { className: "lf-status s-unsure", id: "leafKeyBad", role: "alert", children: l(t.badKey) }) : null,
     /* @__PURE__ */ e("div", { className: "lf-keybox", children: [
-      /* @__PURE__ */ e("label", { htmlFor: "leafKeyIn", className: "tiny", children: l(t.has ? "leaf_key_label_new" : "leaf_key_label") }),
+      /* @__PURE__ */ e("label", { htmlFor: "leafKeyIn", className: "tiny", children: l(t.has ? "leaf_key_label_new" : t.labelKey) }),
       /* @__PURE__ */ e(
         "input",
         {
@@ -123,7 +127,7 @@ function _({ m: i }) {
           autoCapitalize: "off",
           autoCorrect: "off",
           spellCheck: !1,
-          placeholder: "sk-ant-…",
+          placeholder: t.ph,
           "aria-describedby": "leafKeyMsg",
           onKeyDown: (r) => {
             r.key === "Enter" && (r.preventDefault(), n());
@@ -140,14 +144,14 @@ function _({ m: i }) {
       ] })
     ] }),
     /* @__PURE__ */ e("div", { id: "leafKeyMsg", "aria-live": "polite", children: [
-      t.note === "format" ? /* @__PURE__ */ e("p", { role: "alert", id: "leafKeyFormat", children: l("leaf_key_err_format") }) : null,
+      t.note === "format" ? /* @__PURE__ */ e("p", { role: "alert", id: "leafKeyFormat", children: l(t.formatKey) }) : null,
       t.note === "ok" ? /* @__PURE__ */ e("p", { id: "leafKeyOk", children: l("leaf_key_ok") }) : null,
       t.note === "removed" ? /* @__PURE__ */ e("p", { id: "leafKeyGone", children: l("leaf_key_removed") }) : null
     ] }),
     /* @__PURE__ */ e("p", { className: "tiny muted", children: [
-      l("leaf_key_where"),
+      l(t.whereKey),
       " ",
-      /* @__PURE__ */ e("a", { href: "https://console.anthropic.com/settings/keys", target: "_blank", rel: "noopener noreferrer", children: l("leaf_key_link") })
+      /* @__PURE__ */ e("a", { href: t.linkUrl, target: "_blank", rel: "noopener noreferrer", children: l(t.linkKey) })
     ] }),
     /* @__PURE__ */ e("p", { className: "tiny muted", children: l("leaf_key_limit", { n: t.n }) }),
     t.shared ? /* @__PURE__ */ e("p", { className: "tiny muted", children: l("leaf_key_shared", { n: t.sharedN }) }) : null

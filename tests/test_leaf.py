@@ -29,7 +29,7 @@ VISITOR = "sk-ant-api03-" + "V" * 40         # a visitor's own key (sent by thei
 @pytest.fixture(autouse=True)
 def fresh(monkeypatch):
     leaf.reset_budgets()
-    for k in ("ANTHROPIC_API_KEY", "SG_LEAF_AI", "SG_LEAF_MODEL", "SG_LEAF_PER_IP_HOUR", "SG_LEAF_DAILY_MAX", "SG_LEAF_SHARE_SERVER_KEY", "SG_LEAF_BYOK_PER_HOUR"):
+    for k in ("ANTHROPIC_API_KEY", "SG_LEAF_AI", "SG_LEAF_MODEL", "SG_LEAF_GEMINI_MODEL", "SG_LEAF_PER_IP_HOUR", "SG_LEAF_DAILY_MAX", "SG_LEAF_SHARE_SERVER_KEY", "SG_LEAF_BYOK_PER_HOUR"):
         monkeypatch.delenv(k, raising=False)
     yield
     leaf.reset_budgets()
@@ -396,6 +396,87 @@ def test_cross_site_pages_cannot_use_the_key_header():
     assert "access-control-allow-origin" not in {k.lower() for k in r.headers}
     r = post(key=VISITOR, headers={"Origin": "https://evil.example"})
     assert "access-control-allow-origin" not in {k.lower() for k in r.headers}
+
+
+# ---------------------------------------------------------------- the visitor's Gemini key (the free alternative, v9.28)
+
+GKEY = "AIza" + "G" * 35                     # a visitor's own Gemini key (shape only)
+GOOD_GEMINI = FakeResp(200, {"candidates": [{"content": {"parts": [{"text": '{"matches":[{"id":"tungro","confidence":"high","why":"yellow-orange"}]}'}]}}]})
+
+
+def post_gemini(key=None, provider="gemini", body=None):
+    body = {"image": B64, "crop": "rice", "lang": "en"} if body is None else body
+    headers = {}
+    if key is not None:
+        headers["X-User-Api-Key"] = key
+    if provider is not None:
+        headers["X-Ai-Provider"] = provider
+    return client.post("/api/v1/leaf", json=body, headers=headers)
+
+
+def test_a_gemini_key_pays_through_google_and_reports_its_model(mine):
+    fc = FakeClient(GOOD_GEMINI)
+    mine.setattr(state, "client", fc)
+    r = post_gemini(key=GKEY)
+    assert r.status_code == 200 and r.json()["matches"][0]["id"] == "tungro"
+    assert r.json()["model"] == "gemini-2.5-flash"
+    url, kw = fc.calls[0]
+    assert url == "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    assert GKEY not in url and kw["headers"]["x-goog-api-key"] == GKEY          # the key rides in a header, never in the URL
+    parts = kw["json"]["contents"][0]["parts"]
+    assert parts[1]["inline_data"]["mime_type"] == "image/jpeg" and parts[1]["inline_data"]["data"] == B64
+    assert "tungro" in parts[0]["text"] and "pesticide" in kw["json"]["system_instruction"]["parts"][0]["text"].lower()
+
+
+def test_the_gemini_model_name_can_be_changed_by_the_owner(mine):
+    mine.setattr(state, "client", FakeClient(GOOD_GEMINI))
+    mine.setenv("SG_LEAF_GEMINI_MODEL", "gemini-test-x")
+    r = post_gemini(key=GKEY)
+    assert r.json()["model"] == "gemini-test-x"
+
+
+def test_a_key_is_checked_against_the_provider_it_claims(mine):
+    async def boom(*a, **k):
+        raise AssertionError("no provider may be called with a mismatched key")
+    mine.setattr(leaf, "call_model", boom)
+    mine.setattr(leaf, "call_gemini", boom)
+    assert post_gemini(key=VISITOR).json() == {"detail": "bad_key"}            # an Anthropic key is not a Gemini key
+    assert post_gemini(key=GKEY, provider="anthropic").json() == {"detail": "bad_key"}
+    assert post_gemini(key=GKEY, provider="openai").json() == {"detail": "bad_key"}      # a provider the server does not know
+    assert post_gemini(key=GKEY, provider=None).json() == {"detail": "bad_key"}          # no provider named: Anthropic is the default
+    assert post_gemini(key="AIza-short").json() == {"detail": "bad_key"}
+    assert leaf._day["n"] == 0 and not leaf._own_hits
+
+
+@pytest.mark.parametrize("code", [400, 401, 403])
+def test_a_rejected_gemini_key_is_reported_as_bad_key_and_not_echoed(mine, caplog, code):
+    mine.setattr(state, "client", FakeClient(FakeResp(code, {"error": {"message": "API key not valid. " + GKEY}})))
+    with caplog.at_level(logging.DEBUG):
+        r = post_gemini(key=GKEY)
+    assert r.status_code == 401 and r.json() == {"detail": "bad_key"}
+    assert GKEY not in r.text and GKEY not in caplog.text and "AIza" not in caplog.text
+
+
+@pytest.mark.parametrize("resp,exc,status,detail", [
+    (FakeResp(500), None, 502, "unavailable"),
+    (FakeResp(200, {"candidates": []}), None, 502, "unavailable"),          # an empty/blocked reply is not an answer
+    (None, RuntimeError("boom " + GKEY), 502, "unavailable"),
+    (FakeResp(429), None, 503, "busy"),
+])
+def test_gemini_failures_stay_generic_and_never_leak_the_key(mine, caplog, resp, exc, status, detail):
+    mine.setattr(state, "client", FakeClient(resp, exc))
+    with caplog.at_level(logging.DEBUG):
+        r = post_gemini(key=GKEY)
+    assert r.status_code == status and r.json()["detail"] == detail
+    assert GKEY not in r.text and "AIza" not in caplog.text and B64[:40] not in caplog.text
+
+
+def test_gemini_calls_use_the_byok_budget_and_never_the_owners(mine):
+    mine.setattr(state, "client", FakeClient(GOOD_GEMINI))
+    mine.setenv("SG_LEAF_BYOK_PER_HOUR", "2")
+    assert post_gemini(key=GKEY).status_code == 200 and post_gemini(key=GKEY).status_code == 200
+    assert post_gemini(key=GKEY).json() == {"detail": "limit", "scope": "visitor"}
+    assert leaf._day["n"] == 0
 
 
 # ---------------------------------------------------------------- static files of the on-device photo check

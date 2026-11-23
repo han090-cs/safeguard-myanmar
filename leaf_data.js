@@ -139,6 +139,15 @@ export const KEY_STORE = "mw_leaf_key_v1";
 export const isKey = s => typeof s === "string" && /^sk-ant-[A-Za-z0-9_-]{16,256}$/.test(s);
 /** What the screen may show of a key: the start and the last four characters, never more. */
 export const maskKey = s => (isKey(s) ? "sk-ant-…" + s.slice(-4) : "");
+/** The visitor can also bring a Google Gemini key (free to get). It lives in its own store, apart from the Anthropic one. */
+export const GKEY_STORE = "mw_leaf_gkey_v1";
+export const PROVIDER_STORE = "mw_leaf_provider_v1";
+export const isGeminiKey = s => typeof s === "string" && /^AIza[A-Za-z0-9_-]{20,128}$/.test(s);
+export const maskGeminiKey = s => (isGeminiKey(s) ? "AIza…" + s.slice(-4) : "");
+/** Provider-aware key checks, so the card can treat both key kinds the same way. */
+export const isKeyFor = (provider, s) => (provider === "gemini" ? isGeminiKey(s) : isKey(s));
+export const maskKeyFor = (provider, s) => (provider === "gemini" ? maskGeminiKey(s) : maskKey(s));
+export const keyStoreFor = provider => (provider === "gemini" ? GKEY_STORE : KEY_STORE);
 /** Pasted text cleaned up: spaces, line breaks and quote marks around the key removed. */
 export const cleanKey = s => String(s ?? "").trim().replace(/^["'`\u2018\u2019\u201c\u201d]+|["'`\u2018\u2019\u201c\u201d]+$/g, "").trim();
 

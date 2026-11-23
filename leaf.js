@@ -20,6 +20,7 @@ const pct = v => Math.round(v * 100);
 let VIEW = null, LOC = null;
 let CROP = String(readLocal(CROP_KEY, "") || "");
 if (!PEST_CROPS.some(c => c.id === CROP)) CROP = "";
+let PROVIDER = readLocal(D.PROVIDER_STORE, "anthropic") === "gemini" ? "gemini" : "anthropic";   // whose AI the visitor's key belongs to: Anthropic, or Google Gemini (free key)
 let PICKED = new Set();
 let PX = null, PREVIEW = "", PHOTOBAD = false, PHOTO_SEQ = 0;                  // PX = {data (RGBA), w, h}: what the photo model reads
 let PQ = null;                                                                  // quick quality check of that photo: { issues: ["dark" | "bright" | "far" | "blurry"], ... }
@@ -30,15 +31,16 @@ let KEY = loadKey(), KEY_NOTE = "";                                             
 let LOG = readLog(), SAVED = "", CLEAR_ARMED = false, CLEAR_TIMER = 0;
 let engineCached = readLocal(ENGINE_FLAG, 0) === 1;
 
-/** The key lives in sessionStorage (until this tab closes) or, only if the person ticked "remember", in localStorage. Never anywhere else. */
+/** The key lives in sessionStorage (until this tab closes) or, only if the person ticked "remember", in localStorage. Never anywhere else.
+ *  Each provider has its own store, so a Claude key and a Gemini key can both stay on the phone and the card shows the picked one. */
 function loadKey() {
   for (const [area, remember] of [["localStorage", true], ["sessionStorage", false]]) {
-    try { const v = window[area].getItem(D.KEY_STORE); if (D.isKey(v)) return { value: v, remember, bad: false }; } catch { /* storage blocked: no saved key */ }
+    try { const v = window[area].getItem(D.keyStoreFor(PROVIDER)); if (D.isKeyFor(PROVIDER, v)) return { value: v, remember, bad: false }; } catch { /* storage blocked: no saved key */ }
   }
   return { value: "", remember: false, bad: false };
 }
 function persistKey() {
-  const put = (area, v) => { try { if (v) window[area].setItem(D.KEY_STORE, v); else window[area].removeItem(D.KEY_STORE); } catch { /* the key then lives in memory only */ } };
+  const put = (area, v) => { try { if (v) window[area].setItem(D.keyStoreFor(PROVIDER), v); else window[area].removeItem(D.keyStoreFor(PROVIDER)); } catch { /* the key then lives in memory only */ } };
   put("localStorage", KEY.remember ? KEY.value : "");
   put("sessionStorage", KEY.remember ? "" : KEY.value);
 }
@@ -90,15 +92,22 @@ function photoModel() {
 }
 
 function keyModel() {
-  return { show: AIS.known && AIS.byok, has: !!KEY.value, masked: D.maskKey(KEY.value), remember: KEY.remember, bad: KEY.bad, note: KEY_NOTE,
-    shared: AIS.enabled, sharedN: digits(AIS.per_hour), n: digits(AIS.byok_per_hour) };
+  const g = PROVIDER === "gemini";
+  return { show: AIS.known && AIS.byok, has: !!KEY.value, masked: D.maskKeyFor(PROVIDER, KEY.value), remember: KEY.remember, bad: KEY.bad, note: KEY_NOTE,
+    shared: AIS.enabled, sharedN: digits(AIS.per_hour), n: digits(AIS.byok_per_hour),
+    provider: PROVIDER,
+    introKey: g ? "leaf_key_intro_gemini" : "leaf_key_intro", howKey: g ? "leaf_key_how_gemini" : "leaf_key_how",
+    whereKey: g ? "leaf_key_where_gemini" : "leaf_key_where", linkKey: g ? "leaf_key_link_gemini" : "leaf_key_link",
+    linkUrl: g ? "https://aistudio.google.com/apikey" : "https://console.anthropic.com/settings/keys",
+    labelKey: g ? "leaf_key_label_gemini" : "leaf_key_label", formatKey: g ? "leaf_key_err_format_gemini" : "leaf_key_err_format",
+    badKey: g ? "leaf_key_bad_gemini" : "leaf_key_bad", ph: g ? "AIza…" : "sk-ant-…" };
 }
 
 function aiModel() {
   const has = !!KEY.value, usable = has || AIS.enabled;
   const out = { show: AIS.known && AIS.byok && !!PX && !!CROP, usable, state: AI.state,
-    note: has ? T("leaf_ai_note_own", { n: digits(AIS.byok_per_hour) }) : T("leaf_ai_note", { n: digits(AIS.per_hour) }) };
-  if (AI.state === "err") out.err = T((AI.err.startsWith("limit_") ? "leaf_ai_" : "leaf_ai_err_") + AI.err);
+    note: has ? T(PROVIDER === "gemini" ? "leaf_ai_note_own_gemini" : "leaf_ai_note_own", { n: digits(AIS.byok_per_hour) }) : T("leaf_ai_note", { n: digits(AIS.per_hour) }) };
+  if (AI.state === "err") out.err = T(AI.err === "bad_key" && PROVIDER === "gemini" ? "leaf_ai_err_bad_key_gemini" : (AI.err.startsWith("limit_") ? "leaf_ai_" : "leaf_ai_err_") + AI.err);
   if (AI.state === "done" && AI.res) {
     const r = AI.res;
     out.res = {
@@ -228,7 +237,7 @@ async function askAI() {
   AI = { state: "busy" }; SAVED = ""; if (KEY_NOTE !== "format") KEY_NOTE = ""; render();
   const timer = setTimeout(() => ctl.abort(), 60000);
   const headers = { "content-type": "application/json" };
-  if (KEY.value) headers["x-user-api-key"] = KEY.value;                           // only in this header: never in the URL, the body, the log or the console
+  if (KEY.value) { headers["x-user-api-key"] = KEY.value; headers["x-ai-provider"] = PROVIDER; }   // only in these headers: never in the URL, the body, the log or the console
   try {
     const r = await fetch("/api/v1/leaf", { method: "POST", headers, signal: ctl.signal,
       body: JSON.stringify({ image: PREVIEW, crop, lang: isJapanese() ? "ja" : state.lang === "my" ? "my" : "en" }) });
@@ -254,7 +263,7 @@ async function askAI() {
 // ---- the visitor's own key: the separate card in the Lab ----------------------------------------------------------------------------
 function saveKey(raw) {
   const v = D.cleanKey(raw);
-  if (!D.isKey(v)) { KEY_NOTE = "format"; render(); return false; }
+  if (!D.isKeyFor(PROVIDER, v)) { KEY_NOTE = "format"; render(); return false; }
   KEY = { value: v, remember: KEY.remember, bad: false };
   persistKey(); KEY_NOTE = "ok";
   if (AI.state === "err" && (AI.err === "need_key" || AI.err === "bad_key")) AI = { state: "idle" };
@@ -268,6 +277,13 @@ function removeKey() {
   render();
 }
 function rememberKey(yes) { KEY.remember = !!yes; if (KEY.value) persistKey(); render(); }
+function switchProvider(p) {
+  if ((p !== "gemini" && p !== "anthropic") || p === PROVIDER) return;
+  PROVIDER = p; writeLocal(D.PROVIDER_STORE, p);
+  KEY = loadKey(); KEY_NOTE = "";
+  if (AI.state === "err" && (AI.err === "need_key" || AI.err === "bad_key")) AI = { state: "idle" };
+  render();
+}
 
 // ---- save, log, CSV ---------------------------------------------------------------------------------------------------------------
 const placeLabel = () => { const l = state.location || LOC || {}; return String(state.lang === "my" ? l.name || l.name_en || "" : l.name_en || l.name || ""); };
@@ -303,7 +319,7 @@ const on = {
   crop(id) { CROP = PEST_CROPS.some(c => c.id === id) ? id : ""; writeLocal(CROP_KEY, CROP); SAVED = ""; if (PX) { clearPhotoResults(); } render(); if (PX) autoCheck(); },
   sign(id) { if (!D.SYMPTOM_IDS.includes(id)) return; if (PICKED.has(id)) PICKED.delete(id); else PICKED.add(id); SAVED = ""; render(); },
   photo: takePhoto, remove: removePhoto, check: checkPhoto, ask: askAI, save: saveCheck, csv: downloadCSV, clear: clearLog,
-  keySave: saveKey, keyRemove: removeKey, keyRemember: rememberKey,
+  keySave: saveKey, keyRemove: removeKey, keyRemember: rememberKey, keyProvider: switchProvider,
   keyGo() { const el = document.getElementById("leafKeyIn"); if (el) { el.scrollIntoView({ block: "center" }); el.focus(); } },
   reset() { PICKED = new Set(); removePhoto(); SAVED = ""; },
 };
