@@ -482,9 +482,18 @@ def test_gemini_calls_use_the_byok_budget_and_never_the_owners(mine):
 # ---------------------------------------------------------------- static files of the on-device photo check
 
 def test_models_and_engine_files_are_served_exactly_and_nothing_else():
+    # The ONNX weights are deliberately NOT in git (licence + size; see
+    # models/leaf/MODELS.md) — they join the tree only in the release/deploy
+    # copy. In a bare checkout (e.g. CI) the exact-bytes check cannot run;
+    # there the model routes must answer 404 rather than serve anything else.
+    weights_present = all((ROOT / "models" / "leaf" / name).is_file()
+                          for name in ("rice_student_mbv3s.onnx", "pv_int8.onnx"))
     for name, sha, size in [("rice_student_mbv3s.onnx", "0af21e86c46537ed85eb053664556051449447a2147cb5d2f72364164acb8f7a", 3103989),
                             ("pv_int8.onnx", "0db0651a4df688d752dd70366ea7ddaef8e75a4a5b19609b8eb3e1169e4fe765", 2653866)]:
         r = client.get(f"/models/leaf/{name}")
+        if not weights_present:
+            assert r.status_code == 404
+            continue
         assert r.status_code == 200 and len(r.content) == size and hashlib.sha256(r.content).hexdigest() == sha
         assert "max-age" in r.headers["cache-control"]
     parts = b"".join(client.get(f"/vendor/ort/ort-wasm-simd-threaded.wasm.{i}").content for i in range(1, 5))
